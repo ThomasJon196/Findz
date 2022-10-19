@@ -2,15 +2,15 @@
 ---
 ## Vision
 
-    Spotlight yourself so your friends find you easily. Dont lose your friend in a crowd. ...
+#### Spotlight yourself so your friends find you easily. Dont lose your friend in a crowd. ...(gerne eigene Beschreibung einfuegen)
 
-    Augumented-Reality marker, which displays your friends current position through the camera and locates your friends with higher precision.
+Augumented-Reality marker, which displays your friends current position through the camera and locates your friends with higher precision.
 
 ---
 
 ## Description
 
-    ...
+...
 
 --- 
 ## TODO (delete when finished)
