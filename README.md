@@ -14,7 +14,7 @@ Augumented-Reality marker, which displays your friends current position through 
 
 --- 
 
-Collect insights inside [Project-WIKI](https://github.com/ThomasJon196/Findz/wiki)
+Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wiki)
 
 ---
 
