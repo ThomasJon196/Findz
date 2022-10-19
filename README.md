@@ -13,6 +13,11 @@ Augumented-Reality marker, which displays your friends current position through 
 ...
 
 --- 
+
+Collect insights inside [Project-WIKI](https://github.com/ThomasJon196/Findz/wiki)
+
+---
+
 ## TODO (delete when finished)
 - Research and decide on a framework
 - Research w
