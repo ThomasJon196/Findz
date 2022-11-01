@@ -19,8 +19,14 @@ Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wik
 ---
 
 ## TODO (delete when finished)
-- Research and decide on a framework
-- Research w
+- WebXR GPS Koordinaten einlesen [Tobi]
+- Authentifizierung + Freundesliste (Backend) [Thomas]
+- Authentifizierung + Freundesliste usw. (FrontEnd Mobile first development) [Wiete]
+- Erster prototyp eines 3D Markers 
+- Platzierung des Markers auf den GPS Koordinaten
+
+
+
 - Add main/dev branches + push rules
 
 
