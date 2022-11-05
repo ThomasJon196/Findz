@@ -102,7 +102,7 @@ async function updateUserTable() {
     // Add a new message entry to the Firebase database.
 
 
-    if (await userExists()){
+    if (await userExists(getUserMail())){
         console.log('user allready exsits.')
     } else {
         try {
@@ -119,8 +119,7 @@ async function updateUserTable() {
     }
 }
 
-async function userExists() {
-    const email = getUserMail();
+async function userExists(email) {
     const userRef = collection(getFirestore(), 'users');
     const userQuery = query(userRef, where("email", "==", email))
     const docSnap = await getDocs(userQuery);
@@ -128,6 +127,7 @@ async function userExists() {
     return !(docSnap.empty)
 }
 
+// Not used yet
 async function getUserQuery() {
     const email = getUserMail();
     const userRef = collection(getFirestore(), 'users')
@@ -142,6 +142,30 @@ async function getUserQuery() {
     return userQuery
 }
 
+async function addFriend() {
+
+}
+//
+// Add friend functionality
+//
+
+// Replace functions
+
+const loginForm = document.getElementById("login-form");
+const addFriendButton = document.getElementById("login-form-submit");
+const loginErrorMsg = document.getElementById("login-error-msg");
+
+addFriendButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const username = loginForm.username.value;
+
+    if (username === "user") {
+        alert("You have successfully logged in.");
+        location.reload();
+    } else {
+        loginErrorMsg.style.opacity = 1;
+    }
+})
 
 
 //
@@ -151,7 +175,7 @@ const debugButton = document.getElementById("debug-information"); // TODO: DELET
 debugButton.addEventListener('click', printDebugInformation)
 
 function printDebugInformation() {
-    console.log('User authenticated: ' + !!(getAuth().currentUser))
+    console.log('User authenticated: ' + isUserSignedIn())
 }
 
 // Could be used for the creation of a new user independend of google.
