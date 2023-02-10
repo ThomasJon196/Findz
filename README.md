@@ -15,6 +15,8 @@ Augumented-Reality marker, which displays your friends current position through 
 
 ## Setup
 
+### Flask
+
 ```bash
 # Install venv
 python3 -m venv venv
@@ -26,7 +28,31 @@ pip3 install -r requirements.txt
 python app.py
 ```
 
+### Angular
 
+
+
+```bash
+# Install angular cli (ng)
+npm install -g @angular/cli
+
+# Set baseHref to static folder in angular.json
+"build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "baseHref": "/static/",
+          }
+}
+
+# Install node packages
+npm install
+
+# Build project
+ng build --configuration production --build-optimizer
+
+# Move files move created files from dist/ into static/ & index.html into templates/
+
+```
 
 --- 
 

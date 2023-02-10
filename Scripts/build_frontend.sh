@@ -2,7 +2,7 @@
 # Copy files into static & templates folder for flask server
 
 cd ../frontend
-# ng build --configuration production --build-optimizer
+ng build --configuration production --build-optimizer
 
 cd ..
 touch test
