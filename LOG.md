@@ -10,6 +10,9 @@
 
 - Quick fix: https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https
 
+- TODO
+
+
 ## Web Sockets: Two way communication, Updating user states (sockets.io)
 
 [FlaskSocketIO Docs](https://flask-socketio.readthedocs.io/en/latest/getting_started.html)
@@ -18,6 +21,7 @@
 
 - Problem, client uses unsupported socketio version:
     - Check compatability matrix: https://socket.io/docs/v3/client-installation/
+
 
 
 ## Authentication
