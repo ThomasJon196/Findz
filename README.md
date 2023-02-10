@@ -12,6 +12,22 @@ Augumented-Reality marker, which displays your friends current position through 
 
 ...
 
+
+## Setup
+
+```bash
+# Install venv
+python3 -m venv venv
+
+# Install requirements
+pip3 install -r requirements.txt
+
+# Run flask server
+python app.py
+```
+
+
+
 --- 
 
 Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wiki)
