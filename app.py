@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit
 import ssl
 context = ssl.SSLContext()
@@ -12,13 +12,18 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
-    return render_template('index_socket.html')
+    return render_template('index.html')
 
 
-@app.route('/authenticate', methods=['POST'])
+@app.route('/authenticate', methods=['GET'])
 def authenticate():
+    # TODO: Write endpoint as POST-method, since user is supposed to enter 
+    # credentials and post to server
 
-    pass
+
+    # ... your code ...
+
+    return jsonify('Works')
 
 
 @socketio.on('message')
