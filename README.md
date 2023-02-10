@@ -21,6 +21,9 @@ Augumented-Reality marker, which displays your friends current position through 
 # Install venv
 python3 -m venv venv
 
+# Select `venv` as environment & python interpreter
+source venv/bin/activate
+
 # Install requirements
 pip3 install -r requirements.txt
 

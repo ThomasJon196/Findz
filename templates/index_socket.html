@@ -1,3 +1,7 @@
+<!-- 
+Client side socket.io usage
+ -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,38 +19,37 @@
         //     console.log('received message: ' + data);
         // });
 
-        $(document).ready(function () {
+        // sending a connect request to the server.
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        // // An event handler for a change of value 
+        // $('input.sync').on('input', function (event) {
+        //     socket.emit('Slider value changed', {
+        //         who: $(this).attr('id'),
+        //         data: $(this).val()
+        //     });
+        //     return false;
+        // });
 
-            // sending a connect request to the server.
-            var socket = io.connect('http://' + document.domain + ':' + location.port);
-            // // An event handler for a change of value 
-            // $('input.sync').on('input', function (event) {
-            //     socket.emit('Slider value changed', {
-            //         who: $(this).attr('id'),
-            //         data: $(this).val()
-            //     });
-            //     return false;
-            // });
-
-            socket.on('answer', function (msg) {
-                console.log('Connected', msg);
-            });
-
-            // socket.on('update value', function (msg) {
-            //     console.log('Slider value updated');
-            //     $('#' + msg.who).val(msg.data);
-            // });
-            socket.emit('message', 'hello from client');
+        socket.on('answer', function (msg) {
+            console.log('Connected', msg);
+            document.getElementById('server_update').innerText = 'Server message:' + msg
         });
 
+        // socket.on('update value', function (msg) {
+        //     console.log('Slider value updated');
+        //     $('#' + msg.who).val(msg.data);
+        // });
+        socket.emit('message', 'hello from client');
+        
+        
 
     </script>
 </head>
 
 <body>
     <h1>WebSockets Example with Flask</h1>
-    <div id="server_update">
-        <h2>Server message:</h2>
+    <div >
+        <h2 id="server_update">Server message: </h2>
     </div>
 </body>
 
