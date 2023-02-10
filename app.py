@@ -12,7 +12,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index_socket.html')
 
 
 @app.route('/authenticate', methods=['POST'])
@@ -28,4 +28,4 @@ def handle_message(message):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0',ssl_context=context)
+    socketio.run(app, debug=True)  #, host='0.0.0.0') #, ssl_context=context)
