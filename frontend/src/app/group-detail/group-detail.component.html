@@ -1,0 +1,20 @@
+<h3>{{currentGroup!.name}}</h3>
+
+<button class="startSearchButton">Suche starten</button>
+
+<ul class="groups">
+  <li *ngFor="let member of currentGroup!.members">
+    <div class="listContent" style="">
+      {{member.name}}
+      <div *ngIf="member.locationOn" class="deleteMemberButton">
+        <span class="material-symbols-outlined">location_on</span>
+      </div>
+      <div *ngIf="!member.locationOn" class="deleteMemberButton">
+        <span class="material-symbols-outlined">location_off</span>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<button class="editGroupButton">Gruppe bearbeiten</button>
+<button class="deleteGroupButton">Löschen</button>

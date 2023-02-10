@@ -1,0 +1,27 @@
+
+button {
+  padding: 10px 20px;
+  border-radius: 37px;
+}
+
+.deleteMemberButton {
+  width: 44px;
+  height: 34px;
+  background: #E8E8E8;
+  border: 1px solid #BDBDBD;
+  border-radius: 6px;
+  float: right;
+}
+
+li:hover {
+  .deleteMemberButton {
+    background: #365830;
+  }
+}
+
+.deleteGroupButton {
+  background-color: rgb(225, 82, 82);
+  padding: 12px 20px;
+  border: none;
+}
+

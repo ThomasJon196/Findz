@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  width: 360px;
+  height: 640px;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+li {
+  width: 361px;
+  height: 69px;
+  border: 1px solid #EBEBEB;
+}
+
+li:hover {
+  border-left: 2px solid #365830;
+}
+
+button {
+  background-color: #365830;
+  color: #ffffff;
+}

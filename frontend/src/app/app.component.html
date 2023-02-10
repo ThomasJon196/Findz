@@ -1,0 +1,16 @@
+<div class="navbar">
+  <div routerLink="/gruppen" class="title">{{title}}</div>
+
+  <div class="dropdown" style="float: right">
+    <span class="material-symbols-outlined">menu</span>
+    <div class="dropdown-content">
+      <a routerLink="/gruppen">Gruppen</a>
+      <a routerLink="/freunde">Freunde</a>
+      <a routerLink="/ausloggen">Ausloggen</a>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
