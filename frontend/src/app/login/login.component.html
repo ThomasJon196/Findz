@@ -1,4 +1,33 @@
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    .login-btn {
+      justify-content: center;
+      flex-direction: row;
+      display: flex;
+      background-color: rgb(255, 255, 255);
+      align-items: center;
+
+      padding: 10px;
+      box-shadow: 3px 3px 3px rgb(170, 170, 170);
+      border-radius: 15px;
+    }
+    .btn-text {
+      justify-content: center;
+      padding: 5px;
+      font-family: 'Poppins', sans-serif;
+      color: rgb(85, 85, 85);
+    }
+  </style>
 <h3>Login</h3>
 
-<button onclick="location.href='/authenticate'" >Login mit Google</button>
-
+<div>
+  <button onclick="location.href='/google'" class="login-btn" style="text-decoration:none;">
+  <img id="google" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/2048px-Google_%22G%22_Logo.svg.png"
+       alt="Google"
+       style="width:15px;height:15px;">
+  <div class="btn-text">
+    Login with Google
+  </div>
+  </button>
+</div>
