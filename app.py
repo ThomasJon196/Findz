@@ -7,6 +7,7 @@ from flask import url_for, redirect
 from authlib.integrations.flask_client import OAuth
 import os
 
+import json
 context = ssl.SSLContext()
 context.load_cert_chain('cert.pem', 'key.pem')
 
@@ -16,6 +17,13 @@ socketio = SocketIO(app)
 
 app.secret_key = os.urandom(12)
 oauth = OAuth(app)
+users = json.dumps([
+      { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
+      { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
+      { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
+    ])
+
+
 
 @app.route('/')
 def index():
@@ -37,6 +45,9 @@ def google():
             'scope': 'openid email profile'
         }
     )
+@app.route('/webXR')
+def webxr():
+    return render_template('webXR.html')
 
     # Redirect to google_auth function
     redirect_uri = url_for('google_auth', _external=True)
@@ -51,9 +62,11 @@ def google_auth():
     return redirect('/groups')
 
 @socketio.on('message')
+@socketio.on('update')
 def handle_message(message):
     print('received message: ' + message)
-    emit('answer', message, broadcast=True)
+    print('Message to send' + str(users))
+    emit('answer', users, broadcast=True)
 
 
 if __name__ == '__main__':
