@@ -10,6 +10,8 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
   </head>
 
 
@@ -42,6 +44,7 @@
 
   <script>
 
+
     /*
     function ermittlePosition() {
       if (navigator.geolocation) {
@@ -55,6 +58,7 @@
       ausgabe.innerHTML = "Ihre Koordinaten sind:<br> Breite: " + position.coords.latitude +
               "<br>Länge: " + position.coords.longitude;
     }*/
+    let ownPosition;
 
     function Deg2Rad( deg ) {
         return deg * Math.PI / 180;
@@ -76,6 +80,7 @@
         return d.toFixed(2);
     }
 
+
     users =
             [
               {"name":"Thomas", "latitude":"50.780757972246015, " , "longitude": "7.1830757675694805", "bild": "tomas.png"},
@@ -84,7 +89,6 @@
             ]
 
     function zeigeUseran(user, coordinaten) {
-
 
         console.log(coordinaten.latitude)
         var userText = document.createElement("a-text")
@@ -121,7 +125,9 @@
 
     const successCallback = (position) => {
         console.log(position);
-        users.forEach(element => zeigeUseran(element, position.coords))
+        socket.emit('update', positions.toString());
+        ownPosition= position
+
 
     };
 
@@ -129,7 +135,21 @@
         console.log(error);
     };
 
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
+    $(document).ready(function () {
+        // sending a connect request to the server.
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('answer', function (msg) {
+            console.log('Connected',  JSON.parse(msg).forEach(element => zeigeUseran(element, position.coords)));
+
+        });
+
+        navigator.geolocation.watchPosition(successCallback, errorCallback)
+
+
+        watchPosition()
+    });
+
 
     //users.forEach(element => zeigeUseran(element, coordinate))
 
