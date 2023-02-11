@@ -30,3 +30,6 @@
 
 - Authentication in backend is safere
 - Backend if user-data/email is required without them beeing authenticated. (Group management)
+
+
+PROBLEM: nonce parameter in authentication fails.

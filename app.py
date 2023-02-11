@@ -32,9 +32,8 @@ def index():
 @app.route('/google/')
 def google():
 
-    GOOGLE_CLIENT_ID = '194463054446-o83f7f4i51vhh795lbov71bo0hvqu1p8.apps.googleusercontent.com'
-    GOOGLE_CLIENT_SECRET = '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'
-
+    GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
+    GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
     CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
     oauth.register(
         name='google',
@@ -45,19 +44,22 @@ def google():
             'scope': 'openid email profile'
         }
     )
-@app.route('/webXR')
-def webxr():
-    return render_template('webXR.html')
 
     # Redirect to google_auth function
     redirect_uri = url_for('google_auth', _external=True)
     print(redirect_uri)
     return oauth.google.authorize_redirect(redirect_uri)
 
+
+@app.route('/webXR')
+def webxr():
+    return render_template('webXR.html')
+
+
 @app.route('/google/auth/')
 def google_auth():
     token = oauth.google.authorize_access_token()
-    user = oauth.google.parse_id_token(token    )
+    user = oauth.google.parse_id_token(token)
     print(" Google User ", user)
     return redirect('/groups')
 
