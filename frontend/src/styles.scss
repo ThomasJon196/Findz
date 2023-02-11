@@ -11,9 +11,13 @@ ul {
 }
 
 li {
-  width: 361px;
+  width: 320px;
   height: 69px;
   border: 1px solid #EBEBEB;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 7px;
 }
 
 li:hover {
@@ -23,4 +27,9 @@ li:hover {
 button {
   background-color: #365830;
   color: #ffffff;
+}
+
+a:link, a:visited, a:hover, a:active {
+  text-decoration: none;
+  color: black;
 }
