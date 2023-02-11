@@ -24,6 +24,13 @@ LOCAL_DOMAIN = '127.0.0.1'
 
 
 app = Flask("Findz")  #naming our application
+class nutzerdaten:
+    name
+    latitude
+    longitude
+
+userListe = []
+app = Flask("Google Login App")  #naming our application
 app.secret_key = "GeekyHuman.com"  #it is necessary to set a password when dealing with OAuth 2.0
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  #this is to set our environment to https because OAuth 2.0 only supports https environments
 
@@ -114,7 +121,7 @@ def protected_area():
     email = session.get("email")
     print(email)
 
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button 
+    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
 
 @app.route('/')
@@ -124,7 +131,6 @@ def index():
 
 @app.route('/webXR')
 def webxr():
-
     email = session.get("email")
     print(email)
 
@@ -134,8 +140,16 @@ def webxr():
 @socketio.on('update')
 def handle_message(message):
     print('received message: ' + message)
-    print('Message to send' + str(users))
-    emit('answer', users, broadcast=True)
+    angekommennachicht =  json.loads(message)
+    deletUser
+    for user in userListe:
+      if(user[0]==angekommennachicht[0]):
+        deletUser = user
+    userListe.remove(deletUser)
+    userListe.append(angekommennachicht)
+
+    print('Message to send' + str(userList))
+    emit('answer', userList, broadcast=True)
 
 
 if __name__ == '__main__':
