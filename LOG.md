@@ -11,6 +11,9 @@
 - Quick fix: https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https
 
 - Exposed via Cloudflare
+    - Set Cloudflare Flexibel SSL/TLS
+    - Set google console redirect endpoint
+    - Set socket endpoints (local/global)
 
 
 ## Web Sockets: Two way communication, Updating user states (sockets.io)

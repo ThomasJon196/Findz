@@ -24,10 +24,7 @@ LOCAL_DOMAIN = '127.0.0.1'
 
 
 app = Flask("Findz")  #naming our application
-class nutzerdaten:
-    name
-    latitude
-    longitude
+
 
 userListe = []
 app = Flask("Google Login App")  #naming our application
@@ -102,7 +99,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = id_info.get("email")
 
-    return redirect("/groups")  # the final page where the authorized users will end up
+    return redirect("/webXR")  # the final page where the authorized users will end up
 
 
 @app.route("/logout")  # the logout page and function
@@ -140,16 +137,21 @@ def webxr():
 @socketio.on('update')
 def handle_message(message):
     print('received message: ' + message)
-    angekommennachicht =  json.loads(message)
-    deletUser
-    for user in userListe:
-      if(user[0]==angekommennachicht[0]):
-        deletUser = user
-    userListe.remove(deletUser)
-    userListe.append(angekommennachicht)
+    angekommennachicht = json.loads(message)
+        
+    new_user_flag = True
+    for idx, user in enumerate(userListe):
+        if user['name'] == angekommennachicht['name']:
+            user = angekommennachicht
+            new_user_flag = False
+        
+    if new_user_flag:
+        userListe.append(angekommennachicht)
+        
 
-    print('Message to send' + str(userList))
-    emit('answer', userList, broadcast=True)
+
+    print('Message to send' + str(userListe))
+    emit('answer', json.dumps(userListe), broadcast=True)
 
 
 if __name__ == '__main__':
