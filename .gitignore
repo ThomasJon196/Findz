@@ -4,3 +4,5 @@ node_modules
 .idea
 static/*
 .env
+client_secret.json
+key.pem

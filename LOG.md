@@ -10,7 +10,7 @@
 
 - Quick fix: https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https
 
-- TODO
+- Exposed via Cloudflare
 
 
 ## Web Sockets: Two way communication, Updating user states (sockets.io)
@@ -31,5 +31,9 @@
 - Authentication in backend is safere
 - Backend if user-data/email is required without them beeing authenticated. (Group management)
 
+> Adjust the redirect-uri inside google-cloud.
+> Running localy: localhost:5000/google/auth
+> Running globaly: domain/google/auth (findz.thomasjonas.de/google/auth)
 
-PROBLEM: nonce parameter in authentication fails.
+
+[Resource](https://geekyhumans.com/how-to-implement-google-login-in-flask-app/)
