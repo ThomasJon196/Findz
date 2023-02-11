@@ -39,7 +39,7 @@
 
 <script>
 
-  var socket = io.connect('http://' + document.domain + ':' + location.port);
+  var socket = io.connect('https://' + document.domain + ':' + location.port);
   let ownPosition;
   /*
   function ermittlePosition() {
@@ -75,6 +75,7 @@
     var d = Math.sqrt(x * x + y * y) * R;
     return d.toFixed(2);
   }
+
 
 
   users =

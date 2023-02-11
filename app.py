@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import render_template
 from flask_socketio import SocketIO, emit
-import ssl
+# import ssl
 import json
 
 # from flask import url_for, redirect
@@ -10,7 +10,7 @@ import json
 import os
 import pathlib
 import requests
-from flask import Flask, session, abort, redirect, request
+from flask import session, abort, redirect, request
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
@@ -19,7 +19,11 @@ import google.auth.transport.requests
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 
+GLOBAL_DOMAIN = 'findz.thomasjonas.de'
+LOCAL_DOMAIN = '127.0.0.1'
 
+
+app = Flask("Findz")  #naming our application
 class nutzerdaten:
     name
     latitude
@@ -35,19 +39,23 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
     client_secrets_file=client_secrets_file,
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri="http://findz.thomasjonas.de/google/auth/"  #and the redirect URI is the point where the user will end up after the authorization
+    redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  #and the redirect URI is the point where the user will end up after the authorization
 )
 
 
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+# app = Flask(__name__)
+# app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+# SocketIO Endpoints
+
+
+# GOOGLE AUTH FUNCTIONS & ENDPOINTS
+
 app.secret_key = os.urandom(12)
-# oauth = OAuth(app)
 users = json.dumps([
       { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
       { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
@@ -92,6 +100,8 @@ def callback():
 
     session["google_id"] = id_info.get("sub")  # defing the results to show on the page
     session["name"] = id_info.get("name")
+    session["email"] = id_info.get("email")
+
     return redirect("/groups")  # the final page where the authorized users will end up
 
 
@@ -100,11 +110,18 @@ def logout():
     session.clear()
     return redirect("/")
 
+#####################
+# BASIC ENDPOINTS
+#####################
 
 @app.route("/groups")  # the page where only the authorized users can go to
 @login_is_required
 def protected_area():
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button 
+
+    user_id = session.get("email")
+    print(user_id)
+
+    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
 
 @app.route('/')
@@ -114,6 +131,9 @@ def index():
 
 @app.route('/webXR')
 def webxr():
+
+
+
     return render_template('webXR.html')
 
 
@@ -133,7 +153,7 @@ def handle_message(message):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)#, ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True) #, ssl_context=('cert.pem', 'key.pem'))
   #, host='0.0.0.0') #)
 
 
