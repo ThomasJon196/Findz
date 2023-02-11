@@ -64,6 +64,14 @@ Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wik
 ---
 
 ## TODO (delete when finished)
+- Fix `static` endpoints
+- Return current users email address
+- Write a local/global deployment script
+
+
+
+
+
 - WebXR GPS Koordinaten einlesen [Tobi]
 - Authentifizierung + Freundesliste (Backend mit Typescript) [Thomas]
 - Authentifizierung + Freundesliste usw. (FrontEnd Mobile first development) [Wiete]
