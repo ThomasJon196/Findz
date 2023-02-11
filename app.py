@@ -111,8 +111,8 @@ def logout():
 @login_is_required
 def protected_area():
 
-    user_id = session.get("email")
-    print(user_id)
+    email = session.get("email")
+    print(email)
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button 
 
@@ -125,9 +125,10 @@ def index():
 @app.route('/webXR')
 def webxr():
 
-    
+    email = session.get("email")
+    print(email)
 
-    return render_template('webXR.html')
+    return render_template('webXR.html', user=email)
 
 
 @socketio.on('update')
