@@ -84,21 +84,21 @@
       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "images/Tobias.png" }
     ]
 
-  function zeigeUseran(user, coordinaten) {
+  function zeigeUseran(andereUser, coordinaten) {
 
     console.log(coordinaten.latitude)
     var userText = document.createElement("a-text")
-    userText.setAttribute("value", user.name + PythagorasEquirectangular(user.latitude, user.longitude, coordinaten.latitude, coordinaten.longitude))
+    userText.setAttribute("value", andereUser.name + PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude))
     userText.setAttribute("look-at", "[gps-camera]")
     userText.setAttribute("scale", "100 100 100")
-    userText.setAttribute("gps-entity-place", "latitude:" + user.latitude + "; longitude:" + user.longitude)
+    userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
     var userBild = document.createElement("a-image")
 
-    userBild.setAttribute("src", user.bild)
+    userBild.setAttribute("src", andereUser.bild)
     userBild.setAttribute("look-at", "[gps-camera]")
     userBild.setAttribute("scale", "50 50 50")
-    userBild.setAttribute("gps-entity-place", "latitude:" + user.latitude + "; longitude:" + user.longitude)
+    userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
     /*
     userText = ""
@@ -121,7 +121,7 @@
 
   const successCallback = (position) => {
     console.log(position);
-    socket.emit('update', position.coords.latitude + '');
+    socket.emit('update', { "name": '{{user}}', "latitude": position.coords.latitude , "longitude": position.coords.longitude, "bild": "images/Wiete.png" } + "")
     ownPosition = position
 
 
