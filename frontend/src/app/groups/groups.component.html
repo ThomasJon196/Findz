@@ -1,13 +1,11 @@
-<div class="header">
-  <h3>Gruppen</h3>
-  <a routerLink="/gruppeErstellen">
-    <button class="addGroupButton">+</button>
-  </a>
-</div>
+<h3>Gruppen</h3>
+<a routerLink="/gruppeErstellen" class="addGroupButton">
+  <button class="addGroupButton">+</button>
+</a>
 
 <ul class="groups">
   <li *ngFor="let group of groups">
-    <a routerLink="/gruppenDetails/{{group.id}}">
+    <a routerLink="/gruppenDetails/{{group.id}}" class="group">
       {{group.name}}
     </a>
   </li>
