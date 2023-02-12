@@ -65,9 +65,8 @@ Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wik
 
 ## TODO (delete when finished)
 - Fix `static` endpoints
-- Return current users email address
 - Write a local/global deployment script
-
+- Configure deployment via docker-containers (to remove OS-dependency)
 
 
 

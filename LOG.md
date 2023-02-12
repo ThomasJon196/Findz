@@ -8,7 +8,7 @@
 
 - For communication over https we need a ssl cert: https://stackoverflow.com/questions/29458548/can-you-add-https-functionality-to-a-python-flask-web-server
 
-- Quick fix: https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https
+- Quick fix [Running flask over https](https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https)
 
 - Exposed via Cloudflare
     - Set Cloudflare Flexibel SSL/TLS
@@ -40,3 +40,29 @@
 
 
 [Resource](https://geekyhumans.com/how-to-implement-google-login-in-flask-app/)
+
+
+
+
+## FAQ
+
+1. GPS coordinates are not received
+
+        Enable GPS transmission in mobile phone
+
+1. Parsing JSON objects in browser
+
+        Transform via [JSON.Stringify()](https://www.w3schools.com/js/js_json_stringify.asp#:~:text=Stringify%20a%20JavaScript%20Object&text=stringify()%20to%20convert%20it,string%20following%20the%20JSON%20notation.)
+
+1. Passing data from Flask to Javascript
+
+        Add variable to `render_template('get_data.html', geocode=geocode)` function. [Source](https://stackoverflow.com/questions/11178426/how-can-i-pass-data-from-flask-to-javascript-in-a-template)
+
+1. Inspect device via browser:
+
+        In chrome: `chrome://inspect/#devices`
+
+1. Get current user who is accessing endpoint
+
+        [Sessions](https://pythonbasics.org/flask-sessions/)
+

@@ -121,8 +121,8 @@
   }
 
   const successCallback = (position) => {
-    console.log(position);
-    console.log('{{user}}')
+    // console.log(position);
+    // console.log('{{user}}')
     socket.emit('update', JSON.stringify({ "name": '{{user}}', "latitude": position.coords.latitude , "longitude": position.coords.longitude, "bild": "images/Wiete.png" }))
     ownPosition = position
 
@@ -140,7 +140,6 @@
 
   socket.on('answer', function (msg) {
     console.log('Connected', JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } }));
-
   });
 
     // });

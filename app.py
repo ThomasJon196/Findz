@@ -27,7 +27,6 @@ app = Flask("Findz")  #naming our application
 
 
 userListe = []
-app = Flask("Google Login App")  #naming our application
 app.secret_key = "GeekyHuman.com"  #it is necessary to set a password when dealing with OAuth 2.0
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  #this is to set our environment to https because OAuth 2.0 only supports https environments
 
