@@ -154,7 +154,7 @@ def handle_message(message):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')  # , ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='localhost')  # , ssl_context=('cert.pem', 'key.pem'))
   #) #)
 
 
