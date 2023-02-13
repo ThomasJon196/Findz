@@ -1,0 +1,10 @@
+version: '3.0'
+
+services:
+  flask-server:
+    image: findz-flask-server:latest
+    
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudtunnel
+    command: tunnel --no-autoupdate run --token ${CLOUD_TOKEN}

@@ -15,6 +15,16 @@ Augumented-Reality marker, which displays your friends current position through 
 
 ## Setup
 
+### Cloudflare Tunnel
+
+To make the app accessible over the internet Cloudflares `Tunnel` option is used.
+Setting up a local cloudflare-daemon `cloudflared` is required.
+
+Follow the instructions on [Cloudflare Dashboard](https://one.dash.cloudflare.com/3675dc4a228ca040243803bc358815e7/access/tunnels)
+
+...Describtion follows...
+
+
 ### Flask
 
 ```bash
@@ -66,7 +76,7 @@ Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wik
 ## TODO (delete when finished)
 - Fix `static` endpoints
 - Write a local/global deployment script
-- Configure deployment via docker-containers (to remove OS-dependency)
+- Configure deployment via docker-containers to remove OS-dependency. (cloudflared & flaskserver)
 
 
 
