@@ -148,7 +148,8 @@ def protected_area():
 
 @app.route("/addFriend", methods = ['POST'])
 def addFriend():
-    print(request.data)
+    friendMail = request.data.decode("utf-8")
+    print(friendMail)
     data = {"status": "success"}
     return data, 200
 
