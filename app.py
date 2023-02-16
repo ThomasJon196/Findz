@@ -140,7 +140,17 @@ def protected_area():
 @app.route("/addFriend", methods = ['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
+    #checkt ob es registrierten User mit der Mail friendMail gibt
+    #wenn ja fügt er ihn zur freundesliste hinzu und returnt true
+    #wenn nein returnt false
     print(friendMail)
+    data = {"status": "success"}
+    return data, 200
+
+@app.route("/getFriends", methods = ['GET'])
+def getFriends():
+    #returnt Liste von Freunden
+    print("Freundesliste")
     data = {"status": "success"}
     return data, 200
 
