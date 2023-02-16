@@ -89,7 +89,7 @@
 
     console.log(coordinaten.latitude)
     var userText = document.createElement("a-text")
-    userText.setAttribute("value", andereUser.name + PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude))
+    userText.setAttribute("value", PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude))
     userText.setAttribute("look-at", "[gps-camera]")
     userText.setAttribute("scale", "100 100 100")
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
