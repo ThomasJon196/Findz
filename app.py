@@ -4,9 +4,6 @@ from flask_socketio import SocketIO, emit
 # import ssl
 import json
 
-# from flask import url_for, redirect
-# from authlib.integrations.flask_client import OAuth
-
 import os
 import pathlib
 import requests
@@ -23,19 +20,19 @@ GLOBAL_DOMAIN = 'findz.thomasjonas.de'
 LOCAL_DOMAIN = '127.0.0.1'
 
 
-app = Flask("Findz")  #naming our application
+app = Flask("Findz")  # naming our application
 
 
 userListe = []
-app.secret_key = "GeekyHuman.com"  #it is necessary to set a password when dealing with OAuth 2.0
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  #this is to set our environment to https because OAuth 2.0 only supports https environments
+app.secret_key = "GeekyHuman.com"  # it is necessary to set a password when dealing with OAuth 2.0
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # this is to set our environment to https because OAuth 2.0 only supports https environments
 
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
-flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
+flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
     client_secrets_file=client_secrets_file,
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  #and the redirect URI is the point where the user will end up after the authorization
+    redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
 )
 
 
@@ -46,7 +43,28 @@ flow = Flow.from_client_secrets_file(  #Flow is OAuth 2.0 a class that stores al
 # app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
-# SocketIO Endpoints
+# SocketIO ENDPOINTS
+
+@socketio.on('update')
+def handle_message(message):
+    print('received message: ' + message)
+    angekommennachicht = json.loads(message)
+        
+    new_user_flag = True
+    for idx, user in enumerate(userListe):
+        if user['name'] == angekommennachicht['name']:
+            user = angekommennachicht
+            new_user_flag = False
+        
+    if new_user_flag:
+        userListe.append(angekommennachicht)
+    
+    print('Waiting...')
+    import time
+    time.sleep(5)
+
+    print('Message to send' + str(userListe))
+    emit('answer', json.dumps(userListe), broadcast=True)
 
 
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
@@ -138,57 +156,11 @@ def webxr():
     return render_template('webXR.html', user=email)
 
 
-@socketio.on('update')
-def handle_message(message):
-    print('received message: ' + message)
-    angekommennachicht = json.loads(message)
-        
-    new_user_flag = True
-    for idx, user in enumerate(userListe):
-        if user['name'] == angekommennachicht['name']:
-            user = angekommennachicht
-            new_user_flag = False
-        
-    if new_user_flag:
-        userListe.append(angekommennachicht)
-        
-
-
-    print('Message to send' + str(userListe))
-    emit('answer', json.dumps(userListe), broadcast=True)
+# Reroutes the /static/ pages.
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='localhost')  # , ssl_context=('cert.pem', 'key.pem'))
-  #) #)
-
-
-
-
-
-# @app.route('/google/auth/')
-# def google_auth():
-#     token = oauth.google.authorize_access_token()
-#     user = oauth.google.parse_id_token(token)
-#     print(" Google User ", user)
-#     return redirect('/groups')
-
-# @app.route('/google/')
-# def google():
-
-    
-#     CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-#     oauth.register(
-#         name='google',
-#         client_id=GOOGLE_CLIENT_ID,
-#         client_secret=GOOGLE_CLIENT_SECRET,
-#         server_metadata_url=CONF_URL,
-#         client_kwargs={
-#             'scope': 'openid email profile'
-#         }
-#     )
-
-#     # Redirect to google_auth function
-#     redirect_uri = url_for('google_auth', _external=True)
-#     print(redirect_uri)
-#     return oauth.google.authorize_redirect(redirect_uri)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='127.0.0.1')  # , ssl_context=('cert.pem', 'key.pem'))
