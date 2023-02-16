@@ -4,15 +4,26 @@ import sqlite3
 TABLE_NAME = 'findz.db'
 
 
+SHOW_TABLE = 'SELECT user_id FROM users'
+
+
 def add_new_user(email):
     """
     Adds new user to user table.
     """
     query = f"""
-        INSERT INTO users
-        VALUES ({email})
+        INSERT INTO users (email, picture)
+        VALUES ('{email}', 'dummy')
     """
     execute_sql_statement(query)
+
+
+def get_user_id(identifier):
+    # TODO: Try except Already exsists error
+
+    query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
+    id = retrieve_sql_query(query)
+    return id
 
 
 def add_new_friend(friends_email, user_email):
@@ -22,25 +33,14 @@ def add_new_friend(friends_email, user_email):
     Returns error if friends email does not exists in our user database.
     TODO: Here we could send an email in the future with invitation link.
     """
-    pass
+    friends_id = get_user_id(friends_email)
+    user_id = get_user_id(user_email)
 
-
-def tables_exist():
+    query = f"""
+        INSERT INTO friendlists
+        VALUES ({user_id}, {friends_id})
     """
-    Return True if all tables exist. (Currently only 3.)
-    """
-    query = """
-        SELECT name FROM sqlite_master
-        WHERE type='table'
-        AND name='users' OR name='friendlists'
-        OR name='groups' OR name='group_members'
-    """
-
-    tables = retrieve_sql_query(query)
-    if len(tables) == 3:
-        return True
-    else:
-        return False
+    execute_sql_statement(query)
 
 
 def execute_sql_statement(statement):
@@ -62,6 +62,24 @@ def retrieve_sql_query(statement):
             rows = cursor.execute(statement).fetchall()
             print(rows)
     return rows
+
+
+def tables_exist():
+    """
+    Return True if all tables exist. (Currently only 3.)
+    """
+    query = """
+        SELECT name FROM sqlite_master
+        WHERE type='table'
+        AND name='users' OR name='friendlists'
+        OR name='groups' OR name='group_members'
+    """
+
+    tables = retrieve_sql_query(query)
+    if len(tables) == 3:
+        return True
+    else:
+        return False
 
 
 def initialize_database():
@@ -117,3 +135,9 @@ def initialize_database():
         execute_sql_statement(group_members_table)
     else:
         print("Tables already exist.")
+
+
+if __name__ == '__main__':
+    initialize_database()
+    add_new_user('test@mail')
+    retrieve_sql_query
