@@ -119,6 +119,11 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
+@app.route("/addFriend", methods = ['POST'])
+def addFriend():
+    print(request.data)
+    data = {"status": "success"}
+    return data, 200
 
 @app.route('/')
 def index():
