@@ -64,3 +64,46 @@ with closing(sqlite3.connect("aquarium.db")) as connection:
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute("SELECT 1").fetchall()
         print(rows)
+
+# Example user database:
+
+"""
+CREATE TABLE users (
+  user_id INTEGER PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (email)
+);
+
+CREATE TABLE friendlists (
+  friendlist_id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  friend_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (friend_id) REFERENCES users(user_id),
+  UNIQUE (user_id, friend_id)
+);
+
+CREATE TABLE groups (
+  group_id INTEGER PRIMARY KEY,
+  group_name VARCHAR(50) NOT NULL,
+  admin_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (admin_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE group_members (
+  group_id INTEGER NOT NULL,
+  member_id INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (group_id) REFERENCES groups(group_id),
+  FOREIGN KEY (member_id) REFERENCES users(user_id),
+  UNIQUE (group_id, member_id)
+);
+
+
+
+"""
