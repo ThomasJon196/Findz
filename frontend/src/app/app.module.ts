@@ -9,7 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { GroupDetailComponent } from './group-detail/group-detail.component';
 import { CreateGroupComponent } from './create-group/create-group.component';
 import { FriendsComponent } from './friends/friends.component';
-import { LoginComponent } from './login/login.component'; // <-- NgModel lives here
+import { LoginComponent } from './login/login.component';
+import {HttpClientModule} from "@angular/common/http"; // <-- NgModel lives here
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { LoginComponent } from './login/login.component'; // <-- NgModel lives h
   imports: [
     BrowserModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
