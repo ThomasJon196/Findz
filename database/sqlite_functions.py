@@ -1,19 +1,16 @@
 from contextlib import closing
 import sqlite3
 
-TABLE_NAME = 'findz.db'
-
-
-SHOW_TABLE = 'SELECT user_id FROM users'
+DB_NAME = 'findz.db'
 
 
 def add_new_user(email):
     """
     Adds new user to user table.
     """
-    query = f"""
-        INSERT INTO users (email, picture)
-        VALUES ('{email}', 'dummy')
+    query = f""" \
+        INSERT INTO users (email, picture) \
+        VALUES ('{email}', 'dummy') \
     """
     execute_sql_statement(query)
 
@@ -47,7 +44,7 @@ def execute_sql_statement(statement):
     """
     Execute the given sql statement. (Use for CREATE, INSERT, UPDATE, DELETE)
     """
-    with closing(sqlite3.connect(TABLE_NAME)) as connection:
+    with closing(sqlite3.connect(DB_NAME)) as connection:
         with closing(connection.cursor()) as cursor:
             rows = cursor.execute(statement)
             print(rows)
@@ -57,7 +54,7 @@ def retrieve_sql_query(statement):
     """
     Execute the given sql statement. (Use for SELECT statement)
     """
-    with closing(sqlite3.connect(TABLE_NAME)) as connection:
+    with closing(sqlite3.connect(DB_NAME)) as connection:
         with closing(connection.cursor()) as cursor:
             rows = cursor.execute(statement).fetchall()
             print(rows)
@@ -138,6 +135,9 @@ def initialize_database():
 
 
 if __name__ == '__main__':
+    SHOW_TABLE = 'SELECT * FROM users'
+
     initialize_database()
-    add_new_user('test@mail')
-    retrieve_sql_query
+    add_new_user("test@mail")
+    retrieve_sql_query(SHOW_TABLE)
+    
