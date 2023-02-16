@@ -90,7 +90,7 @@
     let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
     console.log(entfernung)
     console.log(coordinaten.latitude)
-    scale = 1000
+    var scale = 1000
     var userText = document.createElement("a-text")
     userText.setAttribute("value", andereUser.name.substring(1, 5) + entfernung )
     userText.setAttribute("look-at", "[gps-camera]")
