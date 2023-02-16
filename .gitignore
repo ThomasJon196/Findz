@@ -1,6 +1,9 @@
 venv
 __pycache__
 node_modules
+templates
+
+
 .idea
 static/*
 .env

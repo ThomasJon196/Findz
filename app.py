@@ -13,6 +13,11 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
+from database.sqlite_functions import (
+    add_new_user, 
+    add_new_friend
+)
+
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 
@@ -112,9 +117,13 @@ def callback():
         audience=GOOGLE_CLIENT_ID
     )
 
+    email = id_info.get("email")
+
     session["google_id"] = id_info.get("sub")  # defing the results to show on the page
     session["name"] = id_info.get("name")
-    session["email"] = id_info.get("email")
+    session["email"] = email
+
+    add_new_user(email)
 
     return redirect("/webXR")  # the final page where the authorized users will end up
 

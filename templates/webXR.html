@@ -76,7 +76,7 @@
     return d.toFixed(2);
   }
 
-
+  textscale = this.data.scale * 100
 
   users =
     [
@@ -89,27 +89,28 @@
 
     console.log(coordinaten.latitude)
     var userText = document.createElement("a-text")
-    userText.setAttribute("value", PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude))
+    userText.setAttribute("value", andereUser.name.substring(1, 5) + PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude))
     userText.setAttribute("look-at", "[gps-camera]")
-    userText.setAttribute("scale", "100 100 100")
+    userText.setAttribute("scale", textscale)
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
-    var userBild = document.createElement("a-image")
-
-    userBild.setAttribute("src", andereUser.bild)
-    userBild.setAttribute("look-at", "[gps-camera]")
-    userBild.setAttribute("scale", "50 50 50")
-    userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-
     /*
-    userText = ""
-    console.log(userText)
-    userBild = ""
-    userText += '<a-text  value="+ user.name + "look-at="[gps-camera]"  scale="120 120 120"  gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-text>'
-    userBild += '<a-image src="+ user.bild + " look-at="[gps-camera]"  scale="70 70 70" gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-image>'
+        var userBild = document.createElement("a-image")
+
+        userBild.setAttribute("src", andereUser.bild)
+        userBild.setAttribute("look-at", "[gps-camera]")
+        userBild.setAttribute("scale", "50 50 50")
+        userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andeUser.longitude)
+
+        /*
+        userText = ""
+        console.log(userText)
+        userBild = ""
+        userText += '<a-text  value="+ user.name + "look-at="[gps-camera]"  scale="120 120 120"  gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-text>'
+        userBild += '<a-image src="+ user.bild + " look-at="[gps-camera]"  scale="70 70 70" gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-image>'
 
 
-     */
+         */
 
 
     element = document.getElementById("a-cene")
