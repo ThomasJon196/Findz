@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit
 # import ssl
 import json
@@ -123,7 +123,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
-    add_new_user(email)
+    # add_new_user(email)
 
     return redirect("/webXR")  # the final page where the authorized users will end up
 
@@ -137,6 +137,7 @@ def logout():
 # BASIC ENDPOINTS
 #####################
 
+
 @app.route("/groups")  # the page where only the authorized users can go to
 @login_is_required
 def protected_area():
@@ -146,11 +147,12 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-@app.route("/addFriend", methods = ['POST'])
+
+@app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    print(friendMail)
-    data = {"status": "success"}
+    # add_new_friend(friends_email=friendMail, user_email=session.get('email'))
+    data = jsonify({"status": "success"})
     return data, 200
 
 @app.route('/')
