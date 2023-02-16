@@ -139,7 +139,7 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-    console.log('Connected', JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } }));
+    console.log('Connected', JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } else { zeigeUseran({ "name": "Kiosk am Ring", "latitude": "50.798459882170334", "longitude": "7.205820364417689", "bild": "images/Tobias.png" }, ownPosition.coords) } }));
   });
 
     // });
