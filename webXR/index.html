@@ -99,7 +99,7 @@
     } else if(entfernung > 1.5) {
       scale *= entfernung/1.5
     }
-    userText.setAttribute("scale", scale)
+    userText.setAttribute("scale", scale + " " + scale + " " + scale)
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
     /*
