@@ -15,10 +15,16 @@ export class FriendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    /*this.http.get('http://localhost:5000/getFriends')
+      .subscribe(response => {
+        console.log(response);
+      });
+
+     */
   }
 
   addFriend(friendMail: String) {
-    this.http.post('http://localhost:5000/addFriend', { data: friendMail })
+    this.http.post('http://localhost:5000/addFriend', friendMail)
       .subscribe(response => {
         console.log(response);
       });
