@@ -4,6 +4,12 @@ services:
   flask-server:
     image: findz-flask-server:latest
     container_name: flask-server
+    volumes:
+      - ./static/:/app/static/:ro
+      - ./templates:/app/templates:ro
+      - ./webXR/index.html:/app/templates/webXR.html:ro
+      - ./database:/app/database:ro
+      - ./app.py:/app/app.py:ro
     
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
