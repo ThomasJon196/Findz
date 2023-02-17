@@ -1,9 +1,7 @@
-service cloudflared start
 
-export DEPLOY_ENV=GLOBAL
+export DEPLOY_ENV=LOCAL
 
 cd ..
 cp webXR/index.html templates/webXR.html
-python app.py
+python3 app.py
 
-service cloudflared stop
