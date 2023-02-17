@@ -148,7 +148,7 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-    document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
+   // document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
