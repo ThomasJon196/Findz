@@ -92,7 +92,7 @@
     console.log(coordinaten.latitude)
     var scale = 1000
     var userText = document.createElement("a-text")
-    userText.setAttribute("value", andereUser.name.substring(1, 5) + entfernung )
+    userText.setAttribute("value", entfernung )
     userText.setAttribute("look-at", "[gps-camera]")
     if(entfernung < 0.1){
       scale *= 0.1/entfernung
@@ -148,7 +148,9 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
+    document.getElementById("a-cene").innerHTML="";
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
+    zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
 
     // });
