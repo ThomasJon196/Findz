@@ -1,9 +1,7 @@
 from flask import Flask
 from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit
-# import ssl
 import json
-
 import os
 import pathlib
 import requests
@@ -17,30 +15,47 @@ from database.sqlite_functions import (
     initialize_database,
     add_new_user,
     add_new_friend,
-    get_friendlist
+    get_friendlist,
+    add_new_group,
+    add_new_group_members,
+    get_grouplist,
+    get_group_memberlist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
-DEPLOY_ENV = os.getenv("DEPLOY_ENV", "unspecified deploy_env")
-print(DEPLOY_ENV)
+DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
+
+# TODO: Add logging instead of print statements. (Slow down the server.)
+print("Setting up database")
+initialize_database()
 
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = '127.0.0.1:5000'
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
+    users = ["test@mail.com", "test2@mail.com"]
+    print("Adding example users: " + str(users) + " for development.")
+    add_new_user(users[0])
+    add_new_user(users[1])
 else:
     DOMAIN = 'findz.thomasjonas.de'
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
-initialize_database()
-add_new_user("test@mail.com")
+# Name of the application. Used inside flask for module loading.. and so on. Idk rly.
+app = Flask(__name__)
 
-app = Flask("Findz")  # naming our application
-app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
+# Ecryption of client-side sessions. Necessary for OAuth 2.0.
+app.secret_key = os.urandom(12).hex()
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # this is to set our environment to https because OAuth 2.0 only supports https environments
+# this is to set our environment to https because OAuth 2.0 only supports https environments
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  
 
+# Google authentication secrets
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
-flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
+# Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
+# and which information we get from google.
+flow = Flow.from_client_secrets_file(  
     client_secrets_file=client_secrets_file,
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
     redirect_uri=f"https://{DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
@@ -49,24 +64,23 @@ flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores a
 # SLL Stuff
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
-# app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'secret!'
 
-socketio = SocketIO(app)
+# SocketIO functions
 
 userListe = []
-
-# SocketIO ENDPOINTS
+socketio = SocketIO(app)
 
 
 def update_userlist():
+    # TODO: Refresh the userlist based on logged in/out users.
     pass
+
 
 @socketio.on('update')
 def handle_message(message):
     # print('received message: ' + message)
     angekommennachicht = json.loads(message)
-        
+
     update_userlist()
 
     new_user_flag = True
@@ -74,7 +88,7 @@ def handle_message(message):
         if user['name'] == angekommennachicht['name']:
             user = angekommennachicht
             new_user_flag = False
-        
+
     if new_user_flag:
         userListe.append(angekommennachicht)
 
@@ -84,32 +98,27 @@ def handle_message(message):
 
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
 
-app.secret_key = os.urandom(12)
-# users = json.dumps([
-#       { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
-#       { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
-#       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
-#     ])
-
-
-def login_is_required(function):  # a function to check if the user is authorized or not
+# Wrapper: checks if the current user is logged in.
+def login_is_required(function):  
     def wrapper(*args, **kwargs):
         if "google_id" not in session:  # authorization required
             return abort(401)
         else:
             return function()
-
     return wrapper
 
 
-@app.route("/google/")  # the page where the user can login
+# Login route
+@app.route("/google/")
 def login():
-    authorization_url, state = flow.authorization_url()  # asking the flow class for the authorization (login) url
+    # asking the flow class for the authorization (login) url
+    authorization_url, state = flow.authorization_url()  
     session["state"] = state
     return redirect(authorization_url)
 
 
-@app.route('/google/auth/')  # this is the page that will handle the callback process meaning process after the authorization
+# Callback route. Redirected by google after authentication.
+@app.route('/google/auth/')  
 def callback():
     flow.fetch_token(authorization_response=request.url)
 
@@ -127,23 +136,24 @@ def callback():
         audience=GOOGLE_CLIENT_ID
     )
 
+    # Safe session informations
     email = id_info.get("email")
 
-    session["google_id"] = id_info.get("sub")  # defing the results to show on the page
+    session["google_id"] = id_info.get("sub")
     session["name"] = id_info.get("name")
     session["email"] = email
 
-    print(session['email'])
-    # print("Current session cookie:" + str(session.sid))
-
+    print("New user-login: " + session['email'])
     add_new_user(email)
 
-    return redirect("/static/gruppen")  # the final page where the authorized users will end up
+    # Final redirect.
+    return redirect("/static/gruppen")  
 
 
-@app.route("/logout")  # the logout page and function
+# Logout by clearing cache and redirect to landing page.
+@app.route("/logout")
 def logout():
-    print(session['email'])
+    print("User logged out: " + session['email'])
     session.clear()
     return redirect("/")
 
@@ -152,44 +162,52 @@ def logout():
 #####################
 
 
-@app.route("/groups")  # the page where only the authorized users can go to
-@login_is_required
-def protected_area():
-
-    email = session.get("email")
-    print(email)
-
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
-
-@login_is_required
+# @login_is_required TODO: Check why this doesnt work?
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    print(session["email"])
     add_new_friend(friends_email=friendMail, user_email=session["email"])
-
     data = jsonify({"status": "success"})
     return data, 200
 
 
 @app.route("/getFriends", methods=['GET'])
 def getFriends():
-    print("Freundesliste")
     friendlist = get_friendlist(session['email'])
     data = jsonify({"friendlist": friendlist})
     return data, 200
+
 
 @app.route("/deleteFriend", methods=['DELETE'])
 def deleteFriend():
     data = jsonify({"status": "success"})
     return data, 200
 
+
 @app.route("/getGroups", methods=['GET'])
 def getGroups():
-    print(session["email"])
-    print("Gruppen")
+    grouplist = get_grouplist(admin_mail=session["email"])
+    data = jsonify({"grouplist": grouplist})
+    return data, 200
+
+
+@app.route("/addMembers", methods=['POST'])
+def add_Group_Member():
+    payload = json.loads(request.data)
+    add_new_group_members(admin=session.get('email'),
+                          groupname=payload["name"],
+                          new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
+
+
+@app.route("/createGroup", methods=['POST'])
+def createGroup():
+    payload = json.loads(request.data)
+    add_new_group(admin=session.get("email"), groupname=payload)
+    data = jsonify({"status": "success"})
+    return data, 200
+
 
 @app.route('/')
 def index():
@@ -199,8 +217,6 @@ def index():
 @app.route('/webXR')
 def webxr():
     email = session.get("email")
-    print(email)
-
     return render_template('webXR.html', user=email)
 
 
