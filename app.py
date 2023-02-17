@@ -14,22 +14,22 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
 from database.sqlite_functions import (
-    add_new_user, 
-    add_new_friend
+    add_new_user,
+    add_new_friend,
+    get_friendlist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 
+# TODO: Set as env. variables
 GLOBAL_DOMAIN = 'findz.thomasjonas.de'
-LOCAL_DOMAIN = '127.0.0.1'
+LOCAL_DOMAIN = '127.0.0.1:5000'
 
 
 app = Flask("Findz")  # naming our application
+app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
 
-
-userListe = []
-app.secret_key = "GeekyHuman.com"  # it is necessary to set a password when dealing with OAuth 2.0
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # this is to set our environment to https because OAuth 2.0 only supports https environments
 
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
@@ -40,21 +40,29 @@ flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores a
     redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
 )
 
-
+# SLL Stuff
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
-
 # app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'secret!'
+
 socketio = SocketIO(app)
 
+userListe = []
+
 # SocketIO ENDPOINTS
+
+
+def update_userlist():
+    pass
 
 @socketio.on('update')
 def handle_message(message):
     # print('received message: ' + message)
     angekommennachicht = json.loads(message)
         
+    update_userlist()
+
     new_user_flag = True
     for idx, user in enumerate(userListe):
         if user['name'] == angekommennachicht['name']:
@@ -63,23 +71,19 @@ def handle_message(message):
         
     if new_user_flag:
         userListe.append(angekommennachicht)
-    
-    # print('Waiting...')
-    import time
-    time.sleep(5)
 
-    # print('Message to send' + str(userListe))
+    print('Message to send' + str(userListe))
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
 
 app.secret_key = os.urandom(12)
-users = json.dumps([
-      { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
-      { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
-      { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
-    ])
+# users = json.dumps([
+#       { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
+#       { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
+#       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
+#     ])
 
 
 def login_is_required(function):  # a function to check if the user is authorized or not
@@ -123,13 +127,17 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
+    print(session['email'])
+    # print("Current session cookie:" + str(session.sid))
+
     add_new_user(email)
 
-    return redirect("/webXR")  # the final page where the authorized users will end up
+    return redirect("/static/gruppen")  # the final page where the authorized users will end up
 
 
 @app.route("/logout")  # the logout page and function
 def logout():
+    print(session['email'])
     session.clear()
     return redirect("/")
 
@@ -147,29 +155,34 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-
+@login_is_required
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    add_new_friend(friends_email=friendMail, user_email=session.get('email'))
+    print(session["email"])
+    add_new_friend(friends_email=friendMail, user_email='dummy')
+
     data = jsonify({"status": "success"})
     return data, 200
 
-@app.route("/getFriends", methods = ['GET'])
+
+@app.route("/getFriends", methods=['GET'])
 def getFriends():
     print("Freundesliste")
-    data = {"status": "success"}
+    friendlist = get_friendlist(session['email'])
+    data = jsonify({"friendlist": friendlist})
     return data, 200
 
-@app.route("/deleteFriend", methods = ['DELETE'])
+@app.route("/deleteFriend", methods=['DELETE'])
 def deleteFriend():
-    data = {"status": "success"}
+    data = jsonify({"status": "success"})
     return data, 200
 
-@app.route("/getGroups", methods = ['GET'])
+@app.route("/getGroups", methods=['GET'])
 def getGroups():
+    print(session["email"])
     print("Gruppen")
-    data = {"status": "success"}
+    data = jsonify({"status": "success"})
     return data, 200
 
 @app.route('/')
@@ -192,4 +205,5 @@ def not_found_error(error):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')  # , ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
+    #, ssl_context=('cert.pem', 'key.pem'))

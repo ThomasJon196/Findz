@@ -20,8 +20,8 @@ def get_user_id(identifier):
     # TODO: Try except Already exsists error
 
     query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
-    id = retrieve_sql_query(query)[0][0]
-    return id
+    id = retrieve_sql_query(query)
+    return id[0][0]
 
 
 def add_new_friend(friends_email, user_email):
@@ -30,16 +30,44 @@ def add_new_friend(friends_email, user_email):
 
     Returns error if friends email does not exists in our user database.
     TODO: Here we could send an email in the future with invitation link.
+    TODO: Exception handling
     """
     friends_id = get_user_id(friends_email)
     user_id = get_user_id(user_email)
 
     query = f""" \
-        INSERT INTO friendlists (user_id, friend_id)\
-        VALUES ({user_id}, {friends_id}) \
+    INSERT INTO friendlists (user_id, friend_id)\
+    VALUES ({user_id}, {friends_id}) \
     """
     execute_sql_statement(query)
     print('Added friend')
+
+
+def get_friendlist(email):
+    user_id = get_user_id(email)
+    query_friends = f""" \
+    SELECT friend_id FROM friendlists \
+    WHERE user_id == '{user_id}' \
+    """
+    friendlist_ids = retrieve_sql_query(query_friends)
+    friendlist_ids = concat_query_result(friendlist_ids)
+
+    query_mails = f""" \
+    SELECT email FROM users \
+    WHERE user_id IN {friendlist_ids} \
+    """
+
+    friendlist_mails = retrieve_sql_query(query_mails)
+    friendlist_mails = concat_query_result(friendlist_mails)
+
+    return friendlist_mails
+
+
+def concat_query_result(tuple_list):
+    tuple = ()
+    for tpl in tuple_list:
+        tuple += tpl
+    return tuple
 
 
 def execute_sql_statement(statement):
@@ -141,18 +169,27 @@ if __name__ == '__main__':
 
     initialize_database()
 
-    email = "test@mail"
-    friend_mail = "friend@mail"
+    email = "master@mail"
+    friend_mail = "cat@mail"
+    friend_mail_2 = "dog@mail"
 
     # Add users to database
     add_new_user(email)
     add_new_user(friend_mail)
+    add_new_user(friend_mail_2)
     retrieve_sql_query(SHOW_USERS)
 
     # Retrieve users from database
     id = get_user_id(email)
 
+    email_1 = 'jonas.thomas196@gmail.com'
+    get_user_id(email)
+
     # Add friends
 
     add_new_friend(friend_mail, email)
+    add_new_friend(friend_mail_2, email)
     retrieve_sql_query(SHOW_FRIENDS)
+
+    # Get Friendlist
+    get_friendlist(email)
