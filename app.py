@@ -40,12 +40,12 @@ flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores a
     redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
 )
 
-
+# SLL Stuff
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
-
 # app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'secret!'
+
 socketio = SocketIO(app)
 
 userListe = []
@@ -128,7 +128,7 @@ def callback():
     session["email"] = email
 
     print(session['email'])
-    print("Current session cookie:" + str(session.sid))
+    # print("Current session cookie:" + str(session.sid))
 
     add_new_user(email)
 
