@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-create-group',
@@ -6,12 +7,21 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./create-group.component.scss']
 })
 export class CreateGroupComponent implements OnInit {
-  friends: any;
 
-  constructor() {
+  friends = [{name: "Tobi"}, {name: "Thomas"}];
+  //friends = [];
+
+  constructor(private http: HttpClient) {
   }
 
   ngOnInit(): void {
+    /*this.http.get('/getFriends')
+      .subscribe(response => {
+        console.log(response);
+        //this.friends = response;
+      });
+
+     */
   }
 
   saveGroup() {

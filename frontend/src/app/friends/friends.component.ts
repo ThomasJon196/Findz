@@ -9,7 +9,7 @@ import {User} from "../User";
 })
 export class FriendsComponent implements OnInit {
 
-  friends = [{name: "tobi"}];
+  friends = [{name: "tobi"}, {name: "thomas"}];
   friendMail: String = "";
 
   constructor(private http: HttpClient) {
@@ -20,7 +20,7 @@ export class FriendsComponent implements OnInit {
   }
 
   updateFriends() : void{
-    this.http.get('http://localhost:5000/getFriends')
+    this.http.get('/getFriends')
       .subscribe(response => {
         console.log(response);
         //this.friends = response;
@@ -28,7 +28,7 @@ export class FriendsComponent implements OnInit {
   }
 
   addFriend(friendMail: String): void {
-    this.http.post('http://localhost:5000/addFriend', friendMail)
+    this.http.post('/addFriend', friendMail)
       .subscribe(
         data => {
           console.log('success', data)
@@ -47,7 +47,7 @@ export class FriendsComponent implements OnInit {
   }
 
   deleteFriend(name: string) {
-    this.http.delete('http://localhost:5000/deleteFriend/' + name)
+    this.http.delete('/deleteFriend/' + name)
       .subscribe(
         data => {
           console.log('success', data)

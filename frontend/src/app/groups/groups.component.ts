@@ -24,10 +24,56 @@ export class GroupsComponent implements OnInit {
   }
 
   updateGroup(): void {
-    this.http.get('http://localhost:5000/getGroups')
+    /*const cookies = document.cookie.split(';');
+    let sessionID = "";
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith('sessionId=')) {
+        sessionID = cookie.substring('sessionId='.length, cookie.length);
+      }
+    }
+    const httpOptions = {
+      withCredentials: true
+    };
+
+    this.http.get('/getGroups?sessionId=${sessionId}', httpOptions)
       .subscribe(response => {
         console.log(response);
         //this.groups = response;
       });
+
+     */
+
+    const cookies = document.cookie.split(';');
+    let sessionId = "";
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith('sessionId=')) {
+        sessionId = cookie.substring('sessionId='.length, cookie.length);
+      }
+    }
+    console.log(sessionId);
+    console.log(cookies);
+
+    const url = `/getGroups?sessionId=${sessionId}`;
+
+    fetch(url, {
+      method: 'GET',
+      credentials: 'include'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+        //this.groups = data;
+      })
+      .catch(error => {
+        console.error('There was an error:', error);
+      });
+
   }
 }
