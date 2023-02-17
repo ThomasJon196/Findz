@@ -100,11 +100,17 @@
 
 
     if((entfernung < 0.02) && !devices.includes(andereUser.name)) {
-      devices.append(andereUser.name)
+      devices.push(andereUser.name)
       updateDeviceList();
       return
     } else if ((entfernung > 0.02) && devices.includes(andereUser.name)){
-      devices.remove(andereUser.name)
+
+      for (let i = 0; i < devices.length; i++) {
+        if (devices[i].id === andereUser.name) {
+          devices.splice(i, 1);
+          break;
+        }
+      }
       updateDeviceList();
       return
     }
