@@ -100,7 +100,7 @@
 
 
     if((entfernung < 0.02) && !devices.includes(andereUser.name)) {
-      devices.add(andereUser.name)
+      devices.append(andereUser.name)
       updateDeviceList();
       return
     } else if ((entfernung > 0.02) && devices.includes(andereUser.name)){
@@ -150,7 +150,7 @@
     clearScene()
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
-    zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": katzen_bild }, ownPosition.coords)
+    zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": kiosk_bild }, ownPosition.coords)
     zeigeUseran({ "name": "Köln", "latitude": "50.937370420644584", "longitude": "6.959450142633586", "bild": thomas_bild }, ownPosition.coords)
     zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords)
   });
