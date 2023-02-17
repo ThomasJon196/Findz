@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit
 # import ssl
 import json
@@ -52,7 +52,7 @@ socketio = SocketIO(app)
 
 @socketio.on('update')
 def handle_message(message):
-    print('received message: ' + message)
+    # print('received message: ' + message)
     angekommennachicht = json.loads(message)
         
     new_user_flag = True
@@ -64,11 +64,11 @@ def handle_message(message):
     if new_user_flag:
         userListe.append(angekommennachicht)
     
-    print('Waiting...')
+    # print('Waiting...')
     import time
     time.sleep(5)
 
-    print('Message to send' + str(userListe))
+    # print('Message to send' + str(userListe))
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
@@ -137,6 +137,7 @@ def logout():
 # BASIC ENDPOINTS
 #####################
 
+
 @app.route("/groups")  # the page where only the authorized users can go to
 @login_is_required
 def protected_area():
@@ -146,11 +147,12 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-@app.route("/addFriend", methods = ['POST'])
+
+@app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    print(friendMail)
-    data = {"status": "user doesnt exists"}
+    add_new_friend(friends_email=friendMail, user_email=session.get('email'))
+    data = jsonify({"status": "success"})
     return data, 200
 
 @app.route("/getFriends", methods = ['GET'])
@@ -190,4 +192,4 @@ def not_found_error(error):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='127.0.0.1')  # , ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')  # , ssl_context=('cert.pem', 'key.pem'))
