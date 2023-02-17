@@ -8,6 +8,19 @@ print(connection.total_changes)
 
 # Create table
 
+users_table = """
+    CREATE TABLE users (
+        user_id INTEGER PRIMARY KEY,
+        email VARCHAR(100) NOT NULL,
+        picture VARCHAR(255),
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (email)
+    )
+    """
+cursor = connection.cursor()
+cursor.execute(users_table)
+
+
 cursor = connection.cursor()
 cursor.execute("CREATE TABLE fish (name TEXT, species TEXT, tank_number INTEGER)")
 
@@ -15,6 +28,8 @@ cursor.execute("CREATE TABLE fish (name TEXT, species TEXT, tank_number INTEGER)
 
 cursor.execute("INSERT INTO fish VALUES ('Sammy', 'shark', 1)")
 cursor.execute("INSERT INTO fish VALUES ('Jamie', 'cuttlefish', 7)")
+
+cursor.execute("INSERT INTO users (email, picture) VALUES ('test@mail', 'dummy')")
 
 # Select data
 
@@ -26,6 +41,9 @@ rows = cursor.execute(
     "SELECT name, species, tank_number FROM fish WHERE name = ?",
     (target_fish_name,),
 ).fetchall()
+print(rows)
+
+rows = cursor.execute("SELECT * FROM users").fetchall()
 print(rows)
 
 
