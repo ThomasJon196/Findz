@@ -10,21 +10,22 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
 </head>
-
-
-
 <body>
 
   <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
     id="a-cene">
-    <a-entity id="container"></a-entity>
+    <a-entity id="container" ></a-entity>
 
-    <a-camera gps-camera rotation-reader> </a-camera>
+    <a-camera gps-camera rotation-reader far="100000"> </a-camera>
+
   </a-scene>
 
-  <ul id="deviceList" >
-  </ul>
+  <div id='setloc' style='position:absolute; left: 10px; bottom: 2%; z-index:999; background-color: blue; color: white; padding: 10px'><ul id="deviceList" ></ul>
+  </div>
+
+
 </body>
 
 <script>
@@ -41,10 +42,7 @@
   }
 
   function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
-    console.log(lat1)
-    console.log(lon1)
-    console.log(lat2)
-    console.log(lon2)
+
     lat1 = Deg2Rad(lat1);
     lat2 = Deg2Rad(lat2);
     lon1 = Deg2Rad(lon1);
@@ -68,21 +66,20 @@
       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": kiosk_bild }
     ]
 
-  let devices = []
-
+  let zuNahListe = []
+  zuNahListe.push("RingKiosk")
   // Funktion zum Überprüfen, ob die Entfernung 10 Meter oder weniger beträgt
 
   function updateDeviceList() {
     // Leere die Liste
-
-    var deviceList = document.querySelector('deviceList')
+    console.log('wallah update list')
+    var deviceList = document.querySelector('#deviceList')
     deviceList.innerHTML = ""
-
     // Füge jedes Gerät als Listenelement hinzu
-    for (const deviceId in devices) {
-      const device = devices[deviceId];
+    for (index in zuNahListe) {
+      console.log(zuNahListe[index])
       const deviceItem = document.createElement('li');
-      deviceItem.textContent = device.name + ' (' + device.distance.toFixed(2) + 'm)';
+      deviceItem.innerText = zuNahListe[index]
       deviceList.appendChild(deviceItem);
     }
   }
@@ -91,35 +88,46 @@
   function zeigeUseran(andereUser, coordinaten) {
 
     let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
-    console.log(entfernung)
+    console.log('ich bin die entfernung:'+ entfernung)
     console.log(coordinaten.latitude)
-    var scale = 50
-    var userText = document.createElement("a-text")
-    userText.setAttribute("value", entfernung )
-    userText.setAttribute("look-at", "[gps-camera]")
+    var scale = 33
 
-
-    if((entfernung < 0.02) && !devices.includes(andereUser.name)) {
-      devices.push(andereUser.name)
+    if((entfernung < 0.03) && !zuNahListe.includes(andereUser.name)) {
+      zuNahListe.push(andereUser.name)
       updateDeviceList();
-      return
-    } else if ((entfernung > 0.02) && devices.includes(andereUser.name)){
 
-      for (let i = 0; i < devices.length; i++) {
-        if (devices[i].id === andereUser.name) {
-          devices.splice(i, 1);
+      return
+    } else if ((entfernung > 0.03) && zuNahListe.includes(andereUser.name)){
+
+      for (let i = 0; i < zuNahListe.length; i++) {
+        console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
+        if (zuNahListe[i].localeCompare(andereUser.name+ " ")) {
+          zuNahListe.splice(i, 1);
+          console.log('ich bin bei zu nah und schon da')
           break;
         }
       }
       updateDeviceList();
+
+    } else if(zuNahListe.includes(andereUser.name)){
       return
     }
 
     if(entfernung < 0.1){
       scale *= 0.1/entfernung
     } else if(entfernung > 1.5) {
-      scale *= entfernung/1.5
+      scale *= entfernung*10/1.5
     }
+
+    var userText = document.createElement("a-text")
+    if(entfernung>1){
+      userText.setAttribute("value", entfernung + " m" )
+    } else {
+      userText.setAttribute("value", entfernung + " km")
+    }
+    userText.setAttribute("value", entfernung )
+    userText.setAttribute("maxDistance", "50000")
+    userText.setAttribute("look-at", "[gps-camera]")
     userText.setAttribute("scale", scale + " " + scale + " " + scale)
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
@@ -127,6 +135,7 @@
         var userBild = document.createElement("a-image")
 
         userBild.setAttribute("src", andereUser.bild)
+        userBild.setAttribute("maxDistance", "50000")
         userBild.setAttribute("look-at", "[gps-camera]")
         userBild.setAttribute("scale", scale + " " + scale + " " + scale)
         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
@@ -155,10 +164,11 @@
   socket.on('answer', function (msg) {
     clearScene()
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
-    zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
-    zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": kiosk_bild }, ownPosition.coords)
-    zeigeUseran({ "name": "Köln", "latitude": "50.937370420644584", "longitude": "6.959450142633586", "bild": thomas_bild }, ownPosition.coords)
-    zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords)
+    zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords);
+    zeigeUseran({ "name": "Koeln", "latitude": "50.932779", "longitude": "6.958231", "bild": thomas_bild }, ownPosition.coords);
+    zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": zuhause_bild }, ownPosition.coords);
+
+    zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
   });
 
 
