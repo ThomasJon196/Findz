@@ -96,11 +96,11 @@
     userText.setAttribute("look-at", "[gps-camera]")
 
 
-    if((entfernung < 0.02) && !devices.contains(andereUser.name)) {
+    if((entfernung < 0.02) && !devices.includes(andereUser.name)) {
       devices.add(andereUser.name)
       updateDeviceList();
       return
-    } else if ((entfernung > 0.02) && devices.contains(andereUser.name)){
+    } else if ((entfernung > 0.02) && devices.includes(andereUser.name)){
       devices.remove(andereUser.name)
       updateDeviceList();
       return
