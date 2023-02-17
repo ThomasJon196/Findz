@@ -8,18 +8,19 @@ def add_new_user(email):
     """
     Adds new user to user table.
     """
-    query = f""" \
-        INSERT INTO users (email, picture) \
-        VALUES ('{email}', 'dummy') \
-    """
-    execute_sql_statement(query)
+    query = f"INSERT INTO users (email, picture) VALUES ('{email}', 'dummy')"
+    try:
+        execute_sql_statement(query)
+        print('Added new user')
+    except sqlite3.IntegrityError as e:
+        print(e)
 
 
 def get_user_id(identifier):
     # TODO: Try except Already exsists error
 
     query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
-    id = retrieve_sql_query(query)
+    id = retrieve_sql_query(query)[0][0]
     return id
 
 
@@ -33,11 +34,12 @@ def add_new_friend(friends_email, user_email):
     friends_id = get_user_id(friends_email)
     user_id = get_user_id(user_email)
 
-    query = f"""
-        INSERT INTO friendlists
-        VALUES ({user_id}, {friends_id})
+    query = f""" \
+        INSERT INTO friendlists (user_id, friend_id)\
+        VALUES ({user_id}, {friends_id}) \
     """
     execute_sql_statement(query)
+    print('Added friend')
 
 
 def execute_sql_statement(statement):
@@ -46,8 +48,8 @@ def execute_sql_statement(statement):
     """
     with closing(sqlite3.connect(DB_NAME)) as connection:
         with closing(connection.cursor()) as cursor:
-            rows = cursor.execute(statement)
-            print(rows)
+            cursor.execute(statement)
+        connection.commit()
 
 
 def retrieve_sql_query(statement):
@@ -57,7 +59,6 @@ def retrieve_sql_query(statement):
     with closing(sqlite3.connect(DB_NAME)) as connection:
         with closing(connection.cursor()) as cursor:
             rows = cursor.execute(statement).fetchall()
-            print(rows)
     return rows
 
 
@@ -73,7 +74,7 @@ def tables_exist():
     """
 
     tables = retrieve_sql_query(query)
-    if len(tables) == 3:
+    if len(tables) >= 4:
         return True
     else:
         return False
@@ -135,9 +136,23 @@ def initialize_database():
 
 
 if __name__ == '__main__':
-    SHOW_TABLE = 'SELECT * FROM users'
+    SHOW_USERS = 'SELECT * FROM users'
+    SHOW_FRIENDS = 'SELECT * FROM friendlists'
 
     initialize_database()
-    add_new_user("test@mail")
-    retrieve_sql_query(SHOW_TABLE)
-    
+
+    email = "test@mail"
+    friend_mail = "friend@mail"
+
+    # Add users to database
+    add_new_user(email)
+    add_new_user(friend_mail)
+    retrieve_sql_query(SHOW_USERS)
+
+    # Retrieve users from database
+    id = get_user_id(email)
+
+    # Add friends
+
+    add_new_friend(friend_mail, email)
+    retrieve_sql_query(SHOW_FRIENDS)

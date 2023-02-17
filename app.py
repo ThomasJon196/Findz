@@ -13,10 +13,10 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
-# from database.sqlite_functions import (
-#     add_new_user, 
-#     add_new_friend
-# )
+from database.sqlite_functions import (
+    add_new_user, 
+    add_new_friend
+)
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
@@ -52,7 +52,7 @@ socketio = SocketIO(app)
 
 @socketio.on('update')
 def handle_message(message):
-    print('received message: ' + message)
+    # print('received message: ' + message)
     angekommennachicht = json.loads(message)
         
     new_user_flag = True
@@ -64,11 +64,11 @@ def handle_message(message):
     if new_user_flag:
         userListe.append(angekommennachicht)
     
-    print('Waiting...')
+    # print('Waiting...')
     import time
     time.sleep(5)
 
-    print('Message to send' + str(userListe))
+    # print('Message to send' + str(userListe))
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
@@ -123,7 +123,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
-    # add_new_user(email)
+    add_new_user(email)
 
     return redirect("/webXR")  # the final page where the authorized users will end up
 
@@ -151,7 +151,7 @@ def protected_area():
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    # add_new_friend(friends_email=friendMail, user_email=session.get('email'))
+    add_new_friend(friends_email=friendMail, user_email=session.get('email'))
     data = jsonify({"status": "success"})
     return data, 200
 
