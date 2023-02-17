@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {Person} from "../person";
+import {User} from "../User";
 
 @Component({
   selector: 'app-freunde',
@@ -20,37 +20,42 @@ export class FriendsComponent implements OnInit {
   }
 
   updateFriends() : void{
-    let response = this.http.get('http://localhost:5000/getFriends')
+    this.http.get('http://localhost:5000/getFriends')
       .subscribe(response => {
         console.log(response);
+        //this.friends = response;
       });
-    //this.friends = response.
   }
 
   addFriend(friendMail: String): void {
-    let response = this.http.post('http://localhost:5000/addFriend', friendMail)
-      .subscribe(response => {
-        console.log(response);
-      });
-    /*if(repsonse.){
-      this.updateFriends();
-    }else{
-      alert("Kein Nutzer mit dieser Mail vorhanden!")
-    }
-     */
+    this.http.post('http://localhost:5000/addFriend', friendMail)
+      .subscribe(
+        data => {
+          console.log('success', data)
+
+          //this.updateFriends();
+        },
+        error => {
+          console.log('error: ', error)
+          if(error.status == 409){
+            alert("Nutzer existiert bereits in Freundesliste");
+          } else if(error.status == 40){
+            alert("Kein Nutzer mit dieser Mail vorhanden!");
+          }
+        }
+      );
   }
 
   deleteFriend(name: string) {
-    /*let response = this.http.delete('http://localhost:5000/deleteFriend', name)
-      .subscribe(response => {
-        console.log(response);
-      });
-     */
-    /*if(repsonse.){
-      this.updateFriends();
-    }else{
-      alert("Kein Nutzer mit dieser Mail vorhanden!")
-    }
-     */
+    this.http.delete('http://localhost:5000/deleteFriend/' + name)
+      .subscribe(
+        data => {
+          console.log('success', data)
+          this.updateFriends();
+        },
+        error => {
+          console.log('error: ', error)
+        }
+      );
   }
 }

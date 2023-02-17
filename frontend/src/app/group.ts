@@ -1,7 +1,7 @@
-import {Person} from "./person";
+import {User} from "./User";
 
 export interface Group {
   id: number;
   name: string;
-  members: Person[];
+  members: User[];
 }

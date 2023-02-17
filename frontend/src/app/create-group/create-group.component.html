@@ -1,1 +1,16 @@
 <h3>Gruppe erstellen</h3>
+
+<label for="name">Name*</label>
+<input type="text" id="name" placeholder="Name*" required>
+
+Teilnehmer
+<!--
+<ul class="participants">
+  <li *ngFor="let friend of friends">
+    <input type="checkbox" >
+    {{friend.name}}
+  </li>
+</ul>
+-->
+
+<button (click)="saveGroup()">Speichern</button>
