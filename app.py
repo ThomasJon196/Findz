@@ -1,9 +1,7 @@
 from flask import Flask
 from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit
-# import ssl
 import json
-
 import os
 import pathlib
 import requests
@@ -26,18 +24,25 @@ from database.sqlite_functions import (
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
-DEPLOY_ENV = os.getenv("DEPLOY_ENV", "unspecified deploy_env")
-print(DEPLOY_ENV)
+DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
+
+# TODO: Add logging instead of print statements. (Slow down the server.)
+print("Setting up database")
+initialize_database()
 
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = '127.0.0.1:5000'
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
+    users = ["test@mail.com", "test2@mail.com"]
+    print("Adding example users: " + str(users) + " for development.")
+    add_new_user(users[0])
+    add_new_user(users[1])
 else:
     DOMAIN = 'findz.thomasjonas.de'
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
-initialize_database()
-add_new_user("test@mail.com")
 
-app = Flask("Findz")  # naming our application
+app = Flask(__name__)  # naming our application
 app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # this is to set our environment to https because OAuth 2.0 only supports https environments
