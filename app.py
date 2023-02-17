@@ -41,7 +41,6 @@ else:
     DOMAIN = 'findz.thomasjonas.de'
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
-
 app = Flask(__name__)  # naming our application
 app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
 
@@ -170,7 +169,7 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-@login_is_required
+#@login_is_required
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
@@ -197,8 +196,8 @@ def deleteFriend():
 @app.route("/getGroups", methods=['GET'])
 def getGroups():
     print("Aktuelle session: " + str(session["email"]))
-    grouplist = get_grouplist(email=session["email"])
-    data = jsonify({"goruplist": grouplist})
+    grouplist = get_grouplist(admin_mail=session["email"])
+    data = jsonify({"grouplist": grouplist})
     return data, 200
 
 
@@ -206,7 +205,7 @@ def getGroups():
 def add_Group_Member():
     payload = json.loads(request.data)
     print(payload)
-    add_new_group_members(admin=session.get('email'), new_users=payload)
+    add_new_group_members(admin=session.get('email'), groupname=payload["name"], new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
 
