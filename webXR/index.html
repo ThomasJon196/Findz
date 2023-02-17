@@ -108,7 +108,7 @@
         userBild.setAttribute("src", kiosk_bild)
         userBild.setAttribute("look-at", "[gps-camera]")
         userBild.setAttribute("scale", "50 50 50")
-        userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andeUser.longitude)
+        userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
         /*
         userText = ""
@@ -148,7 +148,7 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-    var scene = document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
+    document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
