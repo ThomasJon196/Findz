@@ -71,7 +71,7 @@ def add_new_group(admin, groupname):
 
 
 @require_unique
-def add_new_group_member(admin, groupname, new_user):
+def add_new_group_members(admin, groupname, new_users):
     """
     Adds new friend to a user.
 
@@ -80,21 +80,27 @@ def add_new_group_member(admin, groupname, new_user):
     TODO: Exception handling
     """
     admin_id = get_user_id(admin)
-    user_id = get_user_id(new_user)
 
     query_group = f""" \
     SELECT group_id FROM groups \
     WHERE admin_id == {admin_id} \
     """
+    group_id = retrieve_sql_query(query_group)[0][0]
 
-    group_id = retrieve_sql_query(query_group)
+    new_users = ['cat@mail', friend_mail_2]
+    user_ids = tuple([get_user_id(new_user) for new_user in new_users])
+    if len(user_ids) == 1:
+        user_ids = f"({user_ids[0]})"
 
-    query = f""" \
-    INSERT INTO group_members (group_id, member_id) \
-    VALUES ({group_id}, {user_id}) \
-    """
-    execute_sql_statement(query)
-    print(f'Added {new_user} to group {groupname}.')
+    sql_params = [(group_id, user_id) for user_id in user_ids]
+    # query = f""" \
+    # INSERT INTO group_members (group_id, member_id) \
+    # VALUES ({group_id}, {user_id}) \
+    # """
+    query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
+    execute_sql_statement(query, sql_params)
+
+    print(f'Added {new_users} to group {groupname}.')
 
 
 def get_friendlist(email):
@@ -124,7 +130,7 @@ def get_grouplist(email):
     user_id = get_user_id(email)
 
     query_mails = f""" \
-    SELECT groupname FROM groups \
+    SELECT group_name FROM groups \
     WHERE member_id = {user_id} \
     """
 
@@ -140,13 +146,16 @@ def concat_query_result(tuple_list):
     return tuple
 
 
-def execute_sql_statement(statement):
+def execute_sql_statement(statement, additional_params=None):
     """
     Execute the given sql statement. (Use for CREATE, INSERT, UPDATE, DELETE)
     """
     with closing(sqlite3.connect(DB_NAME)) as connection:
         with closing(connection.cursor()) as cursor:
-            cursor.execute(statement)
+            if additional_params:
+                cursor.executemany(statement, additional_params)
+            else:
+                cursor.execute(statement)
         connection.commit()
 
 
@@ -248,7 +257,7 @@ if __name__ == '__main__':
     # Add users to database
     add_new_user(email)
     add_new_user(friend_mail)
-    # add_new_user(friend_mail_2)
+    add_new_user(friend_mail_2)
     retrieve_sql_query(SHOW_USERS)
 
     # Retrieve users from database
@@ -271,4 +280,5 @@ if __name__ == '__main__':
     retrieve_sql_query(SHOW_GROUPS)
 
     # Add group members
-    add_new_group_members()
+    add_new_group_members(admin=email, groupname="dummyGroup",
+                          new_users=[friend_mail, friend_mail_2])
