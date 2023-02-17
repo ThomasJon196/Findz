@@ -20,7 +20,8 @@ from database.sqlite_functions import (
     get_friendlist,
     add_new_group,
     add_new_group_members,
-    get_grouplist
+    get_grouplist,
+    get_group_memberlist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
