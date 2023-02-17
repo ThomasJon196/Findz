@@ -32,7 +32,7 @@ else:
     DOMAIN = 'findz.thomasjonas.de'
 
 initialize_database()
-add_new_user("test@mail.com")
+add_new_user("test")
 
 app = Flask("Findz")  # naming our application
 app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
@@ -162,7 +162,7 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-@login_is_required
+#@login_is_required
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
