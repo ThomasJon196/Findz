@@ -30,6 +30,7 @@ def add_new_friend(friends_email, user_email):
 
     Returns error if friends email does not exists in our user database.
     TODO: Here we could send an email in the future with invitation link.
+    TODO: Exception handling
     """
     friends_id = get_user_id(friends_email)
     user_id = get_user_id(user_email)
@@ -40,6 +41,10 @@ def add_new_friend(friends_email, user_email):
     """
     execute_sql_statement(query)
     print('Added friend')
+
+
+def get_friendlist(user):
+    pass
 
 
 def execute_sql_statement(statement):

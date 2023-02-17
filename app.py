@@ -26,10 +26,8 @@ LOCAL_DOMAIN = '127.0.0.1'
 
 
 app = Flask("Findz")  # naming our application
+app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
 
-
-userListe = []
-app.secret_key = "GeekyHuman.com"  # it is necessary to set a password when dealing with OAuth 2.0
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  # this is to set our environment to https because OAuth 2.0 only supports https environments
 
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
@@ -48,13 +46,21 @@ flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores a
 # app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+userListe = []
+
 # SocketIO ENDPOINTS
+
+
+def update_userlist():
+    pass
 
 @socketio.on('update')
 def handle_message(message):
     # print('received message: ' + message)
     angekommennachicht = json.loads(message)
         
+    update_userlist()
+
     new_user_flag = True
     for idx, user in enumerate(userListe):
         if user['name'] == angekommennachicht['name']:
@@ -68,7 +74,7 @@ def handle_message(message):
     import time
     time.sleep(5)
 
-    # print('Message to send' + str(userListe))
+    print('Message to send' + str(userListe))
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
@@ -150,7 +156,7 @@ def protected_area():
 
     return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"  # the logout button
 
-
+@login_is_required
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
@@ -173,6 +179,7 @@ def deleteFriend():
 
 @app.route("/getGroups", methods = ['GET'])
 def getGroups():
+    print(session["email"])
     print("Gruppen")
     data = {"status": "success"}
     return data, 200
