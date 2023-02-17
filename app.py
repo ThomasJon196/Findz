@@ -200,7 +200,7 @@ def getGroups():
 def add_Group_Member():
     payload = json.loads(request.data)
     print(payload)
-    # add_new_group_member(admin=session.get('email'), new_users=payload)
+    add_new_group_member(admin=session.get('email'), new_users=payload)
     data = jsonify({"status": "success"})
     return data, 200
 
