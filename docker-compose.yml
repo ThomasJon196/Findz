@@ -3,8 +3,7 @@ version: '3.0'
 services:
   flask-server:
     image: findz-flask-server:latest
-    ports: 
-      - "5000:5000"
+    container_name: flask-server
     
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest

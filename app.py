@@ -14,7 +14,7 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
 from database.sqlite_functions import (
-    add_new_user, 
+    add_new_user,
     add_new_friend,
     get_friendlist
 )
@@ -22,8 +22,9 @@ from database.sqlite_functions import (
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 
+# TODO: Set as env. variables
 GLOBAL_DOMAIN = 'findz.thomasjonas.de'
-LOCAL_DOMAIN = '127.0.0.1'
+LOCAL_DOMAIN = '127.0.0.1:5000'
 
 
 app = Flask("Findz")  # naming our application
@@ -70,10 +71,6 @@ def handle_message(message):
         
     if new_user_flag:
         userListe.append(angekommennachicht)
-    
-    # print('Waiting...')
-    import time
-    time.sleep(5)
 
     print('Message to send' + str(userListe))
     emit('answer', json.dumps(userListe), broadcast=True)
@@ -82,11 +79,11 @@ def handle_message(message):
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
 
 app.secret_key = os.urandom(12)
-users = json.dumps([
-      { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
-      { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
-      { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
-    ])
+# users = json.dumps([
+#       { "name": "Thomas", "latitude": "50.780757972246015, ", "longitude": "7.1830757675694805", "bild": "tomas.png" },
+#       { "name": "Wiete", "latitude": "50.799765", "longitude": "7.204590", "bild": "Wiete.png" },
+#       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": "Tobias.png" }
+#     ])
 
 
 def login_is_required(function):  # a function to check if the user is authorized or not
@@ -131,6 +128,7 @@ def callback():
     session["email"] = email
 
     print(session['email'])
+    print("Current session cookie:" + str(session.sid))
 
     add_new_user(email)
 
@@ -208,4 +206,4 @@ def not_found_error(error):
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
-    # , ssl_context=('cert.pem', 'key.pem'))
+    #, ssl_context=('cert.pem', 'key.pem'))
