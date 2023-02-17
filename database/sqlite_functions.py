@@ -86,8 +86,6 @@ def add_new_group_members(admin, groupname, new_users):
     WHERE admin_id == {admin_id} \
     """
     group_id = retrieve_sql_query(query_group)[0][0]
-
-    new_users = ['cat@mail', friend_mail_2]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
     if len(user_ids) == 1:
         user_ids = f"({user_ids[0]})"
@@ -152,7 +150,7 @@ def get_group_memberlist(admin_mail, group_name):
             AND group_name = '{group_name}' \
         )) \
     """
-    
+
     friendlist_mails = retrieve_sql_query(query_members)
     friendlist_mails = concat_query_result(friendlist_mails)
     return friendlist_mails
