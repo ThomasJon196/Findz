@@ -9,21 +9,21 @@ import {User} from "../User";
 })
 export class FriendsComponent implements OnInit {
 
-  friends = [{name: "tobi"}, {name: "thomas"}];
+  friends = [];
   friendMail: String = "";
 
   constructor(private http: HttpClient) {
   }
 
   ngOnInit(): void {
-    //this.updateFriends();
+    this.updateFriends();
   }
 
   updateFriends() : void{
-    this.http.get('/getFriends')
-      .subscribe(response => {
-        console.log(response);
-        //this.friends = response;
+    this.http.get<any>('/getFriends')
+      .subscribe(data => {
+        console.log(data.friendlist);
+        this.friends = data.friendlist;
       });
   }
 
@@ -32,8 +32,7 @@ export class FriendsComponent implements OnInit {
       .subscribe(
         data => {
           console.log('success', data)
-
-          //this.updateFriends();
+          this.updateFriends();
         },
         error => {
           console.log('error: ', error)
@@ -44,6 +43,7 @@ export class FriendsComponent implements OnInit {
           }
         }
       );
+    this.friendMail = "";
   }
 
   deleteFriend(name: string) {

@@ -5,8 +5,8 @@
 
 <ul class="friends">
   <li *ngFor="let friend of friends">
-    {{friend.name}}
-    <button class="deleteFriendButton" (click)="deleteFriend(friend.name)">-</button>
+    {{friend}}
+    <button class="deleteFriendButton" (click)="deleteFriend(friend)">-</button>
   </li>
 </ul>
 

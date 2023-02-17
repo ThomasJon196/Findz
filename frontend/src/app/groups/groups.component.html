@@ -5,9 +5,8 @@
 
 <ul class="groups">
   <li *ngFor="let group of groups">
-    <a routerLink="/gruppenDetails/{{group.id}}" class="group">
-      {{group.name}}
-      {{group.members.length}}
+    <a routerLink="/gruppenDetails/{{group}}" class="group">
+      {{group}}
     </a>
   </li>
 </ul>

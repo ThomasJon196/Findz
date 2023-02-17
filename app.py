@@ -19,7 +19,7 @@ from database.sqlite_functions import (
     add_new_friend,
     get_friendlist,
     add_new_group,
-    add_new_group_member,
+    add_new_group_members,
     get_grouplist
 )
 
@@ -191,7 +191,7 @@ def deleteFriend():
 @app.route("/getGroups", methods=['GET'])
 def getGroups():
     print("Aktuelle session: " + str(session["email"]))
-    grouplist = get_grouplist(email=session["email"])
+    grouplist = get_grouplist(admin_mail=session["email"])
     data = jsonify({"goruplist": grouplist})
     return data, 200
 
@@ -200,7 +200,7 @@ def getGroups():
 def add_Group_Member():
     payload = json.loads(request.data)
     print(payload)
-    add_new_group_member(admin=session.get('email'), new_users=payload)
+    add_new_group_members(admin=session.get('email'), groupname=payload["name"], new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
 
