@@ -4,7 +4,7 @@ import sqlite3
 DB_NAME = 'findz.db'
 
 
-def require_unique(function):  # a function to check if the user is authorized or not
+def require_unique(function):  # sqlite IntegrityError.
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
@@ -124,13 +124,14 @@ def get_grouplist(email):
     user_id = get_user_id(email)
 
     query_mails = f""" \
-    SELECT email FROM groups \
+    SELECT groupname FROM groups \
     WHERE member_id = {user_id} \
     """
 
     friendlist_mails = retrieve_sql_query(query_mails)
     friendlist_mails = concat_query_result(friendlist_mails)
     return friendlist_mails
+
 
 def concat_query_result(tuple_list):
     tuple = ()
@@ -270,4 +271,4 @@ if __name__ == '__main__':
     retrieve_sql_query(SHOW_GROUPS)
 
     # Add group members
-
+    add_new_group_members()
