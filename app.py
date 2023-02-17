@@ -14,6 +14,7 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
 from database.sqlite_functions import (
+    initialize_database,
     add_new_user,
     add_new_friend,
     get_friendlist
@@ -25,6 +26,9 @@ GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 # TODO: Set as env. variables
 GLOBAL_DOMAIN = 'findz.thomasjonas.de'
 LOCAL_DOMAIN = '127.0.0.1:5000'
+
+
+initialize_database()
 
 
 app = Flask("Findz")  # naming our application
