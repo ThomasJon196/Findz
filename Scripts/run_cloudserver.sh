@@ -1,5 +1,5 @@
 source ../.env
-sudo cloudflared service install ${CLOUD_TOKEN}
+# sudo cloudflared service install ${CLOUD_TOKEN}
 service cloudflared start
 
 export DEPLOY_ENV=GLOBAL
