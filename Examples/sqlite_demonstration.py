@@ -28,8 +28,8 @@ cursor.execute("CREATE TABLE fish (name TEXT, species TEXT, tank_number INTEGER)
 
 cursor.execute("INSERT INTO fish VALUES ('Sammy', 'shark', 1)")
 cursor.execute("INSERT INTO fish VALUES ('Jamie', 'cuttlefish', 7)")
-
-cursor.execute("INSERT INTO users (email, picture) VALUES ('test@mail', 'dummy')")
+mail = "test@mail"
+cursor.execute(f"INSERT INTO users (email, picture) VALUES ('{mail}', 'dummy')")
 
 # Select data
 

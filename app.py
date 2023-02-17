@@ -13,10 +13,10 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 
-from database.sqlite_functions import (
-    add_new_user, 
-    add_new_friend
-)
+# from database.sqlite_functions import (
+#     add_new_user, 
+#     add_new_friend
+# )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
@@ -175,4 +175,4 @@ def not_found_error(error):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='127.0.0.1')  # , ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')  # , ssl_context=('cert.pem', 'key.pem'))
