@@ -90,7 +90,7 @@
     let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
     console.log(entfernung)
     console.log(coordinaten.latitude)
-    var scale = 100
+    var scale = 50
     var userText = document.createElement("a-text")
     userText.setAttribute("value", entfernung )
     userText.setAttribute("look-at", "[gps-camera]")
@@ -102,10 +102,10 @@
     userText.setAttribute("scale", scale + " " + scale + " " + scale)
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
-    /*
+
         var userBild = document.createElement("a-image")
 
-        userBild.setAttribute("src", andereUser.bild)
+        userBild.setAttribute("src", kiosk_bild)
         userBild.setAttribute("look-at", "[gps-camera]")
         userBild.setAttribute("scale", "50 50 50")
         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andeUser.longitude)
@@ -148,7 +148,7 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-    document.getElementById("a-cene").innerHTML="";
+    var scene = document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
