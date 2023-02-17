@@ -17,7 +17,10 @@ from database.sqlite_functions import (
     initialize_database,
     add_new_user,
     add_new_friend,
-    get_friendlist
+    get_friendlist,
+    add_new_group,
+    add_new_group_member,
+    get_grouplist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
@@ -184,12 +187,32 @@ def deleteFriend():
     data = jsonify({"status": "success"})
     return data, 200
 
+
 @app.route("/getGroups", methods=['GET'])
 def getGroups():
-    print(session["email"])
-    print("Gruppen")
+    print("Aktuelle session: " + str(session["email"]))
+    grouplist = get_grouplist(email=session["email"])
+    data = jsonify({"goruplist": grouplist})
+    return data, 200
+
+
+@app.route("/addMembers", methods=['POST'])
+def add_Group_Member():
+    payload = json.loads(request.data)
+    print(payload)
+    # add_new_group_member(admin=session.get('email'), new_users=payload)
     data = jsonify({"status": "success"})
     return data, 200
+
+
+@app.route("/createGroup", methods=['POST'])
+def createGroup():
+    payload = json.loads(request.data)
+    print(payload)
+    add_new_group(admin=session.get("email"), groupname=payload)
+    data = jsonify({"status": "success"})
+    return data, 200
+
 
 @app.route('/')
 def index():

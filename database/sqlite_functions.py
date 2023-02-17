@@ -4,16 +4,23 @@ import sqlite3
 DB_NAME = 'findz.db'
 
 
+def require_unique(function):  # a function to check if the user is authorized or not
+    def wrapper(*args, **kwargs):
+        try:
+            return function(*args, **kwargs)
+        except sqlite3.IntegrityError as e:
+            return f"An error occurred: {e}"
+    return wrapper
+
+
+@require_unique
 def add_new_user(email):
     """
     Adds new user to user table.
     """
     query = f"INSERT INTO users (email, picture) VALUES ('{email}', 'dummy')"
-    try:
-        execute_sql_statement(query)
-        print('Added new user')
-    except sqlite3.IntegrityError as e:
-        print(e)
+    execute_sql_statement(query)
+    print('Added new user')
 
 
 def get_user_id(identifier):
@@ -24,6 +31,7 @@ def get_user_id(identifier):
     return id[0][0]
 
 
+@require_unique
 def add_new_friend(friends_email, user_email):
     """
     Adds new friend to a user.
@@ -36,11 +44,57 @@ def add_new_friend(friends_email, user_email):
     user_id = get_user_id(user_email)
 
     query = f""" \
-    INSERT INTO friendlists (user_id, friend_id)\
+    INSERT INTO friendlists (user_id, friend_id) \
     VALUES ({user_id}, {friends_id}) \
     """
     execute_sql_statement(query)
     print('Added friend')
+
+
+@require_unique
+def add_new_group(admin, groupname):
+    """
+    Adds new friend to a user.
+
+    Returns error if friends email does not exists in our user database.
+    TODO: Here we could send an email in the future with invitation link.
+    TODO: Exception handling
+    """
+    user_id = get_user_id(admin)
+
+    query = f""" \
+    INSERT INTO groups (group_name, admin_id) \
+    VALUES ('{groupname}', {user_id}) \
+    """
+    execute_sql_statement(query)
+    print(f'Created group: {groupname}.')
+
+
+@require_unique
+def add_new_group_member(admin, groupname, new_user):
+    """
+    Adds new friend to a user.
+
+    Returns error if friends email does not exists in our user database.
+    TODO: Here we could send an email in the future with invitation link.
+    TODO: Exception handling
+    """
+    admin_id = get_user_id(admin)
+    user_id = get_user_id(new_user)
+
+    query_group = f""" \
+    SELECT group_id FROM groups \
+    WHERE admin_id == {admin_id} \
+    """
+
+    group_id = retrieve_sql_query(query_group)
+
+    query = f""" \
+    INSERT INTO group_members (group_id, member_id) \
+    VALUES ({group_id}, {user_id}) \
+    """
+    execute_sql_statement(query)
+    print(f'Added {new_user} to group {groupname}.')
 
 
 def get_friendlist(email):
@@ -76,7 +130,7 @@ def get_grouplist(email):
 
     friendlist_mails = retrieve_sql_query(query_mails)
     friendlist_mails = concat_query_result(friendlist_mails)
-
+    return friendlist_mails
 
 def concat_query_result(tuple_list):
     tuple = ()
@@ -155,6 +209,7 @@ def initialize_database():
         admin_id INTEGER NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (admin_id) REFERENCES users(user_id)
+        UNIQUE (group_name, admin_id)
     )
     """
 
@@ -181,6 +236,7 @@ def initialize_database():
 if __name__ == '__main__':
     SHOW_USERS = 'SELECT * FROM users'
     SHOW_FRIENDS = 'SELECT * FROM friendlists'
+    SHOW_GROUPS = 'SELECT * FROM groups'
 
     initialize_database()
 
@@ -208,3 +264,10 @@ if __name__ == '__main__':
 
     # Get Friendlist
     get_friendlist(email)
+
+    # Create new group
+    add_new_group(admin=email, groupname="Meat")
+    retrieve_sql_query(SHOW_GROUPS)
+
+    # Add group members
+
