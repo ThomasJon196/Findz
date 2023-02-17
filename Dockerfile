@@ -9,6 +9,7 @@ RUN pip install --upgrade -r /app/requirements.txt
 # TODO: Bind mount app-content to dynamicaly update website content
 COPY ./static /app/static
 COPY ./templates /app/templates
+COPY ./webXR/index.html /app/templates/webXR.html
 COPY ./database /app/database
 COPY ./app.py /app/
 
