@@ -1,0 +1,9 @@
+
+
+Die deutsche Corona-Warn-App verwendet für die Bluetooth-Kommunikation den Exposure Notification Service (ENS), der von Apple und Google speziell für die Corona-Warn-App entwickelt wurde. Der ENS ist Teil von Apples und Googles Betriebssystemen für mobile Geräte und steht für andere Anwendungen nicht zur Verfügung.
+
+Da der ENS speziell für die Corona-Warn-App entwickelt wurde, ist es möglich, dass die App auf manchen Geräten, wie zum Beispiel dem Xiaomi Redmi Note 10 Pro, aufgrund von Kompatibilitätsproblemen nicht einwandfrei funktioniert. In diesem Fall wird die App möglicherweise nicht in der Lage sein, eine sichere Bluetooth-Kommunikation aufzubauen und somit keine Entfernungsmessung durchzuführen.
+
+Also bluetooth nur geringen mehrwert optional
+
+

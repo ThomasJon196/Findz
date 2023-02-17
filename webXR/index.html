@@ -22,6 +22,9 @@
 
     <a-camera gps-camera rotation-reader> </a-camera>
   </a-scene>
+
+  <ul id="deviceList" >
+  </ul>
 </body>
 
 <script>
@@ -62,6 +65,26 @@
       { "name": "Tobias", "latitude": "50.799985", "longitude": "7.205288", "bild": kiosk_bild }
     ]
 
+  let devices = []
+
+  // Funktion zum Überprüfen, ob die Entfernung 10 Meter oder weniger beträgt
+
+  function updateDeviceList() {
+    // Leere die Liste
+
+    var deviceList = document.querySelector('deviceList')
+    deviceList.innerHTML = ""
+
+    // Füge jedes Gerät als Listenelement hinzu
+    for (const deviceId in devices) {
+      const device = devices[deviceId];
+      const deviceItem = document.createElement('li');
+      deviceItem.textContent = device.name + ' (' + device.distance.toFixed(2) + 'm)';
+      deviceList.appendChild(deviceItem);
+    }
+  }
+
+
   function zeigeUseran(andereUser, coordinaten) {
 
     let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
@@ -71,6 +94,18 @@
     var userText = document.createElement("a-text")
     userText.setAttribute("value", entfernung )
     userText.setAttribute("look-at", "[gps-camera]")
+
+
+    if((entfernung < 0.02) && !devices.contains(andereUser.name)) {
+      devices.add(andereUser.name)
+      updateDeviceList();
+      return
+    } else if ((entfernung > 0.02) && devices.contains(andereUser.name)){
+      devices.remove(andereUser.name)
+      updateDeviceList();
+      return
+    }
+
     if(entfernung < 0.1){
       scale *= 0.1/entfernung
     } else if(entfernung > 1.5) {
@@ -113,7 +148,6 @@
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
-
 
 
 </script>
