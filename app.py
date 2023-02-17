@@ -15,7 +15,8 @@ import google.auth.transport.requests
 
 from database.sqlite_functions import (
     add_new_user, 
-    add_new_friend
+    add_new_friend,
+    get_friendlist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
@@ -162,26 +163,28 @@ def addFriend():
     friendMail = request.data.decode("utf-8")
     print(session["email"])
     add_new_friend(friends_email=friendMail, user_email='dummy')
-    
+
     data = jsonify({"status": "success"})
     return data, 200
 
-@app.route("/getFriends", methods = ['GET'])
+
+@app.route("/getFriends", methods=['GET'])
 def getFriends():
     print("Freundesliste")
-    data = {"status": "success"}
+    friendlist = get_friendlist(session['email'])
+    data = jsonify({"friendlist": friendlist})
     return data, 200
 
-@app.route("/deleteFriend", methods = ['DELETE'])
+@app.route("/deleteFriend", methods=['DELETE'])
 def deleteFriend():
-    data = {"status": "success"}
+    data = jsonify({"status": "success"})
     return data, 200
 
-@app.route("/getGroups", methods = ['GET'])
+@app.route("/getGroups", methods=['GET'])
 def getGroups():
     print(session["email"])
     print("Gruppen")
-    data = {"status": "success"}
+    data = jsonify({"status": "success"})
     return data, 200
 
 @app.route('/')
@@ -204,4 +207,5 @@ def not_found_error(error):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')  # , ssl_context=('cert.pem', 'key.pem'))
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
+    # , ssl_context=('cert.pem', 'key.pem'))
