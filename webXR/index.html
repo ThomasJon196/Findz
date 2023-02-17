@@ -17,21 +17,8 @@
 <body>
 
   <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-    id="a-cene"> <!--
-      <a-text
-        value="Wiete."
-        look-at="[gps-camera]"
-        scale="120 120 120"
-        gps-entity-place="latitude:50.799461; longitude:7.206692;"
-      ></a-text>-->
-
-    <!-- todo Bilder auslagern das diese nicht immer versendet werden muessen -->
-    <!-- <a-image
-           src="tomas.png"
-           look-at="[gps-camera]"
-           scale="70 70 70"
-           gps-entity-place="latitude:50.799461; longitude:7.206692;">
-       </a-image> -->
+    id="a-cene">
+    <a-entity id="container"></a-entity>
 
     <a-camera gps-camera rotation-reader> </a-camera>
   </a-scene>
@@ -41,23 +28,13 @@
 
   var socket = io.connect('https://' + document.domain + ':' + location.port);
   let ownPosition;
-  /*
-  function ermittlePosition() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(zeigePosition);
-    } else {
-      ausgabe.innerHTML = 'Ihr Browser unterstützt keine Geolocation.';
-    }
-  }
-
-  function zeigePosition(position) {
-    ausgabe.innerHTML = "Ihre Koordinaten sind:<br> Breite: " + position.coords.latitude +
-            "<br>Länge: " + position.coords.longitude;
-  }*/
-
 
   function Deg2Rad(deg) {
     return deg * Math.PI / 180;
+  }
+
+  function clearScene() {
+    document.querySelector('#container').innerHTML = '';
   }
 
   function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
@@ -107,26 +84,13 @@
 
         userBild.setAttribute("src", kiosk_bild)
         userBild.setAttribute("look-at", "[gps-camera]")
-        userBild.setAttribute("scale", "50 50 50")
+        userBild.setAttribute("scale", scale + " " + scale + " " + scale)
         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
-        /*
-        userText = ""
-        console.log(userText)
-        userBild = ""
-        userText += '<a-text  value="+ user.name + "look-at="[gps-camera]"  scale="120 120 120"  gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-text>'
-        userBild += '<a-image src="+ user.bild + " look-at="[gps-camera]"  scale="70 70 70" gps-entity-place="latitude:user.latitude; longitude:user.longitude;" ></a-image>'
-
-
-         */
-
-
-    element = document.getElementById("a-cene")
-    //element.appendChild(userText)
+    element = document.querySelector('#container')
     element.appendChild(userText)
     element.appendChild(userBild)
 
-    //element.appendChild(userBild)
   }
 
   const successCallback = (position) => {
@@ -142,42 +106,14 @@
     console.log(error);
   };
 
-  // $(document).ready(function () {
-  //     // sending a connect request to the server.
-
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-   // document.getElementById("a-cene").innerHTML='<a-camera gps-camera rotation-reader> </a-camera>';
+    clearScene()
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
 
-    // });
-
-
-    //users.forEach(element => zeigeUseran(element, coordinate))
-
-
-
-  /*
-  function appendData (data) {
-    console.log (data);
-    document.querySelector ("div").innerHTML = JSON.stringify(data);
-  }
-
-  fetch ("test.json").then (function (response) {
-    return response.json();
-  }).then (function (data) {
-    appendData (data);
-  }).catch (function (error) {
-    console.log ("error: " + error);
-  });
-
-  fetch("test.json")
-          .then(res => res.json())
-          .then(data => zeigeUseran(data))
-  */
 
 
 </script>
