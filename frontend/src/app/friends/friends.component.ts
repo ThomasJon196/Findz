@@ -16,7 +16,7 @@ export class FriendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.updateFriends();
+    //this.updateFriends();
   }
 
   updateFriends() : void{
