@@ -193,7 +193,7 @@ def deleteFriend():
 def getGroups():
     print("Aktuelle session: " + str(session["email"]))
     grouplist = get_grouplist(admin_mail=session["email"])
-    data = jsonify({"goruplist": grouplist})
+    data = jsonify({"grouplist": grouplist})
     return data, 200
 
 

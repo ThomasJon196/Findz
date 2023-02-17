@@ -22,7 +22,7 @@ export class GroupsComponent implements OnInit {
     this.http.get<any>('/getGroups')
       .subscribe(data => {
         console.log(data);
-        this.groups = data.goruplist;
+        this.groups = data.grouplist;
       });
   }
 }
