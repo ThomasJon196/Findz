@@ -22,11 +22,14 @@ from database.sqlite_functions import (
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
+DEPLOY_ENV = os.getenv("DEPLOY_ENV", "unspecified deploy_env")
+print(DEPLOY_ENV)
 
 # TODO: Set as env. variables
-GLOBAL_DOMAIN = 'findz.thomasjonas.de'
-LOCAL_DOMAIN = '127.0.0.1:5000'
-
+if DEPLOY_ENV == "LOCAL":
+    DOMAIN = '127.0.0.1:5000'
+else:
+    DOMAIN = 'findz.thomasjonas.de'
 
 initialize_database()
 
@@ -41,7 +44,7 @@ client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret
 flow = Flow.from_client_secrets_file(  # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
     client_secrets_file=client_secrets_file,
     scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri=f"https://{GLOBAL_DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
+    redirect_uri=f"https://{DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
 )
 
 # SLL Stuff
@@ -209,5 +212,7 @@ def not_found_error(error):
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
-    #, ssl_context=('cert.pem', 'key.pem'))
+    if DEPLOY_ENV == "LOCAL":
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
+    else:
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
