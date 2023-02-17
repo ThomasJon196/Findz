@@ -6,6 +6,7 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./create-group.component.scss']
 })
 export class CreateGroupComponent implements OnInit {
+  friends: any;
 
   constructor() {
   }
@@ -13,4 +14,7 @@ export class CreateGroupComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  saveGroup() {
+
+  }
 }

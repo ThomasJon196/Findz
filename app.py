@@ -155,6 +155,23 @@ def addFriend():
     data = jsonify({"status": "success"})
     return data, 200
 
+@app.route("/getFriends", methods = ['GET'])
+def getFriends():
+    print("Freundesliste")
+    data = {"status": "success"}
+    return data, 200
+
+@app.route("/deleteFriend", methods = ['DELETE'])
+def deleteFriend():
+    data = {"status": "success"}
+    return data, 200
+
+@app.route("/getGroups", methods = ['GET'])
+def getGroups():
+    print("Gruppen")
+    data = {"status": "success"}
+    return data, 200
+
 @app.route('/')
 def index():
     return render_template('index.html')
