@@ -154,5 +154,8 @@ if __name__ == '__main__':
 
     # Add friends
 
-    add_new_friend(friend_mail, email)
+    # add_new_friend(friend_mail, email)
     retrieve_sql_query(SHOW_FRIENDS)
+
+    email = 'jonas.thomas196@gmail.com'
+    get_user_id(email)

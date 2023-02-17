@@ -123,13 +123,16 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
+    print(session['email'])
+
     add_new_user(email)
 
-    return redirect("/webXR")  # the final page where the authorized users will end up
+    return redirect("/static/gruppen")  # the final page where the authorized users will end up
 
 
 @app.route("/logout")  # the logout page and function
 def logout():
+    print(session['email'])
     session.clear()
     return redirect("/")
 
@@ -151,7 +154,9 @@ def protected_area():
 @app.route("/addFriend", methods=['POST'])
 def addFriend():
     friendMail = request.data.decode("utf-8")
-    add_new_friend(friends_email=friendMail, user_email=session.get('email'))
+    print(session["email"])
+    add_new_friend(friends_email=friendMail, user_email='dummy')
+    
     data = jsonify({"status": "success"})
     return data, 200
 
