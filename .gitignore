@@ -4,6 +4,7 @@ node_modules
 templates/*
 static/*
 
+findz.db
 .idea
 .env
 client_secret.json

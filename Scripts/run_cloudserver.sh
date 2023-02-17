@@ -1,4 +1,3 @@
-
 source ../.env
 sudo cloudflared service install ${CLOUD_TOKEN}
 service cloudflared start

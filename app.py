@@ -25,7 +25,6 @@ GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 DEPLOY_ENV = os.getenv("DEPLOY_ENV", "unspecified deploy_env")
 print(DEPLOY_ENV)
 
-# TODO: Set as env. variables
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = '127.0.0.1:5000'
 else:
