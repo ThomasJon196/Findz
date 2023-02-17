@@ -141,20 +141,18 @@ def get_grouplist(admin_mail):
 
 def get_group_memberlist(admin_mail, group_name):
     admin_id = get_user_id(admin_mail)
-    query_group_id = f""" \
-    SELECT group_id FROM groups \
-    WHERE admin_id = {admin_id} \
-    AND group_name = '{group_name}'\
-    """
-    group_id = retrieve_sql_query(query_group_id)[0][0]
 
     query_members = f""" \
     SELECT email FROM users \
     WHERE user_id IN ( \
         SELECT member_id FROM group_members \
-        WHERE group_id = {group_id}) \
+        WHERE group_id = ( \
+            SELECT group_id FROM groups \
+            WHERE admin_id = {admin_id} \
+            AND group_name = '{group_name}' \
+        )) \
     """
-
+    
     friendlist_mails = retrieve_sql_query(query_members)
     friendlist_mails = concat_query_result(friendlist_mails)
     return friendlist_mails
