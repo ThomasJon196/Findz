@@ -31,7 +31,7 @@ else:
     DOMAIN = 'findz.thomasjonas.de'
 
 initialize_database()
-
+add_new_user("test@mail.com")
 
 app = Flask("Findz")  # naming our application
 app.secret_key = "secret_session_key"  # it is necessary to set a password when dealing with OAuth 2.0
@@ -166,7 +166,7 @@ def protected_area():
 def addFriend():
     friendMail = request.data.decode("utf-8")
     print(session["email"])
-    add_new_friend(friends_email=friendMail, user_email='dummy')
+    add_new_friend(friends_email=friendMail, user_email=session["email"])
 
     data = jsonify({"status": "success"})
     return data, 200
