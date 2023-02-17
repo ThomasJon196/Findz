@@ -126,12 +126,12 @@ def get_friendlist(email):
     return friendlist_mails
 
 
-def get_grouplist(email):
-    user_id = get_user_id(email)
+def get_grouplist(admin_mail):
+    admin_id = get_user_id(admin_mail)
 
     query_mails = f""" \
     SELECT group_name FROM groups \
-    WHERE member_id = {user_id} \
+    WHERE admin_id = {admin_id} \
     """
 
     friendlist_mails = retrieve_sql_query(query_mails)
