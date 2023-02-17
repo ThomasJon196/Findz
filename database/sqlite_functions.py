@@ -52,6 +52,9 @@ def get_friendlist(email):
     friendlist_ids = retrieve_sql_query(query_friends)
     friendlist_ids = concat_query_result(friendlist_ids)
 
+    if len(friendlist_ids) == 1:
+        friendlist_ids = f"({friendlist_ids[0]})"
+
     query_mails = f""" \
     SELECT email FROM users \
     WHERE user_id IN {friendlist_ids} \
@@ -61,6 +64,18 @@ def get_friendlist(email):
     friendlist_mails = concat_query_result(friendlist_mails)
 
     return friendlist_mails
+
+
+def get_grouplist(email):
+    user_id = get_user_id(email)
+
+    query_mails = f""" \
+    SELECT email FROM groups \
+    WHERE member_id = {user_id} \
+    """
+
+    friendlist_mails = retrieve_sql_query(query_mails)
+    friendlist_mails = concat_query_result(friendlist_mails)
 
 
 def concat_query_result(tuple_list):
@@ -176,7 +191,7 @@ if __name__ == '__main__':
     # Add users to database
     add_new_user(email)
     add_new_user(friend_mail)
-    add_new_user(friend_mail_2)
+    # add_new_user(friend_mail_2)
     retrieve_sql_query(SHOW_USERS)
 
     # Retrieve users from database
@@ -188,7 +203,7 @@ if __name__ == '__main__':
     # Add friends
 
     add_new_friend(friend_mail, email)
-    add_new_friend(friend_mail_2, email)
+    # add_new_friend(friend_mail_2, email)
     retrieve_sql_query(SHOW_FRIENDS)
 
     # Get Friendlist
