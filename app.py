@@ -19,8 +19,9 @@ from database.sqlite_functions import (
     add_new_friend,
     get_friendlist,
     add_new_group,
-    add_new_group_member,
-    get_grouplist
+    add_new_group_members,
+    get_grouplist,
+    get_group_memberlist
 )
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
@@ -200,7 +201,7 @@ def getGroups():
 def add_Group_Member():
     payload = json.loads(request.data)
     print(payload)
-    add_new_group_member(admin=session.get('email'), new_users=payload)
+    add_new_group_members(admin=session.get('email'), new_users=payload)
     data = jsonify({"status": "success"})
     return data, 200
 

@@ -89,12 +89,8 @@ def add_new_group_members(admin, groupname, new_users):
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
     if len(user_ids) == 1:
         user_ids = f"({user_ids[0]})"
-
     sql_params = [(group_id, user_id) for user_id in user_ids]
-    # query = f""" \
-    # INSERT INTO group_members (group_id, member_id) \
-    # VALUES ({group_id}, {user_id}) \
-    # """
+    
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
     execute_sql_statement(query, sql_params)
 
