@@ -148,8 +148,7 @@
   navigator.geolocation.watchPosition(successCallback, errorCallback)
 
   socket.on('answer', function (msg) {
-    document.getElementById("a-cene").innerHTML=<a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-                                                         id="a-cene">;
+    document.getElementById("a-cene").innerHTML='<a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;" id="a-cene">';
     JSON.parse(msg).forEach(element => { if (element['name'] != '{{user}}') { zeigeUseran(element, ownPosition.coords) } });
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords)
   });
