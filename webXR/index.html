@@ -22,7 +22,9 @@
 
   </a-scene>
 
-  <div id='setloc' style='position:absolute; left: 10px; bottom: 2%; z-index:999; background-color: blue; color: white; padding: 10px'><ul id="deviceList" ></ul>
+  <div id='setloc' style='position:absolute; left: 5px; bottom: 2%; z-index:999; border-radius:5px; background: rgba(54,88,48,0.85); color: white; padding: 10px'>
+    In deiner Nähe (<30m):
+    <ul id="deviceList" style='list-style-type:square;'></ul>
   </div>
 
 
@@ -90,14 +92,14 @@
     let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
     console.log('ich bin die entfernung:'+ entfernung)
     console.log(coordinaten.latitude)
-    var scale = 33
+    var scale = 80
 
-    if((entfernung < 0.03) && !zuNahListe.includes(andereUser.name)) {
+    if((entfernung < 0.04) && !zuNahListe.includes(andereUser.name)) {
       zuNahListe.push(andereUser.name)
       updateDeviceList();
 
       return
-    } else if ((entfernung > 0.03) && zuNahListe.includes(andereUser.name)){
+    } else if ((entfernung > 0.04) && zuNahListe.includes(andereUser.name)){
 
       for (let i = 0; i < zuNahListe.length; i++) {
         console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
@@ -113,29 +115,37 @@
       return
     }
 
-    if(entfernung < 0.1){
-      scale *= 0.1/entfernung
-    } else if(entfernung > 1.5) {
-      scale *= entfernung*10/1.5
-    }
+
 
     var userText = document.createElement("a-text")
     if(entfernung>1){
-      userText.setAttribute("value", entfernung + " m" )
+      userText.setAttribute("value", entfernung + " km" )
     } else {
-      userText.setAttribute("value", entfernung + " km")
+      userText.setAttribute("value", entfernung + " m")
     }
-    userText.setAttribute("value", entfernung )
-    userText.setAttribute("maxDistance", "50000")
+    userText.setAttribute("maxDistance", "5000000")
     userText.setAttribute("look-at", "[gps-camera]")
+
+    if(entfernung < 0.5){
+      scale *= 0.2/entfernung
+    //  userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
+    } else if(entfernung > 2.5) {
+      scale *= entfernung/0.5
+    //  userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
+    }
+    //userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
     userText.setAttribute("scale", scale + " " + scale + " " + scale)
+    userText.setAttribute('align', 'center');
+
+
     userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
 
         var userBild = document.createElement("a-image")
 
+        userBild.setAttribute('align', 'center');
         userBild.setAttribute("src", andereUser.bild)
-        userBild.setAttribute("maxDistance", "50000")
+        userBild.setAttribute("maxDistance", "5000000")
         userBild.setAttribute("look-at", "[gps-camera]")
         userBild.setAttribute("scale", scale + " " + scale + " " + scale)
         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
@@ -167,7 +177,7 @@
     zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords);
     zeigeUseran({ "name": "Koeln", "latitude": "50.932779", "longitude": "6.958231", "bild": thomas_bild }, ownPosition.coords);
     zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": zuhause_bild }, ownPosition.coords);
-
+    zeigeUseran({ "name": "shitfest", "latitude": "34.668730658268004", "longitude": "135.4295393926713", "bild": zuhause_bild}, ownPosition.coords);
     zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
   });
 
