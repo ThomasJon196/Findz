@@ -1,7 +1,7 @@
 from contextlib import closing
 import sqlite3
 
-DB_NAME = 'findz.db'
+DB_NAME = './persistent/findz.db'
 
 
 def require_unique(function):  # sqlite IntegrityError.
@@ -29,6 +29,12 @@ def get_user_id(identifier):
     query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
     id = retrieve_sql_query(query)
     return id[0][0]
+
+
+def get_all_users():
+    query = "SELECT email FROM users"
+    mails = retrieve_sql_query(query)
+    return mails
 
 
 @require_unique
@@ -83,14 +89,16 @@ def add_new_group_members(admin, groupname, new_users):
 
     query_group = f""" \
     SELECT group_id FROM groups \
-    WHERE admin_id == {admin_id} \
+    WHERE admin_id = {admin_id} \
+    AND group_name = '{groupname}' \
     """
+
     group_id = retrieve_sql_query(query_group)[0][0]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
     if len(user_ids) == 1:
         user_ids = f"({user_ids[0]})"
     sql_params = [(group_id, user_id) for user_id in user_ids]
-    
+
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
     execute_sql_statement(query, sql_params)
 
@@ -134,6 +142,8 @@ def get_grouplist(admin_mail):
 
 
 def get_group_memberlist(admin_mail, group_name):
+    # TODO: Refactor sql queries. Variables inside are a safety vournability.
+
     admin_id = get_user_id(admin_mail)
 
     query_members = f""" \
@@ -260,6 +270,7 @@ if __name__ == '__main__':
     SHOW_USERS = 'SELECT * FROM users'
     SHOW_FRIENDS = 'SELECT * FROM friendlists'
     SHOW_GROUPS = 'SELECT * FROM groups'
+    SHOW_MEMBERS = 'SELECT * FROM group_members'
 
     initialize_database()
 
@@ -276,13 +287,9 @@ if __name__ == '__main__':
     # Retrieve users from database
     id = get_user_id(email)
 
-    email_1 = 'jonas.thomas196@gmail.com'
-    get_user_id(email)
-
     # Add friends
-
     add_new_friend(friend_mail, email)
-    # add_new_friend(friend_mail_2, email)
+    add_new_friend(friend_mail_2, email)
     retrieve_sql_query(SHOW_FRIENDS)
 
     # Get Friendlist
@@ -295,3 +302,6 @@ if __name__ == '__main__':
     # Add group members
     add_new_group_members(admin=email, groupname="dummyGroup",
                           new_users=[friend_mail, friend_mail_2])
+
+    # Show groups members
+    retrieve_sql_query(SHOW_MEMBERS)

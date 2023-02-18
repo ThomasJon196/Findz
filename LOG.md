@@ -25,6 +25,8 @@
 - Problem, client uses unsupported socketio version:
     - Check compatability matrix: https://socket.io/docs/v3/client-installation/
 
+[SocketIO Rooms](https://flask-socketio.readthedocs.io/en/latest/getting_started.html#rooms) for isolating user groups.
+
 
 
 ## Authentication
@@ -41,6 +43,12 @@
 
 [Resource](https://geekyhumans.com/how-to-implement-google-login-in-flask-app/)
 
+
+## Periodic Tasks
+
+[Flask APScheduler](https://viniciuschiele.github.io/flask-apscheduler/index.html), a lightweight implementation for flask.
+
+For more complex jobs use `Celery`, `cronjob` or `systemd`.
 
 
 

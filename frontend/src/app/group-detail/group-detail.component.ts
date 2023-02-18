@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {Group} from '../group';
 
-import {GROUPS} from '../mock-groups';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-group-detail',
@@ -11,19 +10,20 @@ import {GROUPS} from '../mock-groups';
 })
 export class GroupDetailComponent implements OnInit {
 
-  groups = GROUPS;
+  //groups = GROUPS;
+  //currentGroup?: Group;
 
-  currentGroup?: Group;
+  groupName = this.router.url.substring(16);
+  groupMembers = [];
 
-  constructor(private router: Router) {
-
-    this.currentGroup = this.groups.find((gr) => {
-      return gr.id.toString() === this.router.url.substring(16)
-    });
-
-  }
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
+    this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
+      .subscribe(data => {
+        console.log(data);
+        this.groupMembers = data.memberlist;
+      });
   }
 
 }

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template, jsonify
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room, send
 import json
 import os
 import pathlib
@@ -19,8 +19,15 @@ from database.sqlite_functions import (
     add_new_group,
     add_new_group_members,
     get_grouplist,
-    get_group_memberlist
+    get_group_memberlist,
+    get_all_users
 )
+
+
+#####################
+#       SETUP       #
+#####################
+
 
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
@@ -41,6 +48,7 @@ else:
     DOMAIN = 'findz.thomasjonas.de'
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
+
 # Name of the application. Used inside flask for module loading.. and so on. Idk rly.
 app = Flask(__name__)
 
@@ -51,7 +59,8 @@ app.secret_key = os.urandom(12).hex()
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  
 
 # Google authentication secrets
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent,
+                                   "client_secret.json")
 
 # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
 # and which information we get from google.
@@ -65,10 +74,37 @@ flow = Flow.from_client_secrets_file(
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
 
+
+#####################
 # SocketIO functions
+#####################
 
 userListe = []
 socketio = SocketIO(app)
+
+# TODO: Implement SocketIO rooms for user groups.
+# TODO: Client username & room should be taken from database. Mit Tobi testen.
+# @socketio.on('join')
+# def on_join(data):
+#     username = data['username']
+#     room = data['room']
+#     join_room(room)
+#     send(username + ' has joined the room ' + room, room=room)
+
+
+# @socketio.on('leave')
+# def on_leave(data):
+#     username = data['username']
+#     room = data['room']
+#     leave_room(room)
+#     send(username + ' has left the room ' + room, room=room)
+
+
+# def broadcast_locations():
+#     message = 'hy'
+#     room = 'Lobby'
+#     socketio.emit('message', {'msg': message}, room=room)
+#     pass
 
 
 def update_userlist():
@@ -96,10 +132,12 @@ def handle_message(message):
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
+#####################
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
+#####################
 
 # Wrapper: checks if the current user is logged in.
-def login_is_required(function):  
+def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:  # authorization required
             return abort(401)
@@ -162,8 +200,8 @@ def logout():
 #####################
 
 
-# @login_is_required TODO: Check why this doesnt work?
 @app.route("/addFriend", methods=['POST'])
+@login_is_required  # TODO: Check why this doesnt work?
 def addFriend():
     friendMail = request.data.decode("utf-8")
     add_new_friend(friends_email=friendMail, user_email=session["email"])
@@ -190,21 +228,23 @@ def getGroups():
     data = jsonify({"grouplist": grouplist})
     return data, 200
 
-
-@app.route("/addMembers", methods=['POST'])
-def add_Group_Member():
-    payload = json.loads(request.data)
-    add_new_group_members(admin=session.get('email'),
-                          groupname=payload["name"],
-                          new_users=payload["members"])
-    data = jsonify({"status": "success"})
+@app.route("/getGroupMembers", methods=['GET'])
+def getGroupMembers():
+    payload = request.args.get('groupName')
+    print(payload)
+    memberlist= get_group_memberlist(admin_mail=session["email"], group_name=payload)
+    data = jsonify({"memberlist": memberlist})
     return data, 200
 
 
 @app.route("/createGroup", methods=['POST'])
 def createGroup():
     payload = json.loads(request.data)
-    add_new_group(admin=session.get("email"), groupname=payload)
+    print(payload)
+    add_new_group(admin=session.get("email"), groupname=payload["name"])
+    add_new_group_members(admin=session.get('email'),
+                              groupname=payload["name"],
+                              new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
 
@@ -226,8 +266,32 @@ def not_found_error(error):
     return render_template('index.html')
 
 
+#####################
+# BACKGROUND FUNCS  #
+#####################
+
+
+def get_logged_in_users():
+    # Retrieve all users from the database
+    all_users = get_all_users()
+
+    # Create an empty list to store the logged in users
+    logged_in_users = []
+
+    # Iterate over the session keys and check if they correspond to a logged-in user
+    for key in session.keys():
+        user_id = session.get(key)
+        for user in all_users:
+            if user.id == user_id:
+                logged_in_users.append(user)
+
+    return logged_in_users
+
+
 if __name__ == '__main__':
     if DEPLOY_ENV == "LOCAL":
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
+                     host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
     else:
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
+                     host='0.0.0.0')

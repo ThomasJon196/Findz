@@ -12,7 +12,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'gruppen', component: GroupsComponent},
   {path: 'gruppeErstellen', component: CreateGroupComponent},
-  {path: 'gruppenDetails/:id', component: GroupDetailComponent},
+  {path: 'gruppenDetails/:groupName', component: GroupDetailComponent},
   {path: 'freunde', component: FriendsComponent}
 ];
 

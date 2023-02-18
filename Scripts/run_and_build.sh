@@ -1,3 +1,5 @@
+export DEPLOY_ENV=LOCAL
+
 cd ../frontend
 ng build --configuration production --build-optimizer
 

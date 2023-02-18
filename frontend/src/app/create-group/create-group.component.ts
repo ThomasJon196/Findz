@@ -9,7 +9,7 @@ import {Router} from "@angular/router";
 })
 export class CreateGroupComponent implements OnInit {
 
-  friends = [];
+  friends = [{name: "", checked: false}];
   groupName: String = "";
   checked = [];
 
@@ -20,24 +20,17 @@ export class CreateGroupComponent implements OnInit {
     this.http.get<any>('/getFriends')
       .subscribe(data => {
         console.log(data);
-        this.friends = data.friendlist
-        //this.friends = data.friendlist.forEach((item: any) => {"name": item.toString(), checked: false});
+        this.friends = [];
+        data.friendlist.forEach((x: any) => this.friends.push({name: x, checked: false}));
       });
   }
 
-  async saveGroup() {
-    console.log(this.groupName);
-    await this.http.post<any>('/createGroup', JSON.stringify(this.groupName))
+  saveGroup() {
+    let members = this.friends.filter(x => x.checked).map(y => y.name);
+    this.http.post<any>('/createGroup', JSON.stringify({members: members, name: this.groupName}))
       .subscribe(data => {
         console.log(data);
+        this.router.navigate(['gruppen']);
       });
-
-    //var l = this.friends.filter(f => f.checked==true)
-
-    await this.http.post<any>('/addMembers', JSON.stringify({members: ["test"], name: this.groupName}))
-      .subscribe(data => {
-        console.log(data);
-      });
-    await this.router.navigate(['gruppen']);
   }
 }
