@@ -1,7 +1,7 @@
 from contextlib import closing
 import sqlite3
 
-DB_NAME = 'findz.db'
+DB_NAME = './persistent/findz.db'
 
 
 def require_unique(function):  # sqlite IntegrityError.
@@ -92,8 +92,6 @@ def add_new_group_members(admin, groupname, new_users):
     WHERE admin_id = {admin_id} \
     AND group_name = '{groupname}' \
     """
-    new_users = [friend_mail, friend_mail_2]
-
     group_id = retrieve_sql_query(query_group)[0][0]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
     if len(user_ids) == 1:

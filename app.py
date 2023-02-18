@@ -82,29 +82,29 @@ flow = Flow.from_client_secrets_file(
 userListe = []
 socketio = SocketIO(app)
 
-
+# TODO: Implement SocketIO rooms for user groups.
 # TODO: Client username & room should be taken from database. Mit Tobi testen.
-@socketio.on('join')
-def on_join(data):
-    username = data['username']
-    room = data['room']
-    join_room(room)
-    send(username + ' has joined the room ' + room, room=room)
+# @socketio.on('join')
+# def on_join(data):
+#     username = data['username']
+#     room = data['room']
+#     join_room(room)
+#     send(username + ' has joined the room ' + room, room=room)
 
 
-@socketio.on('leave')
-def on_leave(data):
-    username = data['username']
-    room = data['room']
-    leave_room(room)
-    send(username + ' has left the room ' + room, room=room)
+# @socketio.on('leave')
+# def on_leave(data):
+#     username = data['username']
+#     room = data['room']
+#     leave_room(room)
+#     send(username + ' has left the room ' + room, room=room)
 
 
-def broadcast_locations():
-    message = 'hy'
-    room = 'Lobby'
-    socketio.emit('message', {'msg': message}, room=room)
-    pass
+# def broadcast_locations():
+#     message = 'hy'
+#     room = 'Lobby'
+#     socketio.emit('message', {'msg': message}, room=room)
+#     pass
 
 
 def update_userlist():
@@ -268,22 +268,22 @@ def not_found_error(error):
 # BACKGROUND FUNCS  #
 #####################
 
+
 def get_logged_in_users():
     # Retrieve all users from the database
     all_users = get_all_users()
-    
+
     # Create an empty list to store the logged in users
     logged_in_users = []
-    
+
     # Iterate over the session keys and check if they correspond to a logged-in user
     for key in session.keys():
         user_id = session.get(key)
         for user in all_users:
             if user.id == user_id:
                 logged_in_users.append(user)
-    
-    return logged_in_users
 
+    return logged_in_users
 
 
 if __name__ == '__main__':
