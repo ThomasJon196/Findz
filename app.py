@@ -190,7 +190,14 @@ def getGroups():
     data = jsonify({"grouplist": grouplist})
     return data, 200
 
-
+@app.route("/getGroupMembers", methods=['GET'])
+def getGroupMembers():
+    payload = request.args.get('groupName')
+    print(payload)
+    memberlist= get_group_memberlist(admin_mail=session["email"], group_name=payload)
+    data = jsonify({"memberlist": memberlist})
+    return data, 200
+"""
 @app.route("/addMembers", methods=['POST'])
 def add_Group_Member():
     payload = json.loads(request.data)
@@ -199,12 +206,16 @@ def add_Group_Member():
                           new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
-
+"""
 
 @app.route("/createGroup", methods=['POST'])
 def createGroup():
     payload = json.loads(request.data)
-    add_new_group(admin=session.get("email"), groupname=payload)
+    print(payload)
+    add_new_group(admin=session.get("email"), groupname=payload["name"])
+    add_new_group_members(admin=session.get('email'),
+                              groupname=payload["name"],
+                              new_users=payload["members"])
     data = jsonify({"status": "success"})
     return data, 200
 
