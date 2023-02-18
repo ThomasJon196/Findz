@@ -31,6 +31,12 @@ def get_user_id(identifier):
     return id[0][0]
 
 
+def get_all_users():
+    query = "SELECT email FROM users"
+    mails = retrieve_sql_query(query)
+    return mails
+
+
 @require_unique
 def add_new_friend(friends_email, user_email):
     """
@@ -83,8 +89,11 @@ def add_new_group_members(admin, groupname, new_users):
 
     query_group = f""" \
     SELECT group_id FROM groups \
-    WHERE admin_id == {admin_id} \
+    WHERE admin_id = {admin_id} \
+    AND group_name = '{groupname}' \
     """
+    new_users = [friend_mail, friend_mail_2]
+
     group_id = retrieve_sql_query(query_group)[0][0]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
     if len(user_ids) == 1:
@@ -134,6 +143,8 @@ def get_grouplist(admin_mail):
 
 
 def get_group_memberlist(admin_mail, group_name):
+    # TODO: Refactor sql queries. Variables inside are a safety vournability.
+
     admin_id = get_user_id(admin_mail)
 
     query_members = f""" \

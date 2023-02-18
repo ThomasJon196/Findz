@@ -19,7 +19,8 @@ from database.sqlite_functions import (
     add_new_group,
     add_new_group_members,
     get_grouplist,
-    get_group_memberlist
+    get_group_memberlist,
+    get_all_users
 )
 
 
@@ -272,6 +273,28 @@ def webxr():
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('index.html')
+
+
+#####################
+# BACKGROUND FUNCS  #
+#####################
+
+def get_logged_in_users():
+    # Retrieve all users from the database
+    all_users = get_all_users()
+    
+    # Create an empty list to store the logged in users
+    logged_in_users = []
+    
+    # Iterate over the session keys and check if they correspond to a logged-in user
+    for key in session.keys():
+        user_id = session.get(key)
+        for user in all_users:
+            if user.id == user_id:
+                logged_in_users.append(user)
+    
+    return logged_in_users
+
 
 
 if __name__ == '__main__':
