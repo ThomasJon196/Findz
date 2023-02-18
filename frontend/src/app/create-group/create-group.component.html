@@ -7,8 +7,8 @@ Teilnehmer
 
 <ul class="participants">
   <li *ngFor="let friend of friends">
-    <input type="checkbox" class="friendCheckbox" [(ngModel)]="checked">
-    {{friend}}
+    <input type="checkbox" class="friendCheckbox" [(ngModel)]="friend.checked">
+    {{friend.name}}
   </li>
 </ul>
 

@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {User} from "../User";
 
 @Component({
   selector: 'app-freunde',
@@ -8,12 +7,10 @@ import {User} from "../User";
   styleUrls: ['./friends.component.scss']
 })
 export class FriendsComponent implements OnInit {
-
   friends = [];
   friendMail: String = "";
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.updateFriends();

@@ -8,11 +8,9 @@ import {HttpClient} from "@angular/common/http";
   styleUrls: ['./groups.component.scss']
 })
 export class GroupsComponent implements OnInit {
-
   groups = [];
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.updateGroup();

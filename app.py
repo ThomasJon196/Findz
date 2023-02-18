@@ -235,16 +235,7 @@ def getGroupMembers():
     memberlist= get_group_memberlist(admin_mail=session["email"], group_name=payload)
     data = jsonify({"memberlist": memberlist})
     return data, 200
-"""
-@app.route("/addMembers", methods=['POST'])
-def add_Group_Member():
-    payload = json.loads(request.data)
-    add_new_group_members(admin=session.get('email'),
-                          groupname=payload["name"],
-                          new_users=payload["members"])
-    data = jsonify({"status": "success"})
-    return data, 200
-"""
+
 
 @app.route("/createGroup", methods=['POST'])
 def createGroup():
