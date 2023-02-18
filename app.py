@@ -1,6 +1,6 @@
 from flask import Flask
 from flask import render_template, jsonify
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room, send
 import json
 import os
 import pathlib
@@ -22,6 +22,12 @@ from database.sqlite_functions import (
     get_group_memberlist
 )
 
+
+#####################
+#       SETUP       #
+#####################
+
+
 GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
 GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
 DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
@@ -41,6 +47,7 @@ else:
     DOMAIN = 'findz.thomasjonas.de'
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
+
 # Name of the application. Used inside flask for module loading.. and so on. Idk rly.
 app = Flask(__name__)
 
@@ -51,7 +58,8 @@ app.secret_key = os.urandom(12).hex()
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  
 
 # Google authentication secrets
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent,
+                                   "client_secret.json")
 
 # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
 # and which information we get from google.
@@ -65,10 +73,37 @@ flow = Flow.from_client_secrets_file(
 # context = ssl.SSLContext()
 # context.load_cert_chain('cert.pem', 'key.pem')
 
+
+#####################
 # SocketIO functions
+#####################
 
 userListe = []
 socketio = SocketIO(app)
+
+
+# TODO: Client username & room should be taken from database. Mit Tobi testen.
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    send(username + ' has joined the room ' + room, room=room)
+
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room ' + room, room=room)
+
+
+def broadcast_locations():
+    message = 'hy'
+    room = 'Lobby'
+    socketio.emit('message', {'msg': message}, room=room)
+    pass
 
 
 def update_userlist():
@@ -96,10 +131,12 @@ def handle_message(message):
     emit('answer', json.dumps(userListe), broadcast=True)
 
 
+#####################
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
+#####################
 
 # Wrapper: checks if the current user is logged in.
-def login_is_required(function):  
+def login_is_required(function):
     def wrapper(*args, **kwargs):
         if "google_id" not in session:  # authorization required
             return abort(401)
@@ -162,8 +199,8 @@ def logout():
 #####################
 
 
-# @login_is_required TODO: Check why this doesnt work?
 @app.route("/addFriend", methods=['POST'])
+@login_is_required  # TODO: Check why this doesnt work?
 def addFriend():
     friendMail = request.data.decode("utf-8")
     add_new_friend(friends_email=friendMail, user_email=session["email"])
@@ -239,6 +276,8 @@ def not_found_error(error):
 
 if __name__ == '__main__':
     if DEPLOY_ENV == "LOCAL":
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
+                     host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
     else:
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host='0.0.0.0')
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
+                     host='0.0.0.0')

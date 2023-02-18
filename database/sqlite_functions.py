@@ -90,7 +90,7 @@ def add_new_group_members(admin, groupname, new_users):
     if len(user_ids) == 1:
         user_ids = f"({user_ids[0]})"
     sql_params = [(group_id, user_id) for user_id in user_ids]
-    
+
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
     execute_sql_statement(query, sql_params)
 
@@ -260,6 +260,7 @@ if __name__ == '__main__':
     SHOW_USERS = 'SELECT * FROM users'
     SHOW_FRIENDS = 'SELECT * FROM friendlists'
     SHOW_GROUPS = 'SELECT * FROM groups'
+    SHOW_MEMBERS = 'SELECT * FROM group_members'
 
     initialize_database()
 
@@ -276,13 +277,9 @@ if __name__ == '__main__':
     # Retrieve users from database
     id = get_user_id(email)
 
-    email_1 = 'jonas.thomas196@gmail.com'
-    get_user_id(email)
-
     # Add friends
-
     add_new_friend(friend_mail, email)
-    # add_new_friend(friend_mail_2, email)
+    add_new_friend(friend_mail_2, email)
     retrieve_sql_query(SHOW_FRIENDS)
 
     # Get Friendlist
@@ -295,3 +292,6 @@ if __name__ == '__main__':
     # Add group members
     add_new_group_members(admin=email, groupname="dummyGroup",
                           new_users=[friend_mail, friend_mail_2])
+
+    # Show groups members
+    retrieve_sql_query(SHOW_MEMBERS)
