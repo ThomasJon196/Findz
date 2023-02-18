@@ -10,8 +10,12 @@ services:
       - ./webXR/index.html:/app/templates/webXR.html
       - ./database:/app/database
       - ./app.py:/app/app.py
+      # - findz-volume:/app/persistent/
     
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudtunnel
     command: tunnel --no-autoupdate run --token ${CLOUD_TOKEN}
+
+# volumes:
+#   findz-volume:
