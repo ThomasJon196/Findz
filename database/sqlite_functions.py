@@ -1,7 +1,7 @@
 from contextlib import closing
 import sqlite3
 
-DB_NAME = './persistent/findz.db'
+DB_NAME = 'findz.db'
 
 
 def require_unique(function):  # sqlite IntegrityError.
