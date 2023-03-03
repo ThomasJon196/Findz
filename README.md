@@ -13,7 +13,7 @@ Augumented-Reality marker, which displays your friends current position through 
 ...
 
 
-## Setup
+## Setup & Deployment
 
 ### Cloudflare Tunnel
 
@@ -44,7 +44,6 @@ python app.py
 ### Angular
 
 
-
 ```bash
 # Install angular cli (ng)
 npm install -g @angular/cli
@@ -67,20 +66,51 @@ ng build --configuration production --build-optimizer
 
 ```
 
---- 
+### Docker Compose
 
-Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wiki)
+Deploy method requires only a Docker & Docker-compose installation. Cloudflare tunnel & token is required for this to work. `.env` file.
+
+1. Pull repository
+
+```bash
+cd Scripts/
+
+# Build frontend scripts
+bash build_frontend.sh
+
+# Build docker image
+bash build_docker_image.sh
+
+# Deploy containers
+bash compose_docker_containers.sh
+```
 
 ---
 
 ## TODO (delete when finished)
-- Fix `static` endpoints
-- Write a local/global deployment script
+
+__OPEN__
+
+- Create prod/dev deployments with seperate domains. (e.g. findz.dev., findz.)
+- Add project setup docs
+- Add angular build via docker-container. (Remove any dependencies from system. Such that only docker is required.)
+- Reduce Flask image size. (Currently 1 GB)
+- Integrate user sessions. Currently everyone sees everyone. (Privacy problem.)
+  - Flask SocketIO rooms
+  - flask.session
+  - update logged in userlist
+- Add logging. (Replace print statements)
+- Integrate error handling. (e.g. user already exists/friend already exist. (Extra)
+- Secure code against sql injections
+- Asynchronous update of locations via periodic tasks.
+- Persist database (docker volumes)
+- custom pictures
+- Tobi: Insert resources/links for webXR development
+
+__DONE__
+- Fix `static` endpoints. (Added automatic rerouting)
+- Write a local/global deployment script 
 - Configure deployment via docker-containers to remove OS-dependency. (cloudflared & flaskserver)
-
-
-
-
 - WebXR GPS Koordinaten einlesen [Tobi]
 - Authentifizierung + Freundesliste (Backend mit Typescript) [Thomas]
 - Authentifizierung + Freundesliste usw. (FrontEnd Mobile first development) [Wiete]
@@ -88,14 +118,9 @@ Collect insights inside [Project-Wiki](https://github.com/ThomasJon196/Findz/wik
 - Platzierung des Markers auf den GPS Koordinaten
 
 
-
-- Add main/dev branches + push rules
-
-
 ## Notes
 
 - Codesandbox.io -> reactive development of 3D objects...
-
 
 
 ## MVP

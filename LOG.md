@@ -1,8 +1,14 @@
 # LOG
 
 ## Web Serving: Handling HTTP (Webframework Flask/Spring or nginx for static content)
+
 - Serve angular in Flask: https://avishkabalasuriya980330.medium.com/serve-angular-application-in-python-flask-server-bd37c8a0b431
-	
+
+- Serve directories/files by path (flask.send_file(), flask.send_from_directory())
+
+    - send_files() for html files from other folders. (e.g. webXR/)
+    - Later could be used as an endpoint for images. (Keep in mind security)
+
 
 ## HTTPS/SSL Certificate
 
@@ -50,6 +56,10 @@
 
 For more complex jobs use `Celery`, `cronjob` or `systemd`.
 
+
+## Session handling
+
+Flask Sessions.
 
 
 ## FAQ
