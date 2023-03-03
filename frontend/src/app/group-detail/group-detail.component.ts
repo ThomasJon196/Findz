@@ -13,7 +13,7 @@ export class GroupDetailComponent implements OnInit {
   //groups = GROUPS;
   //currentGroup?: Group;
 
-  groupName = this.router.url.substring(16);
+  groupName: string = this.router.url.substring(16);
   groupMembers = [];
 
   constructor(private router: Router, private http: HttpClient) {}
@@ -26,4 +26,7 @@ export class GroupDetailComponent implements OnInit {
       });
   }
 
+  startAR() {
+    this.http.get<any>('/webXR?groupname=' + this.groupName);
+  }
 }
