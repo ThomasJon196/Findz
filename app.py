@@ -319,6 +319,27 @@ def webxr():
     return render_template("webXR.html", user=email)
 
 
+@app.route("/save_point", methods=["POST"])
+def save_point_of_interest():
+    """
+    Saves a location of intereset
+
+    required payload format: 
+    {"longitude": <value>, "latitude": <value>, "picture": <value>}
+    """
+    payload = json.loads(request.data)
+    email = session.get('email')
+    longitude = payload.get('latitude')
+    latitude = payload.get('longitude')
+    pic = payload.get('picture')
+
+    # save_point() - SQL functions
+    print('Successfully recevied point of interest: ' + str(payload))
+
+    data = jsonify({"status": "success"})
+    return data, 200
+
+
 # Reroutes the /static/ pages.
 @app.errorhandler(404)
 def not_found_error(error):
