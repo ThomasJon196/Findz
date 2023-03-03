@@ -1,6 +1,6 @@
 <h3>{{groupName}}</h3>
 
-<button class="startSearchButton">Suche starten</button>
+<button class="startSearchButton" onclick="location.href='/webXR?groupname='{{groupName}}">Starte AR</button>
 
 <ul class="groups">
   <li *ngFor="let member of groupMembers">
