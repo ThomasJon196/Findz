@@ -27,6 +27,7 @@ export class GroupDetailComponent implements OnInit {
   }
 
   startAR() {
-    this.http.get<any>('/webXR?groupname=' + this.groupName);
+    const url = '/webXR?groupname=' + this.groupName; // replace "your-page" with the actual URL of the page you want to redirect to
+    location.href = url; // redirect the user to the specified page with the query parameters
   }
 }

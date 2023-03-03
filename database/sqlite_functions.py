@@ -3,6 +3,8 @@ import sqlite3
 
 DB_NAME = 'findz.db'
 
+# TODO: Querries might not be secure against injections yet. FIX
+
 
 def require_unique(function):  # sqlite IntegrityError.
     def wrapper(*args, **kwargs):
@@ -162,6 +164,55 @@ def get_group_memberlist(admin_mail, group_name):
     return friendlist_mails
 
 
+def get_group_memberlist_and_location(group_admin_mail, group_name):
+    # TODO: Refactor sql queries. Variables inside are a safety vournability.
+
+    admin_id = get_user_id(group_admin_mail)
+
+    query_members = f""" \
+    SELECT email, longitude, latitude FROM users \
+    WHERE user_id IN ( \
+        SELECT member_id FROM group_members \
+        WHERE group_id = ( \
+            SELECT group_id FROM groups \
+            WHERE admin_id = {admin_id} \
+            AND group_name = '{group_name}' \
+        )) \
+    """
+
+    memberlist_locations = retrieve_sql_query(query_members)
+    # memberlist_locations = concat_query_result(memberlist_locations)
+    # print("memberlist_locations:" + str(memberlist_locations))
+
+    query_group_admin = f""" \
+    SELECT email, longitude, latitude FROM users \
+    WHERE user_id = {admin_id}\
+    """
+
+    group_admin_location = retrieve_sql_query(query_group_admin)
+
+    # print("admin_location:" + str(group_admin_location))
+
+    memberlist_locations += group_admin_location
+
+    print("Member list:" + str(memberlist_locations))
+
+    return memberlist_locations
+
+
+def update_location(email, longitute, latitude):
+
+    user_id = get_user_id(email)
+
+    query_update_location = f""" \
+    UPDATE users \
+    SET longitude = {longitute}, latitude = {latitude} \
+    WHERE user_id = {user_id}; \
+    """
+
+    execute_sql_statement(query_update_location)
+
+
 def concat_query_result(tuple_list):
     tuple = ()
     for tpl in tuple_list:
@@ -213,12 +264,13 @@ def tables_exist():
 def initialize_database():
     """
     Create tables if they dont exist already.
-    TODO: Should I use an index here?
     """
     users_table = """
     CREATE TABLE users (
         user_id INTEGER PRIMARY KEY,
         email VARCHAR(100) NOT NULL,
+        longitude REAL,
+        latitude REAL,
         picture VARCHAR(255),
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         UNIQUE (email)

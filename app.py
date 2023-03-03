@@ -20,7 +20,9 @@ from database.sqlite_functions import (
     add_new_group_members,
     get_grouplist,
     get_group_memberlist,
-    get_all_users
+    get_all_users,
+    get_group_memberlist_and_location,
+    update_location,
 )
 
 
@@ -29,23 +31,33 @@ from database.sqlite_functions import (
 #####################
 
 
-GOOGLE_CLIENT_ID = os.getenv('CLIENT_ID', None)
-GOOGLE_CLIENT_SECRET = os.getenv('CLIENT_KEY', None)
+GOOGLE_CLIENT_ID = os.getenv("CLIENT_ID", None)
+GOOGLE_CLIENT_SECRET = os.getenv("CLIENT_KEY", None)
 DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
 
 # TODO: Add logging instead of print statements. (Slow down the server.)
 print("Setting up database")
 initialize_database()
 
-if DEPLOY_ENV == "LOCAL":
-    DOMAIN = '127.0.0.1:5000'
-    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
+
+def initialize_test_users():
     users = ["test@mail.com", "test2@mail.com"]
     print("Adding example users: " + str(users) + " for development.")
     add_new_user(users[0])
     add_new_user(users[1])
+    update_location(users[0], longitute=123, latitude=456)
+    update_location(users[1], longitute=123, latitude=456)
+    get_group_memberlist_and_location('tmusic196@gmail.com', 'testgroup')
+
+
+initialize_test_users()
+
+if DEPLOY_ENV == "LOCAL":
+    DOMAIN = "127.0.0.1:5000"
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
+
 else:
-    DOMAIN = 'findz.thomasjonas.de'
+    DOMAIN = "findz.thomasjonas.de"
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
 
@@ -56,18 +68,21 @@ app = Flask(__name__)
 app.secret_key = os.urandom(12).hex()
 
 # this is to set our environment to https because OAuth 2.0 only supports https environments
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"  
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 # Google authentication secrets
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent,
-                                   "client_secret.json")
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
 # Flow is OAuth 2.0 a class that stores all the information on how we want to authorize our users
 # and which information we get from google.
-flow = Flow.from_client_secrets_file(  
+flow = Flow.from_client_secrets_file(
     client_secrets_file=client_secrets_file,
-    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],  #here we are specifing what do we get after the authorization
-    redirect_uri=f"https://{DOMAIN}/google/auth/"  # and the redirect URI is the point where the user will end up after the authorization
+    scopes=[
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "openid",
+    ],  # here we are specifing what do we get after the authorization
+    redirect_uri=f"https://{DOMAIN}/google/auth/",  # and the redirect URI is the point where the user will end up after the authorization
 )
 
 # SLL Stuff
@@ -107,29 +122,65 @@ socketio = SocketIO(app)
 #     pass
 
 
-def update_userlist():
-    # TODO: Refresh the userlist based on logged in/out users.
-    pass
+def transform_to_payload(user_location_list):
+    """
+    Transform user data to json payload expected by the frontend.
+    """
+
+    # TODO: remove example image
+    img_adr = "https://icon-library.com/images/sims-icon/sims-icon-29.jpg"
+
+    payload_list = []
+
+    for record in user_location_list:
+        json_payload = {
+            "name": record[0],
+            "latitude": record[1],
+            "longitude": record[2],
+            "bild": img_adr,
+        }
+        payload_list.append(json_payload)
+
+    return payload_list
 
 
-@socketio.on('update')
+@socketio.on("update")
 def handle_message(message):
+    """
+    Endpoint which receives the current user position and establishes a socketio-connection
+    TODO: Create a periodic tasks for broadcasting, instead of sending locations whenever a users sends an update.
+    """
     # print('received message: ' + message)
-    angekommennachicht = json.loads(message)
+    # Received format: { "name": '{{user}}', "latitude": position.coords.latitude , "longitude": position.coords.longitude, "bild": "images/Wiete.png" }
+    print("SocketIO request by: " + str(session.get("email")))
 
-    update_userlist()
+    request_data = json.loads(message)
 
-    new_user_flag = True
-    for idx, user in enumerate(userListe):
-        if user['name'] == angekommennachicht['name']:
-            user = angekommennachicht
-            new_user_flag = False
+    email = request_data.get("name")
+    latitude = request_data.get("latitude")
+    longitute = request_data.get("longitude")
+    # picture = request_data.get("bild")
 
-    if new_user_flag:
-        userListe.append(angekommennachicht)
+    update_location(email, latitude, longitute)
 
-    print('Message to send' + str(userListe))
-    emit('answer', json.dumps(userListe), broadcast=True)
+    # new_user_flag = True
+    # for idx, user in enumerate(userListe):
+    #     if user['name'] == angekommennachicht['name']:
+    #         # user = angekommennachicht
+    #         new_user_flag = False
+
+    # if new_user_flag:
+    #     userListe.append(angekommennachicht)
+
+    location_list = get_group_memberlist_and_location(
+        email, session.get("current_group")
+    )
+
+    payload = transform_to_payload(location_list)
+
+    print("Message to send" + str(payload))
+
+    emit("answer", json.dumps(payload), broadcast=True)
 
 
 #####################
@@ -143,6 +194,7 @@ def login_is_required(function):
             return abort(401)
         else:
             return function()
+
     return wrapper
 
 
@@ -150,13 +202,13 @@ def login_is_required(function):
 @app.route("/google/")
 def login():
     # asking the flow class for the authorization (login) url
-    authorization_url, state = flow.authorization_url()  
+    authorization_url, state = flow.authorization_url()
     session["state"] = state
     return redirect(authorization_url)
 
 
 # Callback route. Redirected by google after authentication.
-@app.route('/google/auth/')  
+@app.route("/google/auth/")
 def callback():
     flow.fetch_token(authorization_response=request.url)
 
@@ -169,9 +221,7 @@ def callback():
     token_request = google.auth.transport.requests.Request(session=cached_session)
 
     id_info = id_token.verify_oauth2_token(
-        id_token=credentials._id_token,
-        request=token_request,
-        audience=GOOGLE_CLIENT_ID
+        id_token=credentials._id_token, request=token_request, audience=GOOGLE_CLIENT_ID
     )
 
     # Safe session informations
@@ -181,26 +231,27 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
-    print("New user-login: " + session['email'])
+    print("New user-login: " + session["email"])
     add_new_user(email)
 
     # Final redirect.
-    return redirect("/static/gruppen")  
+    return redirect("/static/gruppen")
 
 
 # Logout by clearing cache and redirect to landing page.
 @app.route("/logout")
 def logout():
-    print("User logged out: " + session['email'])
+    print("User logged out: " + session["email"])
     session.clear()
     return redirect("/")
+
 
 #####################
 # BASIC ENDPOINTS
 #####################
 
 
-@app.route("/addFriend", methods=['POST'])
+@app.route("/addFriend", methods=["POST"])
 @login_is_required  # TODO: Check why this doesnt work?
 def addFriend():
     friendMail = request.data.decode("utf-8")
@@ -209,61 +260,69 @@ def addFriend():
     return data, 200
 
 
-@app.route("/getFriends", methods=['GET'])
+@app.route("/getFriends", methods=["GET"])
 def getFriends():
-    friendlist = get_friendlist(session['email'])
+    friendlist = get_friendlist(session["email"])
     data = jsonify({"friendlist": friendlist})
     return data, 200
 
 
-@app.route("/deleteFriend", methods=['DELETE'])
+@app.route("/deleteFriend", methods=["DELETE"])
 def deleteFriend():
     data = jsonify({"status": "success"})
     return data, 200
 
 
-@app.route("/getGroups", methods=['GET'])
+@app.route("/getGroups", methods=["GET"])
 def getGroups():
     grouplist = get_grouplist(admin_mail=session["email"])
     data = jsonify({"grouplist": grouplist})
     return data, 200
 
-@app.route("/getGroupMembers", methods=['GET'])
+
+@app.route("/getGroupMembers", methods=["GET"])
 def getGroupMembers():
-    payload = request.args.get('groupName')
+    payload = request.args.get("groupName")
     print(payload)
-    memberlist= get_group_memberlist(admin_mail=session["email"], group_name=payload)
+    memberlist = get_group_memberlist(admin_mail=session["email"], group_name=payload)
     data = jsonify({"memberlist": memberlist})
     return data, 200
 
 
-@app.route("/createGroup", methods=['POST'])
+@app.route("/createGroup", methods=["POST"])
 def createGroup():
     payload = json.loads(request.data)
     print(payload)
     add_new_group(admin=session.get("email"), groupname=payload["name"])
-    add_new_group_members(admin=session.get('email'),
-                              groupname=payload["name"],
-                              new_users=payload["members"])
+    add_new_group_members(
+        admin=session.get("email"),
+        groupname=payload["name"],
+        new_users=payload["members"],
+    )
     data = jsonify({"status": "success"})
     return data, 200
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/webXR')
+@app.route("/webXR")
 def webxr():
+    groupname = request.args.get("groupname")
+    session["current_group"] = groupname
+
     email = session.get("email")
-    return render_template('webXR.html', user=email)
+    print("groupname: " + str(groupname))
+
+    return render_template("webXR.html", user=email)
 
 
 # Reroutes the /static/ pages.
 @app.errorhandler(404)
 def not_found_error(error):
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 #####################
@@ -288,10 +347,14 @@ def get_logged_in_users():
     return logged_in_users
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if DEPLOY_ENV == "LOCAL":
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
-                     host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
+        socketio.run(
+            app,
+            debug=True,
+            allow_unsafe_werkzeug=True,
+            host="0.0.0.0",
+            ssl_context=("cert.pem", "key.pem"),
+        )
     else:
-        socketio.run(app, debug=True, allow_unsafe_werkzeug=True,
-                     host='0.0.0.0')
+        socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host="0.0.0.0")

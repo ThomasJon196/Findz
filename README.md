@@ -91,6 +91,7 @@ bash compose_docker_containers.sh
 
 __OPEN__
 
+- Clear project structure. (src/, )
 - Create prod/dev deployments with seperate domains. (e.g. findz.dev., findz.)
 - Add project setup docs
 - Add angular build via docker-container. (Remove any dependencies from system. Such that only docker is required.)
