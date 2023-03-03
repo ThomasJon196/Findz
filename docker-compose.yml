@@ -15,7 +15,7 @@ services:
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudtunnel
-    command: tunnel --no-autoupdate run --token ${CLOUD_TOKEN_DEV}
+    command: tunnel --no-autoupdate run --token ${CLOUD_TOKEN}
 
 # volumes:
 #   findz-volume:
