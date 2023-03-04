@@ -7,7 +7,7 @@
 	- [x] Aktuelle Gruppe an Server schicken. (Wiete)
 	- [x] Endpunkt erweitern zur Gruppenuebergabe (WebXR)
 	- [x] Userlist/Pointlist -> database 
-    - [ ] Only show logged in users inside a group.
+    - [ ] Only show logged in users inside a group. Login/Logout flag in database.
 
 2. Feature: Interaktion (Tobi)
 	- [ ] Anstupsen (optiional)
@@ -16,6 +16,13 @@
 
 3. Feature: Frontend UX
 	- [ ] User friendly interface.
+
+4. Documentation
+   - [ ] documentation outline (chatgpt)
+   - [ ] frontend
+   - [ ] backend
+   - [ ] webXR
+   - [ ] Vision
 
 Bugfixes:
 
