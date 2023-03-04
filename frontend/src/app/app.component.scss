@@ -1,11 +1,19 @@
+.title {
+  margin: 0;
+}
+
+.navbar {
+  margin: 20px;
+}
+
 .navbar > div {
   display: inline-block;
-  padding: 14px 16px;
+  //padding: 14px 16px;
   cursor: pointer;
 }
 
 .content {
-  margin: 20px;
+  margin: 0 20px;
 }
 
 .dropdown {

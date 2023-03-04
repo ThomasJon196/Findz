@@ -1,14 +1,13 @@
 <h3>Gruppen</h3>
-<a routerLink="/gruppeErstellen" class="addGroupButton">
-  <button class="addGroupButton">+</button>
-</a>
+
+<button routerLink="/gruppeErstellen" class="addGroupButton">+</button>
 
 <ul class="groups">
-  <li *ngFor="let group of groups">
-    <a routerLink="/gruppenDetails/{{group}}" class="group">
-      {{group}}
+  <li *ngFor="let groupName of groups">
+    <a routerLink="/gruppenDetails/{{groupName}}" class="group">
+      {{groupName}}
     </a>
   </li>
 </ul>
 
-<button onclick="location.href='/webXR'" >Starte XR</button>
+<button onclick="location.href='/webXR'">Starte XR</button>

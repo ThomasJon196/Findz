@@ -4,11 +4,6 @@ body {
   width: 360px;
   height: 640px;
 }
-button {
-  border-radius: 5px;
-}
-
-
 
 ul {
   list-style-type: none;
@@ -17,7 +12,7 @@ ul {
 
 li {
   width: 320px;
-  height: 69px;
+  height: 60px;
   border: 1px solid #EBEBEB;
   display: flex;
   flex-direction: row;
@@ -32,9 +27,23 @@ li:hover {
 button {
   background-color: #365830;
   color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.BigButtons{
+  border-radius: 35px;
 }
 
 a:link, a:visited, a:hover, a:active {
   text-decoration: none;
   color: black;
+}
+
+input {
+  height: 50px;
+  //width: 260px;
+  padding-left: 4px;
+  border-radius: 5px;
+  border: 1px solid #E9E9E9
 }
