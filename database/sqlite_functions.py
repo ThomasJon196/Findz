@@ -88,6 +88,7 @@ def add_new_group_members(admin, groupname, new_users):
     TODO: Exception handling
     """
     admin_id = get_user_id(admin)
+    print('new users:' + str(new_users))
 
     query_group = f""" \
     SELECT group_id FROM groups \
@@ -100,7 +101,7 @@ def add_new_group_members(admin, groupname, new_users):
     print('User IDs: ' + str(user_ids))
 
     if len(user_ids) == 1:
-        user_ids = f"({user_ids[0]})"
+        user_ids = [user_ids[0]]
     sql_params = [(group_id, user_id) for user_id in user_ids]
 
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
@@ -139,7 +140,7 @@ def get_grouplist(user):
 
     query_mails = f""" \
     SELECT group_name FROM groups \
-    WHERE group_id = (
+    WHERE group_id IN (
         SELECT group_id FROM group_members \
         WHERE member_id = {user_id} \
     ) \
@@ -369,6 +370,7 @@ if __name__ == '__main__':
 
     # Create new group
     add_new_group(admin=email, groupname="Meat")
+    get_grouplist("tmusic196@gmail.com")
     retrieve_sql_query(SHOW_GROUPS)
 
     # Add group members
@@ -377,3 +379,4 @@ if __name__ == '__main__':
 
     # Show groups members
     retrieve_sql_query(SHOW_MEMBERS)
+    get_group_memberlist("tmusic196@gmail.com", "TestGroup")

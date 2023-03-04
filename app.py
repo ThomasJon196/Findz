@@ -319,7 +319,7 @@ def createGroup():
 def index():
     return render_template("index.html")
 
-
+@login_is_required
 @app.route("/webXR")
 def webxr():
     groupname = request.args.get("groupname")
