@@ -207,6 +207,19 @@ def handle_message(message):
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
 #####################
 
+EXCLUDED_ENDPOINTS = ["index", "login", "callback", "static", None]
+
+
+@app.before_request
+def require_login():
+    # Check if the user is logged in with Google
+    if request.endpoint not in EXCLUDED_ENDPOINTS and session.get('email') is None:
+        print(request.endpoint)
+        print(session.get('email') is None)
+        # If the user is not logged in, redirect to the Google login page
+        return redirect('/')
+
+
 # Wrapper: checks if the current user is logged in.
 def login_is_required(function):
     def wrapper(*args, **kwargs):
