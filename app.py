@@ -45,8 +45,11 @@ def initialize_test_users():
     print("Adding example users: " + str(users) + " for development.")
     add_new_user(users[0])
     add_new_user(users[1])
+    add_new_user("tmusic196@gmail.com")
     update_location(users[0], longitute=123, latitude=456)
     update_location(users[1], longitute=123, latitude=456)
+    add_new_group(users[0], "testmailGroup")
+    add_new_group_members(users[0], "testmailGroup", new_users=["tmusic196@gmail.com"])
     # get_group_memberlist_and_location('tmusic196@gmail.com', 'testgroup') # Group has to be created first.
 
 
@@ -172,13 +175,16 @@ def handle_message(message):
     # if new_user_flag:
     #     userListe.append(angekommennachicht)
 
-    location_list = get_group_memberlist_and_location(
-        email, session.get("current_group")
-    )
+    if session.get("current_group") is not None:
+        location_list = get_group_memberlist_and_location(
+            email, session.get("current_group")
+        )
 
-    payload = transform_to_payload(location_list)
+        payload = transform_to_payload(location_list)
 
-    print("Message to send" + str(payload))
+        print("Message to send" + str(payload))
+    else:
+        payload = []
 
     emit("answer", json.dumps(payload), broadcast=True)
 
@@ -275,7 +281,7 @@ def deleteFriend():
 
 @app.route("/getGroups", methods=["GET"])
 def getGroups():
-    grouplist = get_grouplist(admin_mail=session["email"])
+    grouplist = get_grouplist(user=session["email"])
     data = jsonify({"grouplist": grouplist})
     return data, 200
 
@@ -292,12 +298,18 @@ def getGroupMembers():
 @app.route("/createGroup", methods=["POST"])
 def createGroup():
     payload = json.loads(request.data)
-    print(payload)
+    new_members = payload["members"]
+    mail = session.get("email")
+
     add_new_group(admin=session.get("email"), groupname=payload["name"])
+
+    print("Payload is: " + str(payload["members"]))
+
+    new_members.append(mail)
     add_new_group_members(
         admin=session.get("email"),
         groupname=payload["name"],
-        new_users=payload["members"],
+        new_users=new_members,
     )
     data = jsonify({"status": "success"})
     return data, 200
