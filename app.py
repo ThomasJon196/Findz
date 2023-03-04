@@ -99,15 +99,18 @@ flow = Flow.from_client_secrets_file(
 # SocketIO functions
 #####################
 
-userListe = []
+roomList = []
 socketio = SocketIO(app)
 
 # TODO: Implement SocketIO rooms for user groups.
 # TODO: Client username & room should be taken from database. Mit Tobi testen.
+
+
 # @socketio.on('join')
 # def on_join(data):
-#     username = data['username']
-#     room = data['room']
+#     username = session.get('email')
+#     room = session.get("current_group")
+#     if roomList
 #     join_room(room)
 #     send(username + ' has joined the room ' + room, room=room)
 
@@ -123,6 +126,7 @@ socketio = SocketIO(app)
 # def broadcast_locations():
 #     message = 'hy'
 #     room = 'Lobby'
+    
 #     socketio.emit('message', {'msg': message}, room=room)
 #     pass
 
@@ -207,17 +211,18 @@ def handle_message(message):
 # GOOGLE AUTH FUNCTIONS & ENDPOINTS
 #####################
 
-EXCLUDED_ENDPOINTS = ["index", "login", "callback", "static", None]
+
+# EXCLUDED_ENDPOINTS = ["index", "login", "callback", "static", None]
 
 
-@app.before_request
-def require_login():
-    # Check if the user is logged in with Google
-    if request.endpoint not in EXCLUDED_ENDPOINTS and session.get('email') is None:
-        print(request.endpoint)
-        print(session.get('email') is None)
-        # If the user is not logged in, redirect to the Google login page
-        return redirect('/')
+# @app.before_request
+# def require_login():
+#     # Check if the user is logged in with Google
+#     if request.endpoint not in EXCLUDED_ENDPOINTS and session.get('email') is None:
+#         print(request.endpoint)
+#         print(session.get('email') is None)
+#         # If the user is not logged in, redirect to the Google login page
+#         return redirect('/')
 
 
 # Wrapper: checks if the current user is logged in.
@@ -346,7 +351,7 @@ def createGroup():
 def index():
     return render_template("index.html")
 
-@login_is_required
+
 @app.route("/webXR")
 def webxr():
     groupname = request.args.get("groupname")
