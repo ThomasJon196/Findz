@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
 import {HttpClient} from "@angular/common/http";
+import {LoginStatusService} from "../LoginStatusService";
 
 @Component({
   selector: 'app-groups',
@@ -10,7 +11,9 @@ import {HttpClient} from "@angular/common/http";
 export class GroupsComponent implements OnInit {
   groups = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, public loginStatusService: LoginStatusService) {
+    this.loginStatusService.setLoginStatus(true);
+  }
 
   ngOnInit(): void {
     this.updateGroup();

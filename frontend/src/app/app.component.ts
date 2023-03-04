@@ -1,5 +1,5 @@
- import { Component } from '@angular/core';
- import {Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { LoginStatusService } from './LoginStatusService';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +8,6 @@
 })
 export class AppComponent {
   title = 'Findz';
+  constructor(public loginStatusService: LoginStatusService) {}
 
 }

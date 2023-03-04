@@ -1,7 +1,10 @@
 <div class="navbar">
-  <div routerLink="/gruppen" class="title">{{title}}</div>
+  <div>
+    <h3 routerLink="/gruppen" class="title" *ngIf="loginStatusService.isLoggedIn">{{title}}</h3>
+    <h3 class="title" *ngIf="!loginStatusService.isLoggedIn">{{title}}</h3>
+  </div>
 
-  <div class="dropdown" style="float: right">
+  <div class="dropdown" style="float: right" *ngIf="loginStatusService.isLoggedIn">
     <span class="material-symbols-outlined">menu</span>
     <div class="dropdown-content">
       <p><a routerLink="/gruppen">Gruppen</a></p>
@@ -9,8 +12,8 @@
       <p><a onclick="location.href='/logout'">Ausloggen</a></p>
     </div>
   </div>
-</div>
 
+</div>
 <div class="content">
   <router-outlet></router-outlet>
 </div>
