@@ -97,11 +97,15 @@ def add_new_group_members(admin, groupname, new_users):
 
     group_id = retrieve_sql_query(query_group)[0][0]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
+    print('User IDs: ' + str(user_ids))
+
     if len(user_ids) == 1:
         user_ids = f"({user_ids[0]})"
     sql_params = [(group_id, user_id) for user_id in user_ids]
 
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
+    print("Add group: sql params: " + str(sql_params))
+
     execute_sql_statement(query, sql_params)
 
     print(f'Added {new_users} to group {groupname}.')
@@ -130,12 +134,15 @@ def get_friendlist(email):
     return friendlist_mails
 
 
-def get_grouplist(admin_mail):
-    admin_id = get_user_id(admin_mail)
+def get_grouplist(user):
+    user_id = get_user_id(user)
 
     query_mails = f""" \
     SELECT group_name FROM groups \
-    WHERE admin_id = {admin_id} \
+    WHERE group_id = (
+        SELECT group_id FROM group_members \
+        WHERE member_id = {user_id} \
+    ) \
     """
 
     friendlist_mails = retrieve_sql_query(query_mails)
@@ -143,10 +150,21 @@ def get_grouplist(admin_mail):
     return friendlist_mails
 
 
-def get_group_memberlist(admin_mail, group_name):
+def get_group_memberlist(user, group_name):
     # TODO: Refactor sql queries. Variables inside are a safety vournability.
 
-    admin_id = get_user_id(admin_mail)
+    # user_id = get_user_id(user)
+
+    # query_members = f""" \
+    # SELECT email FROM users \
+    # WHERE user_id IN ( \
+    #     SELECT member_id FROM group_members \
+    #     WHERE group_id = ( \
+    #         SELECT group_id FROM groups \
+    #         WHERE member_id = {user_id} \
+    #         AND group_name = '{group_name}' \
+    #     )) \
+    # """
 
     query_members = f""" \
     SELECT email FROM users \
@@ -154,13 +172,15 @@ def get_group_memberlist(admin_mail, group_name):
         SELECT member_id FROM group_members \
         WHERE group_id = ( \
             SELECT group_id FROM groups \
-            WHERE admin_id = {admin_id} \
-            AND group_name = '{group_name}' \
+            WHERE group_name = '{group_name}' \
         )) \
     """
 
     friendlist_mails = retrieve_sql_query(query_members)
     friendlist_mails = concat_query_result(friendlist_mails)
+
+    print(friendlist_mails)
+
     return friendlist_mails
 
 

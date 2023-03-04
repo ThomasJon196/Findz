@@ -9,3 +9,4 @@ cp webXR/index.html templates/webXR.html
 python app.py
 
 sudo service cloudflared stop
+echo "Stopped cloudflare daemon"
