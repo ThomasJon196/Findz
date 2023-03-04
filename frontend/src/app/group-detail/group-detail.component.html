@@ -1,21 +1,16 @@
 <h3>{{groupName}}</h3>
 
-<button class="startSearchButton" (click)="startAR()">Starte AR</button>
+<button class="BigButtons" (click)="startAR()">Starte AR</button>
 
 <ul class="groups">
   <li *ngFor="let member of groupMembers">
     <div class="listContent">
       {{member}}
-      <!--<div *ngIf="member.locationOn" class="deleteMemberButton">
-        <span class="material-symbols-outlined">location_on</span>
-      </div>
-      <div *ngIf="!member.locationOn" class="deleteMemberButton">
-        <span class="material-symbols-outlined">location_off</span>
-      </div>
-      -->
     </div>
   </li>
 </ul>
 
-<button class="editGroupButton">Gruppe bearbeiten</button>
-<button class="deleteGroupButton">Löschen</button>
+<!--
+<button class="BigButtons">Gruppe bearbeiten</button>
+<button class="BigButtons">Löschen</button>
+-->

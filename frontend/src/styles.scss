@@ -29,10 +29,12 @@ button {
   color: #ffffff;
   border-radius: 5px;
   cursor: pointer;
+  border: none;
 }
 
 .BigButtons{
   border-radius: 35px;
+  padding: 10px 20px;
 }
 
 a:link, a:visited, a:hover, a:active {
@@ -41,9 +43,9 @@ a:link, a:visited, a:hover, a:active {
 }
 
 input {
-  height: 50px;
-  //width: 260px;
+  height: 40px;
+  background: #F9F9F9;
   padding-left: 4px;
   border-radius: 5px;
-  border: 1px solid #E9E9E9
+  border: 1px solid #DADADA;
 }
