@@ -11,11 +11,13 @@ services:
       - ./database:/app/database
       - ./app.py:/app/app.py
       # - findz-volume:/app/persistent/
+    restart: unless-stopped
     
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudtunnel
     command: tunnel --no-autoupdate run --token ${CLOUD_TOKEN}
+    restart: unless-stopped
 
 # volumes:
 #   findz-volume:
