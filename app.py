@@ -23,7 +23,8 @@ from database.sqlite_functions import (
     get_all_users,
     get_group_memberlist_and_location,
     update_location,
-    get_saved_group_points
+    get_saved_group_points,
+    save_new_point
 )
 
 
@@ -191,8 +192,8 @@ def handle_message(message):
         print("User payload to send" + str(user_payload))
 
         saved_points_list = get_saved_group_points(group=session.get("current_group"))
-        example_point = [['examplePoint', 'kill me please', 50.79846715949979, 7.2058313596181565]]
-        saved_points_list = transform_to_point_payload(example_point)
+        # example_point = [['examplePoint', 'kill me please', 50.79846715949979, 7.2058313596181565]]
+        saved_points_list = transform_to_point_payload(saved_points_list)
 
         payload = [user_location_list, saved_points_list]
         print("Full payload to send" + str(payload))
@@ -349,17 +350,11 @@ def save_point_of_interest():
     """
     Saves a location of intereset
 
-    required payload format: 
-    {"longitude": <value>, "latitude": <value>, "picture": <value>}
+    TODO: Points only work if you are currently in a group.
     """
-    payload = json.loads(request.data)
-    email = session.get('email')
-    longitude = payload.get('latitude')
-    latitude = payload.get('longitude')
-    title = payload.get('title')
-    beschreibung = payload.get('beschreibung')
+    payload = json.loads(request.data)  
 
-    # save_point() - SQL functions
+    save_new_point(payload, session.get('email'), session.get('current_group'))
     print('Successfully recevied point of interest: ' + str(payload))
 
     data = jsonify({"status": "success"})

@@ -81,11 +81,7 @@ def add_new_group(admin, groupname):
 @require_unique
 def add_new_group_members(admin, groupname, new_users):
     """
-    Adds new friend to a user.
-
-    Returns error if friends email does not exists in our user database.
-    TODO: Here we could send an email in the future with invitation link.
-    TODO: Exception handling
+    Adds members to a group
     """
     admin_id = get_user_id(admin)
     print('new users:' + str(new_users))
@@ -154,19 +150,6 @@ def get_grouplist(user):
 def get_group_memberlist(user, group_name):
     # TODO: Refactor sql queries. Variables inside are a safety vournability.
 
-    # user_id = get_user_id(user)
-
-    # query_members = f""" \
-    # SELECT email FROM users \
-    # WHERE user_id IN ( \
-    #     SELECT member_id FROM group_members \
-    #     WHERE group_id = ( \
-    #         SELECT group_id FROM groups \
-    #         WHERE member_id = {user_id} \
-    #         AND group_name = '{group_name}' \
-    #     )) \
-    # """
-
     query_members = f""" \
     SELECT email FROM users \
     WHERE user_id IN ( \
@@ -234,12 +217,40 @@ def update_location(email, longitute, latitude):
     execute_sql_statement(query_update_location)
 
 
+def save_new_point(payload, user, groupname):
+
+    user_id = get_user_id(user)
+
+    query_group = f""" \
+    SELECT group_id FROM groups \
+    WHERE group_name = '{groupname}' \
+    """
+    group_id = retrieve_sql_query(query_group)[0][0]
+
+    query = f"""\
+        INSERT INTO saved_points (user_id, group_id, title, describtion, longitude, latitude) \
+        VALUES ({user_id}, {group_id}, '{payload.get("title")}', \
+          '{payload.get("text")}', {payload.get("longitude")}, {payload.get("latitude")}) \
+    """
+
+    execute_sql_statement(query)
+
+
 def get_saved_group_points(group):
     """
     Returns all saved points inside the current group.
     """
+    query = f""" \
+    SELECT title, describtion, longitude, latitude FROM saved_points \
+    WHERE group_id = (
+        SELECT group_id FROM groups
+        WHERE  group_name = '{group}'
+    ) \
+    """
+    points = retrieve_sql_query(query)
+    print("Retrieved points: " + str(points))
 
-    pass
+    return points
 
 
 def concat_query_result(tuple_list):
@@ -281,10 +292,12 @@ def tables_exist():
         WHERE type='table'
         AND name='users' OR name='friendlists'
         OR name='groups' OR name='group_members'
+        OR name='saved_points'
     """
 
     tables = retrieve_sql_query(query)
-    if len(tables) >= 4:
+    print("Current num tables: " + str(len(tables)))
+    if len(tables) >= 5:
         return True
     else:
         return False
@@ -329,8 +342,8 @@ def initialize_database():
 
     group_members_table = """
     CREATE TABLE group_members (
-        group_id INTEGER NOT NULL,
         member_id INTEGER NOT NULL,
+        group_id INTEGER NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (group_id) REFERENCES groups(group_id),
         FOREIGN KEY (member_id) REFERENCES users(user_id),
@@ -338,11 +351,29 @@ def initialize_database():
     )
     """
 
+    saved_points_table = """
+    CREATE TABLE saved_points (
+        point_id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        group_id INTEGER NOT NULL,
+        title VARCHAR(50) NOT NULL,
+        describtion VARCHAR(50) NOT NULL,
+        longitude REAL,
+        latitude REAL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (group_id) REFERENCES groups(group_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        UNIQUE (group_id, title)
+    )
+    """
+
     if not tables_exist():
+        print("Creating new tables.")
         execute_sql_statement(users_table)
         execute_sql_statement(friendlists_table)
         execute_sql_statement(groups_table)
         execute_sql_statement(group_members_table)
+        execute_sql_statement(saved_points_table)
     else:
         print("Tables already exist.")
 
@@ -352,8 +383,11 @@ if __name__ == '__main__':
     SHOW_FRIENDS = 'SELECT * FROM friendlists'
     SHOW_GROUPS = 'SELECT * FROM groups'
     SHOW_MEMBERS = 'SELECT * FROM group_members'
+    SHOW_POINTS = 'SELECT * FROM saved_points'
 
-    initialize_database()
+    print("Executing sqlite functions module.")
+
+    # initialize_database()
 
     email = "master@mail"
     friend_mail = "cat@mail"
@@ -378,13 +412,30 @@ if __name__ == '__main__':
 
     # Create new group
     add_new_group(admin=email, groupname="Meat")
-    get_grouplist("tmusic196@gmail.com")
+    get_grouplist(email)
     retrieve_sql_query(SHOW_GROUPS)
 
     # Add group members
-    add_new_group_members(admin=email, groupname="dummyGroup",
+    add_new_group_members(admin=email, groupname="Meat",
                           new_users=[friend_mail, friend_mail_2])
 
     # Show groups members
     retrieve_sql_query(SHOW_MEMBERS)
-    get_group_memberlist("tmusic196@gmail.com", "TestGroup")
+    get_group_memberlist(email, "Meat")
+
+    # Show saved points
+    point_payload = {
+            "title": 'examplePoint',
+            "text": 'kill me please',
+            "latitude": 50.79846715949979,
+            "longitude": 7.2058313596181565
+        }
+    save_new_point(point_payload, email, "Meat")
+    point_payload = {
+            "title": 'examplePoint_2',
+            "text": 'kill me please',
+            "latitude": 50.79846715949979,
+            "longitude": 7.2058313596181565
+        }
+    save_new_point(point_payload, email, "Meat")
+    retrieve_sql_query(SHOW_POINTS)
