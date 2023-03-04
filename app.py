@@ -47,7 +47,7 @@ def initialize_test_users():
     add_new_user(users[1])
     update_location(users[0], longitute=123, latitude=456)
     update_location(users[1], longitute=123, latitude=456)
-    get_group_memberlist_and_location('tmusic196@gmail.com', 'testgroup')
+    # get_group_memberlist_and_location('tmusic196@gmail.com', 'testgroup') # Group has to be created first.
 
 
 initialize_test_users()
