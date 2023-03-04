@@ -204,7 +204,7 @@ def handle_message(message):
 
     if session.get("current_group") is not None:
         user_location_list = get_group_memberlist_and_location(
-            email, session.get("current_group")
+            session.get("current_group")
         )
 
         user_payload = transform_to_payload(user_location_list)

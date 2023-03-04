@@ -27,10 +27,13 @@ def add_new_user(email):
 
 def get_user_id(identifier):
     # TODO: Try except Already exsists error
-
-    query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
-    id = retrieve_sql_query(query)
-    return id[0][0]
+    if identifier == 'None':
+        print("Bitte neu einloggen Mister 1.0")
+        return None
+    else:
+        query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
+        id = retrieve_sql_query(query)
+        return id[0][0]
 
 
 def get_all_users():
