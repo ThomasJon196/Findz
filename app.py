@@ -284,7 +284,7 @@ def getGroups():
 def getGroupMembers():
     payload = request.args.get("groupName")
     print(payload)
-    memberlist = get_group_memberlist(admin_mail=session["email"], group_name=payload)
+    memberlist = get_group_memberlist(user=session["email"], group_name=payload)
     data = jsonify({"memberlist": memberlist})
     return data, 200
 

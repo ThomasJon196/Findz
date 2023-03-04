@@ -143,10 +143,10 @@ def get_grouplist(admin_mail):
     return friendlist_mails
 
 
-def get_group_memberlist(admin_mail, group_name):
+def get_group_memberlist(user, group_name):
     # TODO: Refactor sql queries. Variables inside are a safety vournability.
 
-    admin_id = get_user_id(admin_mail)
+    user_id = get_user_id(user)
 
     query_members = f""" \
     SELECT email FROM users \
@@ -154,7 +154,7 @@ def get_group_memberlist(admin_mail, group_name):
         SELECT member_id FROM group_members \
         WHERE group_id = ( \
             SELECT group_id FROM groups \
-            WHERE admin_id = {admin_id} \
+            WHERE member_id = {user_id} \
             AND group_name = '{group_name}' \
         )) \
     """
