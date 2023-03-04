@@ -234,6 +234,14 @@ def update_location(email, longitute, latitude):
     execute_sql_statement(query_update_location)
 
 
+def get_saved_group_points(group):
+    """
+    Returns all saved points inside the current group.
+    """
+
+    pass
+
+
 def concat_query_result(tuple_list):
     tuple = ()
     for tpl in tuple_list:

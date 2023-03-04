@@ -23,6 +23,7 @@ from database.sqlite_functions import (
     get_all_users,
     get_group_memberlist_and_location,
     update_location,
+    get_saved_group_points
 )
 
 
@@ -133,18 +134,33 @@ def transform_to_payload(user_location_list):
     # TODO: remove example image
     img_adr = "https://icon-library.com/images/sims-icon/sims-icon-29.jpg"
 
-    payload_list = []
+    user_list = []
 
     for record in user_location_list:
         json_payload = {
             "name": record[0],
             "latitude": record[1],
             "longitude": record[2],
-            "bild": img_adr,
+            "bild": img_adr,    
         }
-        payload_list.append(json_payload)
+        user_list.append(json_payload)
 
-    return payload_list
+    return user_list
+
+
+def transform_to_point_payload(points):
+
+    payload = []
+    for point in points:
+        point_payload = {
+            "title": point[0],
+            "text": point[1],
+            "latitude": point[2],
+            "longitude": point[3]
+        }
+        payload.append(point_payload)
+
+    return payload
 
 
 @socketio.on("update")
@@ -166,23 +182,20 @@ def handle_message(message):
 
     update_location(email, latitude, longitute)
 
-    # new_user_flag = True
-    # for idx, user in enumerate(userListe):
-    #     if user['name'] == angekommennachicht['name']:
-    #         # user = angekommennachicht
-    #         new_user_flag = False
-
-    # if new_user_flag:
-    #     userListe.append(angekommennachicht)
-
     if session.get("current_group") is not None:
-        location_list = get_group_memberlist_and_location(
+        user_location_list = get_group_memberlist_and_location(
             email, session.get("current_group")
         )
 
-        payload = transform_to_payload(location_list)
+        user_payload = transform_to_payload(user_location_list)
+        print("User payload to send" + str(user_payload))
 
-        print("Message to send" + str(payload))
+        saved_points_list = get_saved_group_points(group=session.get("current_group"))
+        example_point = [['examplePoint', 'kill me please', 50.79846715949979, 7.2058313596181565]]
+        saved_points_list = transform_to_point_payload(example_point)
+
+        payload = [user_location_list, saved_points_list]
+        print("Full payload to send" + str(payload))
     else:
         payload = []
 
@@ -343,7 +356,8 @@ def save_point_of_interest():
     email = session.get('email')
     longitude = payload.get('latitude')
     latitude = payload.get('longitude')
-    pic = payload.get('picture')
+    title = payload.get('title')
+    beschreibung = payload.get('beschreibung')
 
     # save_point() - SQL functions
     print('Successfully recevied point of interest: ' + str(payload))
