@@ -61,8 +61,9 @@ initialize_test_users()
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = "127.0.0.1:5000"
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
-elif DEPLOY_ENV == "LOCAL_DEV":
-    pass
+elif DEPLOY_ENV == "GLOBAL_2":
+    DOMAIN = "findz-dev.thomasjonas.de"
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 else:
     DOMAIN = "findz.thomasjonas.de"
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
