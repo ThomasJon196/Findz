@@ -32,7 +32,7 @@ export class CreateGroupComponent implements OnInit {
     } else if(members.length==0){
       alert("Bitte Gruppenmitglieder auswählen!");
     }
-    this.http.post<any>('/createGroup', JSON.stringify({members: members, name: this.groupName.trimEnd().toString()}))
+    this.http.post<any>('/createGroup', JSON.stringify({members: members, name: this.groupName.trimEnd()}))
       .subscribe(data => {
         console.log(data);
         this.router.navigate(['gruppen']);

@@ -13,7 +13,7 @@ export class GroupDetailComponent implements OnInit {
   //groups = GROUPS;
   //currentGroup?: Group;
 
-  groupName: string = this.router.url.substring(16);
+  groupName: string = this.router.url.substring(16).replace('%20',' ');
   groupMembers = [];
 
   constructor(private router: Router, private http: HttpClient) {}
