@@ -36,8 +36,8 @@
     .form-popup {
       display: none;
       position: fixed;
-      bottom: 0;
-      right: 15px;
+      bottom: 50%;
+      right: 50%;
       border: 3px solid #f1f1f1;
       z-index: 9;
     }
@@ -90,7 +90,9 @@
         AFRAME.registerComponent('clicker', {
             init: function () {
                 this.el.addEventListener('click', e => {
-                    alert(this.el);
+                   place = getPunkt(this.el.innerHTML);
+                   console.log(" ergebniss getponkut"+ place)
+                   openPoint(place);
                 });
             }
         });
@@ -117,17 +119,32 @@
 
 
 <div id='2'
-     style='position:absolute; right: 5px; bottom: 2%; z-index:999; border-radius:5px; background: rgba(54,88,48,0.85); color: white; padding: 10px'>
-    <button class="open-button" onclick="openForm()">Open Form</button>
+     style='position:absolute; right: 2%; bottom: 2%; z-index:999; border-radius:5px; background: rgba(54,88,48,0.85); color: white; padding: 5px'>
+    <button class="open-button" onclick="openForm()">Makierung setzten</button>
 </div>
 
+
+
+<div class="form-popup" id="myPoint">
+    <div class="form-container" id="1">
+        <h1>Makierung</h1>
+
+
+        <h2 id="titelp" ></h2>
+
+        <a id="textp"></a>
+
+        <button class="btn" onclick="closePoint()">Schließen</button>
+
+    </div>
+</div>
 
 <div class="form-popup" id="myForm">
     <div class="form-container" id="0">
         <h1>Makierung</h1>
 
         <label for="titel"><b>Name</b></label>
-        <input type="text" placeholder="Enter Email" id="titel" required>
+        <input type="text" placeholder="titel" id="titel" required>
 
         <label for="beschreibung"><b>Beschreibung</b></label>
         <input type="text" placeholder="beschreibung" id="beschreibung" required>
@@ -140,7 +157,30 @@
 </body>
 
 <script>
+    function openPoint(punkt) {
 
+        console.log("punkt : " + punkt)
+        document.getElementById("titelp").innerHTML = punkt["title"]
+        document.getElementById("textp").innerHTML = punkt["text"]
+
+        document.getElementById("myPoint").style.display = "block";
+
+    }
+    function getPunkt(punkt){
+
+        var ergebnis;
+        punkteAr.forEach(element => {if(0===element["title"].localeCompare(punkt)){
+            console.log(" fuck this" + element)
+            ergebnis = element;
+        }});
+        return ergebnis;
+    }
+
+    function closePoint() {
+        document.getElementById("myPoint").style.display = "none";
+    //    document.getElementById("titelp").innerHTML = ""
+   //     document.getElementById("titelp").innerHTML = ""
+    }
     function openForm() {
         document.getElementById("myForm").style.display = "block";
     }
@@ -148,6 +188,8 @@
     function closeForm() {
         document.getElementById("myForm").style.display = "none";
     }
+
+
 
     function ongeopruefen() {
         if (navigator.geolocation) {
@@ -158,11 +200,17 @@
 
     }
 
+
     function makierungSetzten(location) {
 
         let titel = document.getElementById("titel").value;
         let beschreibung = document.getElementById("beschreibung").value;
-        console.log("title: "+ title)
+
+        console.log("imhereto die" + titel)
+        if(titel.localeCompare(" ") || titel == null){
+            closeForm()
+            return
+        }
         fetch("https://findz.thomasjonas.de/save_point", {
             method: "POST",
             body: JSON.stringify({
@@ -190,6 +238,8 @@
             "latitude": location.coords.latitude,
             "longitude": location.coords.longitude
         })
+        document.getElementById("titel").value= " ";
+        document.getElementById("beschreibung").value= " ";
         closeForm()
         /*
           var titel = document.getElementById("titel").value;bi("titel").value;
@@ -327,6 +377,9 @@
 
     }
 
+
+
+
     function zeigePunkteAn(punkte, coordinaten) {
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, coordinaten.latitude, coordinaten.longitude)
         //  console.log('ich bin die entfernung:'+ entfernung)
@@ -364,6 +417,7 @@
         userText.setAttribute("maxDistance", "5000000")
         userText.setAttribute("look-at", "[gps-camera]")
         userText.setAttribute("clicker", "")
+        userText.innerText = punkte.title
 
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
             scale *= (1 + (entfernung - 2.5))
@@ -414,6 +468,8 @@
     var socket = io.connect('https://' + document.domain + ':' + location.port);
     let ownPosition;
 
+    let punkteAr = []
+
     let zuNahListe = []
 
     navigator.geolocation.watchPosition(successCallback, errorCallback)
@@ -437,7 +493,8 @@
         // zeigeUseran({ "name": "shitfest", "latitude": "34.668730658268004", "longitude": "135.4295393926713", "bild": zuhause_bild}, ownPosition.coords);
         // zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
 
-
+        punkteAr = JSON.parse(msg)[1]
+      //  console.log(punkte)
         JSON.parse(msg)[1].forEach(element => zeigePunkteAn(element, ownPosition.coords));
 
     });
