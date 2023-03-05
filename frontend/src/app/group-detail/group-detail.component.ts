@@ -10,7 +10,9 @@ import {HttpClient} from "@angular/common/http";
 })
 export class GroupDetailComponent implements OnInit {
 
-  groupName = this.route.snapshot.paramMap.get('groupName');
+  groupName: string = this.router.url.substring(16).replace(/%20/gi,' ');
+
+  //groupName = this.route.snapshot.paramMap.get('groupName');
   groupMembers = [];
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {}
