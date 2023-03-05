@@ -24,7 +24,8 @@ from database.sqlite_functions import (
     get_group_memberlist_and_location,
     update_location,
     get_saved_group_points,
-    save_new_point
+    save_new_point,
+    get_all_groupnames,
 )
 
 
@@ -60,7 +61,9 @@ initialize_test_users()
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = "127.0.0.1:5000"
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
-
+elif DEPLOY_ENV == "GLOBAL_2":
+    DOMAIN = "findz-dev.thomasjonas.de"
+    print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 else:
     DOMAIN = "findz.thomasjonas.de"
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
@@ -106,14 +109,14 @@ socketio = SocketIO(app)
 # TODO: Client username & room should be taken from database. Mit Tobi testen.
 
 
-# @socketio.on('join')
-# def on_join(data):
-#     username = session.get('email')
-#     room = session.get("current_group")
-#     if roomList
-#     join_room(room)
-#     send(username + ' has joined the room ' + room, room=room)
+@socketio.on('join')
+def on_join(data):
+    username = session.get('email')
+    room = session.get("current_group")
+    join_room(room)
+    send(username + ' has joined the room ' + room, room=room)
 
+# TODO: Implement a active rooms list.
 
 # @socketio.on('leave')
 # def on_leave(data):
@@ -123,12 +126,25 @@ socketio = SocketIO(app)
 #     send(username + ' has left the room ' + room, room=room)
 
 
-# def broadcast_locations():
-#     message = 'hy'
-#     room = 'Lobby'
-    
-#     socketio.emit('message', {'msg': message}, room=room)
-#     pass
+def broadcast_locations():
+    print("Boradcasting locations")
+    rooms = get_all_groupnames()
+
+    for room in rooms:
+        print("Broadcasting locations for group: " + str(room))
+        user_location_list = get_group_memberlist_and_location(session.get("current_group"))
+
+        user_payload = transform_to_payload(user_location_list)
+        print("User payload to send" + str(user_payload))
+
+        saved_points_list = get_saved_group_points(group=session.get("current_group"))
+        example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
+        saved_points_list = transform_to_point_payload(example_point)
+
+        payload = [user_location_list, saved_points_list]
+        print("Full payload to send" + str(payload))
+
+        socketio.emit("answer", json.dumps(payload), room=room)
 
 
 def transform_to_payload(user_location_list):
@@ -189,7 +205,7 @@ def handle_message(message):
 
     if session.get("current_group") is not None:
         user_location_list = get_group_memberlist_and_location(
-            email, session.get("current_group")
+            session.get("current_group")
         )
 
         user_payload = transform_to_payload(user_location_list)
@@ -418,3 +434,12 @@ if __name__ == "__main__":
         )
     else:
         socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host="0.0.0.0")
+
+    
+    # import threading
+    # # Broadcast locations every x seconds.
+    # def broadcast_event():
+    #     broadcast_locations()
+    #     new_event = threading.Timer(2.0, broadcast_event)
+
+    # threading.Timer(interval=2.0, function=broadcast_event)
