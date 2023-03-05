@@ -4,7 +4,7 @@
 
 <ul class="groups">
   <li *ngFor="let groupName of groups">
-    <a routerLink="/gruppenDetails/{{groupName}}, {groupName:{{groupName}}}" class="group">
+    <a [routerLink]="['/gruppenDetails/{{groupName}}']" [queryParams]="{groupName: '{{groupName}}'}" class="group">
       {{groupName}}
     </a>
   </li>
