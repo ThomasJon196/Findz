@@ -442,12 +442,9 @@ if __name__ == "__main__":
     # def broadcast_event():
     #     broadcast_locations()
     #     new_event = threading.Timer(2.0, broadcast_event)
-
-
     # def test():
     #     print("Hello you fat fuck")
     #     new_event = threading.Timer(2.0, test)
         
     # print("Starting thread")
     # threading.Timer(interval=2.0, function=test)
-    
