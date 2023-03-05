@@ -7,7 +7,8 @@
 	- [x] Aktuelle Gruppe an Server schicken. (Wiete)
 	- [x] Endpunkt erweitern zur Gruppenuebergabe (WebXR)
 	- [x] Userlist/Pointlist -> database 
-    - [ ] Only show logged in users inside a group. Login/Logout flag in database. SocketIO rooms
+	- [x] Isolate groups from each other
+    - [ ] Only show logged in users inside a group. Login/Logout flag in database with name of group. SocketIO rooms
 
 2. Feature: Interaktion (Tobi)
 	- [ ] Anstupsen (optional)
@@ -25,7 +26,7 @@
    - [ ] Vision
 
 Bugfixes:
-
+- [ ] App langsamer seit AppScheduler
 - [ ] Sonderzeichen in Gruppennamen
 - [ ] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
