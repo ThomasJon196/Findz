@@ -5,7 +5,6 @@ pyOpenSSL==23.0.0
 Authlib
 requests
 python-dotenv
-
 google-auth==1.27.0
 google-auth-oauthlib==0.4.2
 # requests==2.25.1
@@ -14,3 +13,5 @@ oauthlib==3.1.0
 pathlib==1.0.1
 vendor==0.1
 
+
+Flask-APScheduler==1.12.4
