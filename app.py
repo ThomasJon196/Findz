@@ -111,8 +111,8 @@ socketio = SocketIO(app)
 
 @socketio.on('join')
 def on_join(data):
-    username = session.get('email')
-    room = session.get("current_group")
+    username = data.get('email')
+    room = data.get("current_group")
     join_room(room)
     send(username + ' has joined the room ' + room, room=room)
 
@@ -141,7 +141,7 @@ def broadcast_locations():
         example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
         saved_points_list = transform_to_point_payload(example_point)
 
-        payload = [user_location_list, saved_points_list]
+        payload = [user_payload, saved_points_list]
         print("Full payload to send" + str(payload))
 
         socketio.emit("answer", json.dumps(payload), room=room)
@@ -376,7 +376,7 @@ def webxr():
     email = session.get("email")
     print("groupname: " + str(groupname))
 
-    return render_template("webXR.html", user=email)
+    return render_template("webXR.html", user=email, current_group=groupname)
 
 
 @app.route("/save_point", methods=["POST"])
@@ -424,6 +424,7 @@ def get_logged_in_users():
 
 
 if __name__ == "__main__":
+
     if DEPLOY_ENV == "LOCAL":
         socketio.run(
             app,
@@ -435,11 +436,15 @@ if __name__ == "__main__":
     else:
         socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host="0.0.0.0")
 
-    
+
     # import threading
     # # Broadcast locations every x seconds.
     # def broadcast_event():
     #     broadcast_locations()
     #     new_event = threading.Timer(2.0, broadcast_event)
-
-    # threading.Timer(interval=2.0, function=broadcast_event)
+    # def test():
+    #     print("Hello you fat fuck")
+    #     new_event = threading.Timer(2.0, test)
+        
+    # print("Starting thread")
+    # threading.Timer(interval=2.0, function=test)

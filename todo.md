@@ -7,10 +7,10 @@
 	- [x] Aktuelle Gruppe an Server schicken. (Wiete)
 	- [x] Endpunkt erweitern zur Gruppenuebergabe (WebXR)
 	- [x] Userlist/Pointlist -> database 
-    - [ ] Only show logged in users inside a group. Login/Logout flag in database.
+    - [ ] Only show logged in users inside a group. Login/Logout flag in database. SocketIO rooms
 
 2. Feature: Interaktion (Tobi)
-	- [ ] Anstupsen (optiional)
+	- [ ] Anstupsen (optional)
 	- [ ] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
 	Fuer alle Leute in der Gruppe sichtbar.
 
@@ -26,7 +26,8 @@
 
 Bugfixes:
 
-- [ ] Show only logged in users in webXR. Implement a logout function in WebXR and set a logged in flag in database.
+- [ ] Sonderzeichen in Gruppennamen
+- [ ] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [ ] Bild flakern (probably download/refresh)
 - [ ] Error on first login 
