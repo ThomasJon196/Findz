@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import {HttpClient} from "@angular/common/http";
 
@@ -10,10 +10,10 @@ import {HttpClient} from "@angular/common/http";
 })
 export class GroupDetailComponent implements OnInit {
 
-  groupName: string = this.router.url.substring(16).replace(/%20/gi,' ');
+  groupName = this.route.snapshot.paramMap.get('groupName');
   groupMembers = [];
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
