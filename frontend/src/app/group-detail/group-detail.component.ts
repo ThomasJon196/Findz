@@ -10,10 +10,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class GroupDetailComponent implements OnInit {
 
-  //groups = GROUPS;
-  //currentGroup?: Group;
-
-  groupName: string = this.router.url.substring(16).replace('%20',' ');
+  groupName: string = this.router.url.substring(16).replace(/%20/gi,' ');
   groupMembers = [];
 
   constructor(private router: Router, private http: HttpClient) {}
@@ -27,7 +24,6 @@ export class GroupDetailComponent implements OnInit {
   }
 
   startAR() {
-    const url = '/webXR?groupname=' + this.groupName; // replace "your-page" with the actual URL of the page you want to redirect to
-    location.href = url; // redirect the user to the specified page with the query parameters
+    location.href = '/webXR?groupname=' + this.groupName;
   }
 }
