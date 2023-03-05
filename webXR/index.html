@@ -130,7 +130,7 @@
         <h1>Makierung</h1>
 
 
-        <h2 id="titelp" ></h2>
+        <h2 id="titelp"></h2>
 
         <a id="textp"></a>
 
@@ -186,6 +186,8 @@
     }
 
     function closeForm() {
+        document.getElementById("titel").value = "";
+        document.getElementById("beschreibung").value = "";
         document.getElementById("myForm").style.display = "none";
     }
 
@@ -238,13 +240,10 @@
             "latitude": location.coords.latitude,
             "longitude": location.coords.longitude
         })
-        document.getElementById("titel").value= " ";
-        document.getElementById("beschreibung").value= " ";
-        closeForm()
-        /*
-          var titel = document.getElementById("titel").value;bi("titel").value;
-          var beschreibung = document.getElementById("beschreibung").value;
 
+        closeForm()
+
+/*
           console.log(JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
           //socket.emit('update', JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
 
@@ -297,6 +296,7 @@
 
     function zeigeUseran(andereUser, coordinaten) {
 
+        console.log(andereUser)
         let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
         //  console.log('ich bin die entfernung:'+ entfernung)
 
@@ -369,7 +369,6 @@
         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
         userBild.setAttribute("clicker", "")
 
-
         element = document.querySelector('#container')
 
         element.appendChild(userBild)*/
@@ -421,11 +420,9 @@
 
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
             scale *= (1 + (entfernung - 2.5))
-
         }
         if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
             scale *= (1 - (0.5 - entfernung))
-
         }
 
         userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
@@ -458,7 +455,6 @@
         }))
         ownPosition = position
 
-
     };
 
     const errorCallback = (error) => {
@@ -466,10 +462,22 @@
     };
 
     var socket = io.connect('https://' + document.domain + ':' + location.port);
+    /*socket.emit('join', JSON.stringify({
+        "name": '{{user}}',
+        "gruppe": '{{current_group}}'
+    }))
+
+     */
+
     let ownPosition;
 
-    let punkteAr = []
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((coords)=>{ownPosition=coords})
+        } else {
+            console.log("Geolocation is not supported by this browser.")
+        }
 
+    let punkteAr = []
     let zuNahListe = []
 
     navigator.geolocation.watchPosition(successCallback, errorCallback)
