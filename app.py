@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template, jsonify
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
+from flask_apscheduler import APScheduler
 import json
 import os
 import pathlib
@@ -32,7 +33,6 @@ from database.sqlite_functions import (
 #####################
 #       SETUP       #
 #####################
-
 
 GOOGLE_CLIENT_ID = os.getenv("CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.getenv("CLIENT_KEY", None)
@@ -71,6 +71,13 @@ else:
 
 # Name of the application. Used inside flask for module loading.. and so on. Idk rly.
 app = Flask(__name__)
+
+
+# initialize scheduler
+scheduler = APScheduler()
+scheduler.api_enabled = True
+scheduler.init_app(app)
+scheduler.start()
 
 # Ecryption of client-side sessions. Necessary for OAuth 2.0.
 app.secret_key = os.urandom(12).hex()
@@ -126,20 +133,26 @@ def on_join(data):
 #     send(username + ' has left the room ' + room, room=room)
 
 
+# @scheduler.task('interval', id='do_job_1', seconds=2, misfire_grace_time=300)
+# def test_task():
+#     print("hello you")
+
+
+@scheduler.task('interval', id='do_job_1', seconds=2, misfire_grace_time=300)
 def broadcast_locations():
     print("Boradcasting locations")
     rooms = get_all_groupnames()
 
     for room in rooms:
         print("Broadcasting locations for group: " + str(room))
-        user_location_list = get_group_memberlist_and_location(session.get("current_group"))
+        user_location_list = get_group_memberlist_and_location(room)
 
         user_payload = transform_to_payload(user_location_list)
         print("User payload to send" + str(user_payload))
 
-        saved_points_list = get_saved_group_points(group=session.get("current_group"))
-        example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
-        saved_points_list = transform_to_point_payload(example_point)
+        saved_points_list = get_saved_group_points(group=room)
+        # example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
+        # saved_points_list = transform_to_point_payload(example_point)
 
         payload = [user_payload, saved_points_list]
         print("Full payload to send" + str(payload))
@@ -162,7 +175,7 @@ def transform_to_payload(user_location_list):
             "name": record[0],
             "latitude": record[1],
             "longitude": record[2],
-            "bild": img_adr,    
+            "bild": img_adr 
         }
         user_list.append(json_payload)
 
@@ -203,24 +216,24 @@ def handle_message(message):
 
     update_location(email, latitude, longitute)
 
-    if session.get("current_group") is not None:
-        user_location_list = get_group_memberlist_and_location(
-            session.get("current_group")
-        )
+    # if session.get("current_group") is not None:
+    #     user_location_list = get_group_memberlist_and_location(
+    #         session.get("current_group")
+    #     )
 
-        user_payload = transform_to_payload(user_location_list)
-        print("User payload to send" + str(user_payload))
+    #     user_payload = transform_to_payload(user_location_list)
+    #     print("User payload to send" + str(user_payload))
 
-        saved_points_list = get_saved_group_points(group=session.get("current_group"))
-        example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
-        saved_points_list = transform_to_point_payload(example_point)
+    #     saved_points_list = get_saved_group_points(group=session.get("current_group"))
+    #     example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
+    #     saved_points_list = transform_to_point_payload(example_point)
 
-        payload = [user_payload, saved_points_list]
-        print("Full payload to send" + str(payload))
-    else:
-        payload = []
+    #     payload = [user_payload, saved_points_list]
+    #     print("Full payload to send" + str(payload))
+    # else:
+    #     payload = []
 
-    emit("answer", json.dumps(payload), broadcast=True)
+    # emit("answer", json.dumps(payload), broadcast=True)
 
 
 #####################
