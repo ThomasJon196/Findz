@@ -118,6 +118,7 @@ socketio = SocketIO(app)
 
 @socketio.on('join')
 def on_join(data):
+    data = json.loads(data)
     username = data.get('email')
     room = data.get("current_group")
     join_room(room)
