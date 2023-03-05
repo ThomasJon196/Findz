@@ -215,7 +215,7 @@ def handle_message(message):
         example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
         saved_points_list = transform_to_point_payload(example_point)
 
-        payload = [user_location_list, saved_points_list]
+        payload = [user_payload, saved_points_list]
         print("Full payload to send" + str(payload))
     else:
         payload = []
