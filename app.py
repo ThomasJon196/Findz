@@ -121,6 +121,7 @@ def on_join(data):
     username = data.get('email')
     room = data.get("current_group")
     join_room(room)
+    print(username + ' has joined the room ' + room)
     send(username + ' has joined the room ' + room, room=room)
 
 # TODO: Implement a active rooms list.
@@ -138,7 +139,7 @@ def on_join(data):
 #     print("hello you")
 
 
-@scheduler.task('interval', id='do_job_1', seconds=2, misfire_grace_time=300)
+@scheduler.task('interval', id='Notify users', seconds=2, misfire_grace_time=300)
 def broadcast_locations():
     print("Boradcasting locations")
     rooms = get_all_groupnames()
