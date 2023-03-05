@@ -10,7 +10,7 @@
 	- [x] Isolate groups from each other
     - [ ] Only show logged in users inside a group. Login/Logout flag in database with name of group. SocketIO rooms
 
-2. Feature: Interaktion (Tobi)
+2. Feature: Interaktion
 	- [ ] Anstupsen (optional)
 	- [ ] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
 	Fuer alle Leute in der Gruppe sichtbar.
@@ -46,6 +46,14 @@ Bugfixes:
 
 - [ ] app.py aufraeumen: [Flask blueprints](https://flask.palletsprojects.com/en/1.1.x/blueprints/) for tidy folder structure.
 
-# Feedback 
+# Fazit (Was haben wir aus diesem Projekt gelernt?)
 
-- Kommentare
+Wie kann man in Zukunft entiwcklungszeit sparen?
+
+- Ausfuehrliche log/print statements essentiell fuer Debugging[^2]
+- Einheitliche Schnittstellen definitionen [^1]
+
+
+[^1]: Kommunikation zwischen unterschiedlichen Komponenten erfordert die Uebergabe einheitlicher Daten. (Hierfuer eignen sich API-Management-Tools). Ansonsten kann ein kleiner typo fuer viel verlorene Entwicklungszeit sorgen.
+
+[^2]: Am besten sofort mit logging bibliotheken arbeiten, anstatt in den stdout zu schreiben, da die programmlaufzeit unter print statements leidet.
