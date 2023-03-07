@@ -10,6 +10,9 @@
     {{friend.name}}
   </li>
 </ul>
-<p *ngIf="friends.length==0">Noch keine Freunde hinzugefügt!</p>
+<p *ngIf="friends.length==0">
+  Noch keine Freunde hinzugefügt!
+  <button style="margin-top: 10px" routerLink="/freunde">Freunde hinzufügen</button>
+</p>
 
 <button (click)="saveGroup()" class="BigButtons">Speichern</button>

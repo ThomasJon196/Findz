@@ -11,28 +11,6 @@
   cursor: pointer;
 }
 
-/*
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  //min-width: 100px;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-  padding: 12px 16px;
-  z-index: 1;
-  right: 0;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-*/
-
 .sidebar {
   height: 100%;
   width: 0;
@@ -77,12 +55,16 @@
   padding: 16px;
   margin-right: 0;
 }
+
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
-  .sidebar {padding-top: 15px;}
-  .sidebar a {font-size: 18px;}
+  .sidebar {
+    padding-top: 15px;
+  }
+  .sidebar a {
+    font-size: 18px;
+  }
 }
-
 
 .content {
   margin-left: 20px;
