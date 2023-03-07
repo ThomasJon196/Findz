@@ -348,13 +348,15 @@
         userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
 
         var sign = document.createElement("a-entity")
+        //sign.setAttribute("text", "value", "HELLO", "height" , "10")
+        sign.setAttribute("text", "width: 4; value: This text will be 4 units wide.")
         sign.setAttribute("id", "refresh-button")
         sign.setAttribute("look-at", "[gps-camera]")
-        sign.setAttribute("geometry", "primitive: box")
+        sign.setAttribute("geometry", "primitive: plane; radius: auto")
         sign.setAttribute("maxDistance", "5000000")
-        sign.setAttribute("material", "color: red")
+        sign.setAttribute("material", "color: #dfecec")
         sign.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-        sign.setAttribute("position", scale + " " + scale + " " + scale)
+        sign.setAttribute("scale", scale + " " + scale + " " + scale)
 
 
         var pfeil = document.createElement("a-entity")
@@ -371,13 +373,13 @@
         //beschriftung.innerHTML ='<button style="background-color: #4CAF50;  border: none; color: white; padding: 10px 20px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 5px;"> fuck </button>'
         //var userText = document.createElement("a-text")
         element2.appendChild(sign)
-        element.appendChild(pfeil)
+        //element.appendChild(pfeil)
         console.log(sign)
         //userText.setAttribute("scale", scale + " " + scale + " " + scale)
         //userText.setAttribute('align', 'center');
 
 
-/*
+
         var userBild = document.createElement("a-image")
 
         userBild.setAttribute('align', 'center');
@@ -390,7 +392,7 @@
 
         element = document.querySelector('#container')
 
-        element.appendChild(userBild)*/
+        element.appendChild(userBild)
         element.appendChild(userText)
 
     }
