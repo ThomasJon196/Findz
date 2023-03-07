@@ -56,7 +56,7 @@ def initialize_test_users():
     # get_group_memberlist_and_location('tmusic196@gmail.com', 'testgroup') # Group has to be created first.
 
 
-initialize_test_users()
+#initialize_test_users()
 
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = "127.0.0.1:5000"
