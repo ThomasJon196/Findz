@@ -12,13 +12,14 @@ import {CurrentGroupService} from "../CurrentGroupService";
 export class GroupDetailComponent implements OnInit {
 
   //groupName: string = this.router.url.substring(16).replace(/%20/gi,' ');
-  groupName: string = this.currentGroupService.groupName;
+  groupName: string = "";
   //groupName = this.route.snapshot.paramMap.get('groupName');
   groupMembers = [];
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient, public currentGroupService: CurrentGroupService) {}
 
   ngOnInit(): void {
+    this.groupName = this.currentGroupService.groupName;
     this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
       .subscribe(data => {
         console.log(data);
