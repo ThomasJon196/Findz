@@ -9,7 +9,7 @@ import {LoginStatusService} from "../LoginStatusService";
   styleUrls: ['./groups.component.scss']
 })
 export class GroupsComponent implements OnInit {
-  groups = [];
+  groups = ["a", "b"];
 
   constructor(private http: HttpClient, public loginStatusService: LoginStatusService) {
     this.loginStatusService.setLoginStatus(true);
