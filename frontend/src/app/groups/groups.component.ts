@@ -10,7 +10,7 @@ import {CurrentGroupService} from "../CurrentGroupService";
   styleUrls: ['./groups.component.scss']
 })
 export class GroupsComponent implements OnInit {
-  groups = [];
+  groups = ["hallo"];
 
   constructor(private http: HttpClient, public loginStatusService: LoginStatusService, public currentGroupService: CurrentGroupService) {
     this.loginStatusService.setLoginStatus(true);
@@ -24,11 +24,11 @@ export class GroupsComponent implements OnInit {
     this.http.get<any>('/getGroups')
       .subscribe(data => {
         console.log(data);
-        this.groups = data.grouplist;
+        //this.groups = data.grouplist;
       });
   }
 
   updateCurrentGroup(groupName: string) {
-    this.currentGroupService.setGroupName(groupName);
+    //this.currentGroupService.setGroupName(groupName);
   }
 }
