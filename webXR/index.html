@@ -221,8 +221,8 @@
             body: JSON.stringify({
                 "title": titel,
                 "text": beschreibung,
-                "latitude": location.coords.latitude,
-                "longitude": location.coords.longitude
+                "latitude": location.coords.longitude,
+                "longitude": location.coords.latitude
             })
             ,
             headers: {
@@ -277,10 +277,9 @@
         return d.toFixed(2);
     }
 
-    kiosk_bild = 'data:image/jpeg;base64,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'
-    katzen_bild = 'https://www.myself.de/Undefined/image-thumb__8934__header/katzenfotos_1.jpg'
+     katzen_bild = 'https://www.myself.de/Undefined/image-thumb__8934__header/katzenfotos_1.jpg'
     thomas_bild = 'https://m.media-amazon.com/images/I/51PPdZidmBL._SX342_SY445_QL70_ML2_.jpg'
-    zuhause_bild = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/UK_road_A127.svg/446px-UK_road_A127.svg.png'
+    zuhause_bild = 'https://images.pexels.com/photos/7005018/pexels-photo-7005018.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
 
     // Funktion zum Überprüfen, ob die Entfernung 10 Meter oder weniger beträgt
 
@@ -397,15 +396,119 @@
 
     }
 
+    function zeigeUseran2(andereUser, coordinaten) {
 
+        // console.log(andereUser)
+        let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
+        //  console.log('ich bin die entfernung:'+ entfernung)
+
+
+        if ((entfernung < 0.04) && !zuNahListe.includes(andereUser.name)) {
+            zuNahListe.push(andereUser.name)
+            updateDeviceList();
+            return
+        } else if ((entfernung > 0.04) && zuNahListe.includes(andereUser.name)) {
+            for (let i = 0; i < zuNahListe.length; i++) {
+                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
+                if (zuNahListe[i].localeCompare(andereUser.name + " ")) {
+                    zuNahListe.splice(i, 1);
+                    //   console.log('ich bin bei zu nah und schon da')
+                    break;
+                }
+            }
+            updateDeviceList();
+
+        } else if (zuNahListe.includes(andereUser.name)) {
+            return
+        }
+
+
+
+
+        var scale = 130
+        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
+            scale *= (1 + (entfernung - 2.5))
+
+        }
+        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
+            scale *= (1 - (0.5 - entfernung))
+
+        }
+
+
+        root = document.createElement("a-entity")
+        root.setAttribute("maxDistance", "5000000")
+        root.setAttribute("look-at", "[gps-camera]")
+        root.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
+
+        var userText = document.createElement("a-text")
+        if (entfernung > 1) {
+            userText.setAttribute("value", entfernung + " km")
+        } else {
+            userText.setAttribute("value", (entfernung*1000) + " m")
+        }
+
+        userText.setAttribute('position', 0 + " " +  (-scale/1.5) + " " + 0)
+        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+        userText.setAttribute("align", "center")
+
+
+        var pfeil = document.createElement("a-entity")
+        pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
+        pfeil.setAttribute("scale", (scale/2) + " " + (scale/2) + " " + (scale/2))
+        pfeil.setAttribute("position", 0 + " " + (scale*2) + " " + 0)
+
+
+
+        element = document.querySelector('#container')
+        element2 = document.querySelector('#a-cene')
+
+
+
+
+        var userBild = document.createElement("a-circle")
+
+        userBild.setAttribute('align', 'center');
+       // userBild.setAttribute('rotation', "-90 0 0");
+        userBild.setAttribute("material","src: "+ andereUser.bild)
+        userBild.setAttribute("scale", (scale/1.6) + " " + (scale/1.6) + " " + (scale/1.6))
+     //   userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
+        userBild.setAttribute("clicker", "")
+
+
+
+
+/*
+        userBild.setAttribute('align', 'center');
+        userBild.setAttribute("src", andereUser.bild)
+        userBild.setAttribute("scale", scale + " " + scale + " " + scale)
+           userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
+        userBild.setAttribute("clicker", "")
+
+*/
+
+        element = document.querySelector('#container')
+
+        root.appendChild(userBild)
+        root.appendChild(pfeil)
+        root.appendChild(userText)
+        element.appendChild(root)
+
+
+    }
 
 
     function zeigePunkteAn(punkte, coordinaten) {
+        console.log("ich bin der punkt in zeige punkt an" + punkte)
+
+
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, coordinaten.latitude, coordinaten.longitude)
         //  console.log('ich bin die entfernung:'+ entfernung)
-          console.log(punkte)
+          console.log("punktbekommen" +  punkte)
+        console.log("entfernung" + entfernung)
 
         if ((entfernung < 0.04) && !zuNahListe.includes(punkte.title)) {
+            console.log(punkte.title)
             zuNahListe.push(punkte.title)
             updateDeviceList();
 
@@ -451,7 +554,7 @@
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
 
        // console.log(userText)
-        console.log(userText)
+        console.log(" hier sollte user text sein" + userText)
         element = document.querySelector('#container')
         element.appendChild(userText)
     }
@@ -511,8 +614,8 @@
                 zeigeUseran(element, ownPosition.coords)
             }
         });
-        // zeigeUseran({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": kiosk_bild }, ownPosition.coords);
-        zeigeUseran({
+        zeigeUseran2({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": zuhause_bild }, ownPosition.coords);
+        zeigeUseran2({
             "name": "Koeln",
             "latitude": 50.932779,
             "longitude": 6.958231,
@@ -523,25 +626,13 @@
         // zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
 
         punkteAr = JSON.parse(msg)[1]
-      //  console.log(punkte)
-        JSON.parse(msg)[1].forEach(element => zeigePunkteAn(element, ownPosition.coords));
+        console.log("ich bin die angekommene nachicht" + punkteAr)
+        JSON.parse(msg)[1].forEach(makierterPunkt => zeigePunkteAn(makierterPunkt, ownPosition.coords));
+        zeigePunkteAn({ "title":'hbrs',"text": 'wir lieben es alle ', "latitude" : 50.78001445359288, "longitude": 7.182461982104352},ownPosition.coords)
 
     });
 
 
-    function calculateScale(distance, minDistance, maxDistance, minScale, maxScale) {
-        if (distance < minDistance) {
-            return minScale;
-        } else if (distance > maxDistance) {
-            return maxScale;
-        } else {
-            const scaleRange = maxScale - minScale;
-            const distanceRange = maxDistance - minDistance;
-            const distancePercentage = (distance - minDistance) / distanceRange;
-            const scale = minScale + scaleRange * distancePercentage;
-            return scale;
-        }
-    }
 
 </script>
 
