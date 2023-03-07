@@ -3,11 +3,7 @@
 <button routerLink="/gruppeErstellen" class="addGroupButton">+</button>
 
 <ul class="groups" *ngFor="let groupName of groups">
-  <li routerLink="/gruppenDetails/{{groupName}}" (click)="updateCurrentGroup(groupName)" class="group">
-    <!--<a routerLink="/gruppenDetails/{{groupName}}" class="group">-->
-    <!--<a [routerLink]="['/gruppenDetails/{{groupName}}']" [queryParams]="{groupName: '{{groupName}}'}" class="group">-->
-    <!--<a routerLink="/gruppenDetails/{{groupName}}" (click)="updateCurrentGroup(groupName)" class="group">-->
+  <li routerLink="/gruppenDetails/{{groupName}}" class="group">
       {{groupName}}
-    <!--</a>-->
   </li>
 </ul>

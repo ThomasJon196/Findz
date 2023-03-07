@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
 import {HttpClient} from "@angular/common/http";
-import {CurrentGroupService} from "../CurrentGroupService";
 
 @Component({
   selector: 'app-group-detail',
@@ -11,16 +10,12 @@ import {CurrentGroupService} from "../CurrentGroupService";
 })
 export class GroupDetailComponent implements OnInit {
 
-  groupName: string = this.router.url.substring(16).replace(/%20/gi,' ');
-  //groupName: string = this.currentGroupService.getGroupName();
-  //groupName = this.route.snapshot.paramMap.get('groupName');
+  groupName: string = decodeURIComponent(this.router.url).substring(16);
   groupMembers = [];
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient, public currentGroupService: CurrentGroupService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    //this.groupName = this.currentGroupService.getGroupName();
-    console.log(this.groupName);
     this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
       .subscribe(data => {
         console.log(data);
