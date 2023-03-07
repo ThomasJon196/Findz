@@ -1,10 +1,10 @@
 <h3>Gruppe erstellen</h3>
 
 <label for="friendName">Name*</label><br>
-<input type="text" id="friendName" placeholder="Name*" class="friendName" required [(ngModel)]="groupName"><br>
+<input type="text" id="friendName" placeholder="Name*" class="friendName" [(ngModel)]="groupName"><br>
 
 <p class="membersLabel">Teilnehmer*</p>
-<ul class="participants" *ngIf="friends.length!=0">
+<ul *ngIf="friends.length!=0">
   <li *ngFor="let friend of friends">
     <input type="checkbox" class="friendCheckbox" [(ngModel)]="friend.checked">
     {{friend.name}}
