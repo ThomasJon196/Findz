@@ -2,8 +2,9 @@
 
 <button routerLink="/gruppeErstellen" class="addGroupButton">+</button>
 
-<ul class="groups" *ngFor="let groupName of groups">
-  <li routerLink="/gruppenDetails/{{groupName}}" class="group">
-      {{groupName}}
+<ul>
+  <li *ngFor="let groupName of groups" routerLink="/gruppenDetails/{{groupName}}">
+    <!--<a routerLink="/gruppenDetails/{{groupName}}">{{groupName}}</a>-->
+    {{groupName}}
   </li>
 </ul>
