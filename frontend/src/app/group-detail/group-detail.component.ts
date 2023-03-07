@@ -20,6 +20,7 @@ export class GroupDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.groupName = this.currentGroupService.groupName;
+    console.log(this.groupName);
     this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
       .subscribe(data => {
         console.log(data);
