@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {HttpClient} from "@angular/common/http";
 import {LoginStatusService} from "../LoginStatusService";
+import {CurrentGroupService} from "../CurrentGroupService";
 
 @Component({
   selector: 'app-groups',
@@ -11,7 +12,7 @@ import {LoginStatusService} from "../LoginStatusService";
 export class GroupsComponent implements OnInit {
   groups = [];
 
-  constructor(private http: HttpClient, public loginStatusService: LoginStatusService) {
+  constructor(private http: HttpClient, public loginStatusService: LoginStatusService, public currentGroupService: CurrentGroupService) {
     this.loginStatusService.setLoginStatus(true);
   }
 
@@ -25,5 +26,9 @@ export class GroupsComponent implements OnInit {
         console.log(data);
         this.groups = data.grouplist;
       });
+  }
+
+  updateCurrentGroup(groupName: string) {
+    this.currentGroupService.setGroupName(groupName);
   }
 }
