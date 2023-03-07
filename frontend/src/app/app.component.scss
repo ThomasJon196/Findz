@@ -8,12 +8,7 @@
 
 .navbar > div {
   display: inline-block;
-  //padding: 14px 16px;
   cursor: pointer;
-}
-
-.content {
-  margin: 0 20px;
 }
 
 /*
@@ -86,4 +81,9 @@
 @media screen and (max-height: 450px) {
   .sidebar {padding-top: 15px;}
   .sidebar a {font-size: 18px;}
+}
+
+
+.content {
+  margin-left: 20px;
 }

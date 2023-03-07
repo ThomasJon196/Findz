@@ -23,5 +23,4 @@ export class AppComponent {
     // @ts-ignore
     document.getElementById("main").style.marginRight= "0";
   }
-
 }

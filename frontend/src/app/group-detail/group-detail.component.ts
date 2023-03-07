@@ -11,9 +11,11 @@ import {HttpClient} from "@angular/common/http";
 export class GroupDetailComponent implements OnInit {
 
   groupName: string = decodeURIComponent(this.router.url).substring(16);
-  groupMembers = [];
+  groupMembers = ["a", "ads"];
+  //groupMembers = [];
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
+  }
 
   ngOnInit(): void {
     this.http.get<any>('/getGroupMembers?groupName=' + this.groupName)
