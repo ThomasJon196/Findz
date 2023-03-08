@@ -120,6 +120,10 @@ socketio = SocketIO(app)
 def on_join(data):
     data = json.loads(data)
     username = data.get('email')
+    if username is None:
+        destination = '/'
+        emit('redirect', destination)
+        return
     room = data.get("current_group")
     join_room(room)
     # If a None type error is thrown here, the current user is not logged in.
