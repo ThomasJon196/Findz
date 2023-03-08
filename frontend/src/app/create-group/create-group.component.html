@@ -1,15 +1,18 @@
 <h3>Gruppe erstellen</h3>
 
 <label for="friendName">Name*</label><br>
-<input type="text" id="friendName" placeholder="Name*" class="friendName" required [(ngModel)]="groupName"><br>
+<input type="text" id="friendName" placeholder="Name*" class="friendName" [(ngModel)]="groupName"><br>
 
 <p class="membersLabel">Teilnehmer*</p>
-<ul class="participants" *ngIf="friends.length!=0">
+<ul *ngIf="friends.length!=0">
   <li *ngFor="let friend of friends">
     <input type="checkbox" class="friendCheckbox" [(ngModel)]="friend.checked">
     {{friend.name}}
   </li>
 </ul>
-<p *ngIf="friends.length==0">Noch keine Freunde hinzugefügt!</p>
+<p *ngIf="friends.length==0">
+  Noch keine Freunde hinzugefügt!
+  <button style="margin-top: 10px" routerLink="/freunde">Freunde hinzufügen</button>
+</p>
 
 <button (click)="saveGroup()" class="BigButtons">Speichern</button>

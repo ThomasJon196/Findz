@@ -27,7 +27,7 @@
 
 Bugfixes:
 - [ ] App langsamer seit AppScheduler
-- [ ] Sonderzeichen in Gruppennamen
+- [x] Sonderzeichen in Gruppennamen
 - [ ] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [ ] Bild flakern (probably download/refresh)

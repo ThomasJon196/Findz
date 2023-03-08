@@ -3,7 +3,6 @@ import {RouterModule, Routes} from '@angular/router';
 import {CreateGroupComponent} from './create-group/create-group.component';
 import {FriendsComponent} from './friends/friends.component';
 import {GroupDetailComponent} from './group-detail/group-detail.component';
-
 import {GroupsComponent} from './groups/groups.component';
 import {LoginComponent} from './login/login.component';
 

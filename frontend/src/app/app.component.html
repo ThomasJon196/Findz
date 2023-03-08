@@ -4,25 +4,15 @@
     <h3 class="title" *ngIf="!loginStatusService.isLoggedIn">{{title}}</h3>
   </div>
 
-  <!--
-  <div class="dropdown" style="float: right" *ngIf="loginStatusService.isLoggedIn">
-    <span class="material-symbols-outlined">menu</span>
-    <div class="dropdown-content">
-      <p><a routerLink="/gruppen">Gruppen</a></p>
-      <p><a routerLink="/freunde">Freunde</a></p>
-      <p><a onclick="location.href='/logout'">Ausloggen</a></p>
-    </div>
-  </div>
-  -->
-
-  <div id="mySidebar" class="sidebar">
+  <div class="sidebar" [ngStyle]="sidebarStyle">
     <a class="closebtn" (click)="closeNav()">×</a>
     <a (click)="closeNav()" routerLink="/gruppen">Gruppen</a>
     <a (click)="closeNav()" routerLink="/freunde">Freunde</a>
+    <a (click)="closeNav()" routerLink="/profilBearbeiten">Profil bearbeiten</a>
     <a (click)="closeNav()" onclick="location.href='/logout'">Ausloggen</a>
   </div>
 
-  <div id="main" style="float: right" *ngIf="loginStatusService.isLoggedIn">
+  <div id="main" style="float: right" *ngIf="loginStatusService.isLoggedIn" [ngStyle]="mainStyle">
     <button class="openbtn" (click)="openNav()">☰</button>
   </div>
 </div>

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { LoginStatusService } from './LoginStatusService';
+import {Component} from '@angular/core';
+import {LoginStatusService} from './LoginStatusService';
 
 @Component({
   selector: 'app-root',
@@ -8,20 +8,19 @@ import { LoginStatusService } from './LoginStatusService';
 })
 export class AppComponent {
   title = 'Findz';
-  constructor(public loginStatusService: LoginStatusService) {}
+  sidebarStyle: any = {"width": "0"};
+  mainStyle: any = {"marginRight": "0"};
+
+  constructor(public loginStatusService: LoginStatusService) {
+  }
 
   openNav() {
-    // @ts-ignore
-    document.getElementById("mySidebar").style.width = "140px";
-    // @ts-ignore
-    document.getElementById("main").style.marginRight = "140px";
+    this.sidebarStyle = {"width": "140px"};
+    this.mainStyle = {"marginRight": "140px"};
   }
 
   closeNav() {
-    // @ts-ignore
-    document.getElementById("mySidebar").style.width = "0";
-    // @ts-ignore
-    document.getElementById("main").style.marginRight= "0";
+    this.sidebarStyle = {"width": "0"};
+    this.mainStyle = {"marginRight": "0"};
   }
-
 }

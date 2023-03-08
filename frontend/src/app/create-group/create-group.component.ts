@@ -27,10 +27,12 @@ export class CreateGroupComponent implements OnInit {
 
   saveGroup() {
     let members = this.friends.filter(x => x.checked).map(y => y.name);
-    if (this.groupName==""){
+    if (this.groupName == "") {
       alert("Bitte Gruppennamen eingeben!");
-    } else if(members.length==0){
+      return;
+    } else if (members.length == 0) {
       alert("Bitte Gruppenmitglieder auswählen!");
+      return;
     }
     this.http.post<any>('/createGroup', JSON.stringify({members: members, name: this.groupName.trimEnd()}))
       .subscribe(data => {

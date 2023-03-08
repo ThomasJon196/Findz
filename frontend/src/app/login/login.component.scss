@@ -4,20 +4,19 @@
 }
 
 .login-btn {
-  margin:auto;
+  margin: auto;
   justify-content: center;
   flex-direction: row;
   display: flex;
   background-color: rgb(255, 255, 255);
   align-items: center;
-
   padding: 10px;
   box-shadow: 3px 3px 3px rgb(170, 170, 170);
   border-radius: 15px;
 }
+
 .btn-text {
   justify-content: center;
   padding: 5px;
-  font-family: 'Poppins', sans-serif;
   color: rgb(85, 85, 85);
 }
