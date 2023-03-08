@@ -122,6 +122,7 @@ def on_join(data):
     username = data.get('email')
     room = data.get("current_group")
     join_room(room)
+    # If a None type error is thrown here, the current user is not logged in.
     print(username + ' has joined the room ' + room)
     send(username + ' has joined the room ' + room, room=room)
 
