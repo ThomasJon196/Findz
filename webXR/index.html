@@ -96,15 +96,6 @@
                         openPoint(place);
                     });
                 }
-                ,
-                remove: function () {
-                    console.log(this.el)
-                    this.el.removeEventListener('click', e => {
-                        place = getPunkt(this.el.innerHTML);
-                        console.log(" ergebniss getponkut" + place)
-                        openPoint(place);
-                    });
-                },
             }
         );
     </script>
@@ -175,6 +166,8 @@
 
     let punkteAr = []
     let zuNahListe = []
+    let angezeigteFreunde = []
+    let testDataSet = false;
 
     const successCallback = (position) => {
         // console.log(position);
@@ -207,9 +200,6 @@
     navigator.geolocation.watchPosition(successCallback, errorCallback)
 
 
-    
-
-
     var socket = io.connect('https://' + document.domain + ':' + location.port);
 
     socket.emit('join', JSON.stringify({
@@ -221,50 +211,236 @@
         window.location.href = destination;
     });
 
-    socket.on('answer', function (msg) {
-        clearScene()
+    function checkZunahFreund(freundNeu) {
+        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
 
-        JSON.parse(msg)[0].forEach(element => {
-            if (element['name'] != '{{user}}') {
-                //console.log(" Empfangene name" + element['name'])
-                zeigeUseran2(element, ownPosition.coords)
+        if ((entfernung < 0.04) && !zuNahListe.includes(freundNeu.name)) {
+            zuNahListe.push(freundNeu.name)
+            updateDeviceList();
+            return true
+        } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
+            for (let i = 0; i < zuNahListe.length; i++) {
+                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
+                if (zuNahListe[i].localeCompare(freundNeu.name + " ")) {
+                    zuNahListe.splice(i, 1);
+                    break;
+                }
             }
-        });
-        zeigeUseran2({
+            updateDeviceList();
+            return false
+        } else if (zuNahListe.includes(freundNeu.name)) {
+            return true;
+        }
+        return false
+    }
+
+    function erstelleFreundEntity(freundNeu) {
+        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+        var scale = 130
+        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
+            scale *= (1 + (entfernung - 2.5))
+        }
+
+        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
+            scale *= (1 - (0.5 - entfernung))
+        }
+
+        let root = document.createElement("a-entity")
+        console.log("freundname erstelleFreundEntity", freundNeu.name)
+        root.setAttribute("id", freundNeu.name)
+        root.setAttribute("maxDistance", "5000000")
+        root.setAttribute("look-at", "[gps-camera]")
+        root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+
+        let userText = document.createElement("a-text")
+        if (entfernung > 1) {
+            userText.setAttribute("value", entfernung + " km")
+        } else {
+            userText.setAttribute("value", (entfernung * 1000) + " m")
+        }
+
+        userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
+        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+        userText.setAttribute("align", "center")
+
+
+        var pfeil = document.createElement("a-entity")
+        pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
+        pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
+        pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
+
+
+        var userBild = document.createElement("a-circle")
+
+        userBild.setAttribute('align', 'center');
+        userBild.setAttribute("material", "src: " + freundNeu.bild)
+        userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
+
+        let element = document.querySelector('#container')
+
+        root.appendChild(userBild)
+        root.appendChild(pfeil)
+        root.appendChild(userText)
+        element.appendChild(root)
+    }
+
+    function updateFriend(freundNeu) {
+        let element = document.getElementById(freundNeu.name)
+        element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+    }
+
+    function updateFreundesListe(freundNeu) {
+        if (checkZunahFreund(freundNeu)) {
+            return
+        }
+
+        angezeigteFreunde.forEach(freundAktuell => {
+
+            if (0 === freundAktuell.name.localeCompare(freundNeu.name)) {
+                //           console.log("updatefriendList" + freundNeu.name)
+                updateFriend("update friend" + freundNeu);
+                return
+            }
+        })
+        angezeigteFreunde.push(freundNeu)
+        erstelleFreundEntity(freundNeu)
+    }
+
+
+    function checkZunahPunkt(punkte) {
+        let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+
+        if ((entfernung < 0.04) && !zuNahListe.includes(punkte.title)) {
+            zuNahListe.push(punkte.title)
+            updateDeviceList();
+            return true
+        } else if ((entfernung > 0.04) && zuNahListe.includes(punkte.title)) {
+            for (let i = 0; i < zuNahListe.length; i++) {
+                if (zuNahListe[i].localeCompare(punkte.title + " ")) {
+                    zuNahListe.splice(i, 1);
+                    break;
+                }
+            }
+            updateDeviceList();
+            return false
+        } else if (zuNahListe.includes(punkte.title)) {
+            return true
+        }
+        return false
+    }
+
+
+    function erstellePunktEntity(punkte) {
+        let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+        var scale = 200
+
+        var userText = document.createElement("a-text")
+        userText.setAttribute("id", punkte.title)
+        if (entfernung > 1) {
+            userText.setAttribute("value", punkte.title + " " + entfernung + " km")
+        } else {
+            userText.setAttribute("value", punkte.title + " " + entfernung + " m")
+        }
+        userText.setAttribute("maxDistance", "5000000")
+        userText.setAttribute("look-at", "[gps-camera]")
+        userText.setAttribute("clicker", "")
+        userText.innerText = punkte.title
+
+        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
+            scale *= (1 + (entfernung - 2.5))
+        }
+        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
+            scale *= (1 - (0.5 - entfernung))
+        }
+
+        userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
+        userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
+        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+
+        let element = document.querySelector('#container')
+        element.appendChild(userText)
+    }
+
+    function updatePunkteListe(punktNeu) {
+
+        if (checkZunahPunkt(punktNeu)) {
+            return
+        }
+
+        for (let i = 0; i < punkteAr.length; i++) {
+            if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
+                return
+            }
+        }
+        punkteAr.push(punktNeu)
+        erstellePunktEntity(punktNeu)
+
+    }
+
+    function removeOfflineUser(freundAktuell, freundlisteNeu) {
+        freundlisteNeu.forEach(freundneu => {
+            if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
+                return
+            }
+        })
+        angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
+        let element = document.getElementById(freundAktuell.name);
+        let root = document.getElementById("container");
+        root.removeChild(element);
+    }
+
+    function addTestData() {
+
+        let testFreund1 = {
             "name": "RingKiosk",
             "latitude": "50.79846715949979",
             "longitude": "7.2058313596181565",
             "bild": zuhause_bild
-        }, ownPosition.coords);
-        zeigeUseran2({
+        };
+        let testFreund2 = {
             "name": "Koeln",
             "latitude": 50.932779,
             "longitude": 6.958231,
             "bild": thomas_bild
-        }, ownPosition.coords);
-        // zeigeUseran({ "name": "hbrs", "latitude": "50.78001445359288", "longitude": "7.182461982104352", "bild": thomas_bild }, ownPosition.coords);
-        // zeigeUseran({ "name": "shitfest", "latitude": "34.668730658268004", "longitude": "135.4295393926713", "bild": zuhause_bild}, ownPosition.coords);
-        // zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
+        }
+        let testPunkt1 = {
+            "title": 'hbrs',
+            "text": 'wir lieben es alle ',
+            "latitude": 50.78001445359288,
+            "longitude": 7.182461982104352
+        }
+        if (testDataSet) {
 
-        punkteAr = JSON.parse(msg)[1]
-        console.log(typeof punkteAr)
-        // console.log("ich bin die angekommene nachicht" + punkteAr)
-        JSON.parse(msg)[1].forEach(makierterPunkt => zeigePunkteAn(makierterPunkt, ownPosition.coords));
-        punkteAr.push({
-            "title": 'hbrs',
-            "text": 'wir lieben es alle ',
-            "latitude": 50.78001445359288,
-            "longitude": 7.182461982104352
-        })
-        zeigePunkteAn({
-            "title": 'hbrs',
-            "text": 'wir lieben es alle ',
-            "latitude": 50.78001445359288,
-            "longitude": 7.182461982104352
-        }, ownPosition.coords)
+        } else {
+            erstelleFreundEntity(testFreund1)
+            erstelleFreundEntity(testFreund2)
+        }
+        checkZunahFreund(testFreund1)
+        checkZunahFreund(testFreund2)
+        updatePunkteListe(testPunkt1)
+        testDataSet = true
+    }
+
+    socket.on('answer', function (msg) {
+
+        let freundeListeNeu = JSON.parse(msg)[0];
+        let punkteListeNeu = JSON.parse(msg)[1];
+
+
+        freundeListeNeu.forEach(freundNeu => {
+            updateFreundesListe(freundNeu)
+        });
+        angezeigteFreunde.forEach(freundAktuell => {
+            removeOfflineUser(freundAktuell, freundeListeNeu)
+        });
+
+        punkteListeNeu.forEach(punktNeu => {
+            updatePunkteListe(punktNeu)
+        });
+
+        addTestData();
 
     });
-
 
     function openPoint(punkt) {
         //    console.log("punkt : " + punkt)
@@ -311,7 +487,6 @@
         } else {
             console.log("Geolocation is not supported by this browser.")
         }
-
     }
 
     function makierungSetzten(location) {
@@ -363,16 +538,11 @@
          */
     }
 
-    function clearScene() {
-        document.querySelector('#container').innerHTML = '';
-    }
-
     function Deg2Rad(deg) {
         return deg * Math.PI / 180;
     }
 
     function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
-
         lat1 = Deg2Rad(lat1);
         lat2 = Deg2Rad(lat2);
         lon1 = Deg2Rad(lon1);
@@ -385,166 +555,13 @@
     }
 
     function updateDeviceList() {
-        // Leere die Liste
-        var deviceList = document.querySelector('#deviceList')
-        deviceList.innerHTML = ""
-        // Füge jedes Gerät als Listenelement hinzu
-        for (index in zuNahListe) {
-            //     console.log(zuNahListe[index])
+        let deviceList = document.getElementById('deviceList');
+        deviceList.innerHTML = "";
+        for (let index in zuNahListe) {
             const deviceItem = document.createElement('li');
-            deviceItem.innerText = zuNahListe[index]
+            deviceItem.innerText = zuNahListe[index];
             deviceList.appendChild(deviceItem);
         }
-    }
-
-    function zeigeUseran2(andereUser, coordinaten) {
-
-        // console.log(andereUser)
-        let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
-        //  console.log('ich bin die entfernung:'+ entfernung)
-
-
-        if ((entfernung < 0.04) && !zuNahListe.includes(andereUser.name)) {
-            zuNahListe.push(andereUser.name)
-            updateDeviceList();
-            return
-        } else if ((entfernung > 0.04) && zuNahListe.includes(andereUser.name)) {
-            for (let i = 0; i < zuNahListe.length; i++) {
-                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
-                if (zuNahListe[i].localeCompare(andereUser.name + " ")) {
-                    zuNahListe.splice(i, 1);
-                    //   console.log('ich bin bei zu nah und schon da')
-                    break;
-                }
-            }
-            updateDeviceList();
-
-        } else if (zuNahListe.includes(andereUser.name)) {
-            return
-        }
-
-
-        var scale = 130
-        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-            scale *= (1 + (entfernung - 2.5))
-        }
-
-        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (1 - (0.5 - entfernung))
-        }
-
-
-        root = document.createElement("a-entity")
-        root.setAttribute("maxDistance", "5000000")
-        root.setAttribute("look-at", "[gps-camera]")
-        root.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-
-        var userText = document.createElement("a-text")
-        if (entfernung > 1) {
-            userText.setAttribute("value", entfernung + " km")
-        } else {
-            userText.setAttribute("value", (entfernung * 1000) + " m")
-        }
-
-        userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
-        userText.setAttribute("scale", scale + " " + scale + " " + scale)
-        userText.setAttribute("align", "center")
-
-
-        var pfeil = document.createElement("a-entity")
-        pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
-        pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
-        pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
-
-
-        element = document.querySelector('#container')
-        element2 = document.querySelector('#a-cene')
-
-
-        var userBild = document.createElement("a-circle")
-
-        userBild.setAttribute('align', 'center');
-        //userBild.setAttribute('rotation', "-90 0 0");
-        userBild.setAttribute("material", "src: " + andereUser.bild)
-        userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
-        //userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-        //userBild.setAttribute("clicker", "")
-
-
-        /*
-                userBild.setAttribute('align', 'center');
-                userBild.setAttribute("src", andereUser.bild)
-                userBild.setAttribute("scale", scale + " " + scale + " " + scale)
-                   userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-                userBild.setAttribute("clicker", "")
-        */
-
-        element = document.querySelector('#container')
-
-        root.appendChild(userBild)
-        root.appendChild(pfeil)
-        root.appendChild(userText)
-        element.appendChild(root)
-    }
-
-    function zeigePunkteAn(punkte, coordinaten) {
-        //console.log("ich bin der punkt in zeige punkt an" + punkte)
-
-        let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, coordinaten.latitude, coordinaten.longitude)
-        //  console.log('ich bin die entfernung:'+ entfernung)
-        //  console.log("title" +  punkte.title)
-        //  console.log("entfernung" + entfernung)
-
-        if ((entfernung < 0.04) && !zuNahListe.includes(punkte.title)) {
-            //  console.log(punkte.title)
-            zuNahListe.push(punkte.title)
-            updateDeviceList();
-
-            return
-        } else if ((entfernung > 0.04) && zuNahListe.includes(punkte.title)) {
-
-            for (let i = 0; i < zuNahListe.length; i++) {
-                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
-                if (zuNahListe[i].localeCompare(punkte.title + " ")) {
-                    zuNahListe.splice(i, 1);
-                    //   console.log('ich bin bei zu nah und schon da')
-                    break;
-                }
-            }
-            updateDeviceList();
-
-        } else if (zuNahListe.includes(punkte.title)) {
-            return
-        }
-
-        var scale = 200
-
-        var userText = document.createElement("a-text")
-        if (entfernung > 1) {
-            userText.setAttribute("value", punkte.title + " " + entfernung + " km")
-        } else {
-            userText.setAttribute("value", punkte.title + " " + entfernung + " m")
-        }
-        userText.setAttribute("maxDistance", "5000000")
-        userText.setAttribute("look-at", "[gps-camera]")
-        userText.setAttribute("clicker", "")
-        userText.innerText = punkte.title
-
-        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-            scale *= (1 + (entfernung - 2.5))
-        }
-        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (1 - (0.5 - entfernung))
-        }
-
-        userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
-        userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", scale + " " + scale + " " + scale)
-
-        //console.log(userText)
-        //console.log(" hier sollte user text sein" + userText)
-        element = document.querySelector('#container')
-        element.appendChild(userText)
     }
 
     function checkClose(position) {
@@ -554,139 +571,3 @@
 </script>
 
 </html>
-
-<!--
-
-/* function zeigeUseran(andereUser, coordinaten) {
-
-        // console.log(andereUser)
-         let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
-         //  console.log('ich bin die entfernung:'+ entfernung)
-
-
-         if ((entfernung < 0.04) && !zuNahListe.includes(andereUser.name)) {
-             zuNahListe.push(andereUser.name)
-             updateDeviceList();
-             return
-         } else if ((entfernung > 0.04) && zuNahListe.includes(andereUser.name)) {
-             for (let i = 0; i < zuNahListe.length; i++) {
-                 //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
-                 if (zuNahListe[i].localeCompare(andereUser.name + " ")) {
-                     zuNahListe.splice(i, 1);
-                     //   console.log('ich bin bei zu nah und schon da')
-                     break;
-                 }
-             }
-             updateDeviceList();
-
-         } else if (zuNahListe.includes(andereUser.name)) {
-             return
-         }
-
-
-
-
-         var scale = 200
-         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-             scale *= (1 + (entfernung - 2.5))
-
-         }
-         if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-             scale *= (1 - (0.5 - entfernung))
-
-         }
-
-         var userText = document.createElement("a-text")
-         if (entfernung > 1) {
-             userText.setAttribute("value", entfernung + " km")
-         } else {
-             userText.setAttribute("value", (entfernung*1000) + " m")
-         }
-         userText.setAttribute("maxDistance", "5000000")
-         userText.setAttribute("look-at", "[gps-camera]")
-         userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
-         userText.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-
-         var sign = document.createElement("a-entity")
-         //sign.setAttribute("text", "value", "HELLO", "height" , "10")
-         sign.setAttribute("text", "width: 4; value: This text will be 4 units wide.")
-         sign.setAttribute("id", "refresh-button")
-         sign.setAttribute("look-at", "[gps-camera]")
-         sign.setAttribute("geometry", "primitive: plane; radius: auto")
-         sign.setAttribute("maxDistance", "5000000")
-         sign.setAttribute("material", "color: #dfecec")
-         sign.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-         sign.setAttribute("scale", scale + " " + scale + " " + scale)
-
-
-         var pfeil = document.createElement("a-entity")
-         pfeil.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-         pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
-
-         pfeil.setAttribute("scale", scale + " " + scale + " " + scale)
-         pfeil.setAttribute("position", scale + " " + scale + " " + scale)
-
-         element = document.querySelector('#container')
-        // beschriftung = document.createElement("iframe")
-
-         element2 = document.querySelector('#a-cene')
-         //beschriftung.innerHTML ='<button style="background-color: #4CAF50;  border: none; color: white; padding: 10px 20px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 5px;"> fuck </button>'
-         //var userText = document.createElement("a-text")
-         element2.appendChild(sign)
-         //element.appendChild(pfeil)
-         console.log(sign)
-         //userText.setAttribute("scale", scale + " " + scale + " " + scale)
-         //userText.setAttribute('align', 'center');
-
-
-
-         var userBild = document.createElement("a-image")
-
-         userBild.setAttribute('align', 'center');
-         userBild.setAttribute("src", andereUser.bild)
-         userBild.setAttribute("maxDistance", "5000000")
-         userBild.setAttribute("look-at", "[gps-camera]")
-         userBild.setAttribute("scale", scale + " " + scale + " " + scale)
-         userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-         userBild.setAttribute("clicker", "")
-
-         element = document.querySelector('#container')
-
-         element.appendChild(userBild)
-         element.appendChild(userText)
-
-     }
- */
-
--->
-
-<!--  <script> AFRAME.registerComponent('scale-based-on-distance', {
-    schema: {
-      minDistance: {type: 'number', default: 1},
-      maxDistance: {type: 'number', default: 10},
-      minScale: {type: 'number', default: 0.1},
-      maxScale: {type: 'number', default: 1}
-    },
-
-    init: function () {
-      this.camera = document.querySelector('#camera');
-      this.object = this.el;
-    },
-
-    tick: function () {
-      var distance = this.camera.object3D.position.distanceTo(this.object.object3D.position);
-      var scale = this.scaleForDistance(distance, this.data.minDistance, this.data.maxDistance, this.data.minScale, this.data.maxScale);
-      this.object.setAttribute('scale', {x: scale, y: scale, z: scale});
-    },
-
-    scaleForDistance: function (distance, minDistance, maxDistance, minScale, maxScale) {
-      if (distance < minDistance) {
-        return maxScale;
-      } else if (distance > maxDistance) {
-        return minScale;
-      } else {
-        return (maxScale - minScale) * (1 - (distance - minDistance) / (maxDistance - minDistance)) + minScale;
-      }
-    }
-
-  });</script> -->
