@@ -89,13 +89,22 @@
   <script>
         AFRAME.registerComponent('clicker', {
             init: function () {
+                console.log(this.el)
                 this.el.addEventListener('click', e => {
                    place = getPunkt(this.el.innerHTML);
                    console.log(" ergebniss getponkut"+ place)
                    openPoint(place);
                 });
             }
-        });
+        ,
+            remove: function () {
+            console.log(this.el)
+            this.el.removeEventListener('click', e => {
+                place = getPunkt(this.el.innerHTML);
+                console.log(" ergebniss getponkut"+ place)
+                openPoint(place);
+            });},}
+        );
     </script>
 </head>
 
@@ -161,7 +170,7 @@
 <script>
     function openPoint(punkt) {
 
-        console.log("punkt : " + punkt)
+    //    console.log("punkt : " + punkt)
         document.getElementById("titelp").innerHTML = punkt["title"]
         document.getElementById("textp").innerHTML = punkt["text"]
 
@@ -171,8 +180,10 @@
     function getPunkt(punkt){
 
         var ergebnis;
+        punkteAr.forEach(element => {console.log("das sind die punkte" + element["title"])});
+        console.log("bin der vergleichspunkt" + punkt)
         punkteAr.forEach(element => {if(0===element["title"].localeCompare(punkt)){
-            console.log(" fuck this" + element)
+            console.log(" fuck this" + element["title"])
             ergebnis = element;
         }});
         return ergebnis;
@@ -181,7 +192,7 @@
     function closePoint() {
         document.getElementById("myPoint").style.display = "none";
     //    document.getElementById("titelp").innerHTML = ""
-   //     document.getElementById("titelp").innerHTML = ""
+   //     document.getElementById("textp").innerHTML = ""
     }
     function openForm() {
         document.getElementById("myForm").style.display = "block";
@@ -210,7 +221,7 @@
         let titel = document.getElementById("titel").value;
         let beschreibung = document.getElementById("beschreibung").value;
 
-        console.log("imhereto die" + titel)
+      //  console.log("imhereto die" + titel)
         /*if(titel.localeCompare(" ") || titel == null){
             closeForm()
             return
@@ -254,7 +265,7 @@
 
           */
     }
-
+    
 
     function clearScene() {
         document.querySelector('#container').innerHTML = '';
@@ -296,7 +307,7 @@
         }
     }
 
-    function zeigeUseran(andereUser, coordinaten) {
+   /* function zeigeUseran(andereUser, coordinaten) {
 
        // console.log(andereUser)
         let entfernung = PythagorasEquirectangular(andereUser.latitude, andereUser.longitude, coordinaten.latitude, coordinaten.longitude)
@@ -395,7 +406,7 @@
         element.appendChild(userText)
 
     }
-
+*/
     function zeigeUseran2(andereUser, coordinaten) {
 
         // console.log(andereUser)
@@ -473,7 +484,7 @@
         userBild.setAttribute("material","src: "+ andereUser.bild)
         userBild.setAttribute("scale", (scale/1.6) + " " + (scale/1.6) + " " + (scale/1.6))
      //   userBild.setAttribute("gps-entity-place", "latitude:" + andereUser.latitude + "; longitude:" + andereUser.longitude)
-        userBild.setAttribute("clicker", "")
+        //userBild.setAttribute("clicker", "")
 
 
 
@@ -499,16 +510,16 @@
 
 
     function zeigePunkteAn(punkte, coordinaten) {
-        console.log("ich bin der punkt in zeige punkt an" + punkte)
+      //  console.log("ich bin der punkt in zeige punkt an" + punkte)
 
 
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, coordinaten.latitude, coordinaten.longitude)
         //  console.log('ich bin die entfernung:'+ entfernung)
-          console.log("punktbekommen" +  punkte)
-        console.log("entfernung" + entfernung)
+        //  console.log("title" +  punkte.title)
+      //  console.log("entfernung" + entfernung)
 
         if ((entfernung < 0.04) && !zuNahListe.includes(punkte.title)) {
-            console.log(punkte.title)
+          //  console.log(punkte.title)
             zuNahListe.push(punkte.title)
             updateDeviceList();
 
@@ -554,7 +565,7 @@
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
 
        // console.log(userText)
-        console.log(" hier sollte user text sein" + userText)
+       // console.log(" hier sollte user text sein" + userText)
         element = document.querySelector('#container')
         element.appendChild(userText)
     }
@@ -606,12 +617,16 @@
 
     navigator.geolocation.watchPosition(successCallback, errorCallback)
 
+    socket.on('redirect', function(destination) {
+        window.location.href = destination;
+    });
+
     socket.on('answer', function (msg) {
         clearScene()
         JSON.parse(msg)[0].forEach(element => {
             if (element['name'] != '{{user}}') {
                 //console.log(" Empfangene name" + element['name'])
-                zeigeUseran(element, ownPosition.coords)
+                zeigeUseran2(element, ownPosition.coords)
             }
         });
         zeigeUseran2({ "name": "RingKiosk", "latitude": "50.79846715949979", "longitude": "7.2058313596181565", "bild": zuhause_bild }, ownPosition.coords);
@@ -626,8 +641,10 @@
         // zeigeUseran({ "name": "zuhause", "latitude": "50.799501761695296", "longitude": "7.205012353349729", "bild": zuhause_bild}, ownPosition.coords);
 
         punkteAr = JSON.parse(msg)[1]
-        console.log("ich bin die angekommene nachicht" + punkteAr)
+        console.log(typeof punkteAr)
+       // console.log("ich bin die angekommene nachicht" + punkteAr)
         JSON.parse(msg)[1].forEach(makierterPunkt => zeigePunkteAn(makierterPunkt, ownPosition.coords));
+        punkteAr.push({ "title":'hbrs',"text": 'wir lieben es alle ', "latitude" : 50.78001445359288, "longitude": 7.182461982104352})
         zeigePunkteAn({ "title":'hbrs',"text": 'wir lieben es alle ', "latitude" : 50.78001445359288, "longitude": 7.182461982104352},ownPosition.coords)
 
     });

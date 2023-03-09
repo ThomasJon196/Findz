@@ -119,7 +119,7 @@ socketio = SocketIO(app)
 @socketio.on('join')
 def on_join(data):
     data = json.loads(data)
-    username = data.get('email')
+    username = data.get('name')
     if username is None:
         destination = '/'
         emit('redirect', destination)
