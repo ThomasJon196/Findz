@@ -175,9 +175,6 @@ def transform_to_payload(user_location_list):
     Transform user data to json payload expected by the frontend.
     """
 
-    # TODO: remove example image
-    img_adr = "https://icon-library.com/images/sims-icon/sims-icon-29.jpg"
-
     user_list = []
 
     for record in user_location_list:
@@ -185,7 +182,7 @@ def transform_to_payload(user_location_list):
             "name": record[0],
             "latitude": record[1],
             "longitude": record[2],
-            "bild": img_adr 
+            "bild": None
         }
         user_list.append(json_payload)
 
