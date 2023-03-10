@@ -31,12 +31,12 @@
 
 Bugfixes:
 - [x] Lati/Longi switched when saving/reading point.
-- [ ] App langsamer seit AppScheduler: Replaced print statements
+- [x] App langsamer seit AppScheduler: Replace print statements with logging
 - [x] Sonderzeichen in Gruppennamen
 - [x] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [x] Bild flakern (probably download/refresh)
-- [ ] Error on first login 
+- [x] Error on first login: Probably session problems. Maybe the random secret key creates problems.
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
 
 
