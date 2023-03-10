@@ -8,7 +8,7 @@
 	- [x] Endpunkt erweitern zur Gruppenuebergabe (WebXR)
 	- [x] Userlist/Pointlist -> database 
 	- [x] Isolate groups from each other. (SocketIO rooms)
-    - [ ] Only show logged in users inside a group. Login/Logout flag in database with name of group. 
+    - [x] Only show logged in users inside a group. Login/Logout flag in database with name of group. 
       - loggedIn Flag in database (default False)
       - set False on server restart
   - [x] Endpoint for profile picture
@@ -17,13 +17,14 @@
 	- [ ] Anstupsen (optional)
 	- [x] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
 	Fuer alle Leute in der Gruppe sichtbar.
+  - [ ] Zeige Nutzer in der selben Gruppe an.
 
 2. Feature: Frontend UX
-	- [ ] Choose profile picture
-	- [ ] User friendly interface.
+	- [x] Choose profile picture
+	- [x] User friendly interface.
 
 3. Documentation
-   - [ ] documentation outline (chatgpt)
+   - [x] documentation outline
    - [ ] frontend
    - [ ] backend
    - [ ] webXR
@@ -31,12 +32,12 @@
 
 Bugfixes:
 - [x] Lati/Longi switched when saving/reading point.
-- [x] App langsamer seit AppScheduler: Replace print statements with logging
+- [ ] App langsamer seit AppScheduler: Replace print statements with logging, Disable/Replace clientside logging. Disable 'DEBUG' Flag in production.
 - [x] Sonderzeichen in Gruppennamen
 - [x] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [x] Bild flakern (probably download/refresh)
-- [x] Error on first login: Probably session problems. Maybe the random secret key creates problems.
+- [x] Error on first login: Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
 
 
