@@ -27,6 +27,9 @@ from database.sqlite_functions import (
     get_saved_group_points,
     save_new_point,
     get_all_groupnames,
+    user_logged_in,
+    user_logged_out,
+    loggout_all_users
 )
 
 
@@ -41,7 +44,7 @@ DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
 # TODO: Add logging instead of print statements. (Slow down the server.)
 print("Setting up database")
 initialize_database()
-
+loggout_all_users()
 
 def initialize_test_users():
     users = ["test@mail.com", "test2@mail.com"]
@@ -288,6 +291,7 @@ def callback():
 
     print("New user-login: " + session["email"])
     add_new_user(email)
+    user_logged_in(email)
 
     # Final redirect.
     return redirect("/static/gruppen")
@@ -296,7 +300,9 @@ def callback():
 # Logout by clearing cache and redirect to landing page.
 @app.route("/logout")
 def logout():
-    print("User logged out: " + session["email"])
+    email = session["email"]
+    user_logged_out(email)
+    print("User logged out: " + email)
     session.clear()
     return redirect("/")
 

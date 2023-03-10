@@ -36,6 +36,23 @@ def get_user_id(identifier):
         return id[0][0]
 
 
+def user_logged_in(email):
+    user_id = get_user_id(email)
+    query = f"UPDATE users SET loggedIN = 1 WHERE user_id = {user_id}"
+    execute_sql_statement(query)
+
+
+def user_logged_out(email):
+    user_id = get_user_id(email)
+    query = f"UPDATE users SET loggedIN = 0 WHERE user_id = {user_id}"
+    execute_sql_statement(query)
+
+
+def loggout_all_users():  
+    query = "UPDATE users SET loggedIN = 0"
+    execute_sql_statement(query)
+
+
 def get_all_users():
     query = "SELECT email FROM users"
     mails = retrieve_sql_query(query)
@@ -195,6 +212,7 @@ def get_group_memberlist_and_location(group_name):
             SELECT group_id FROM groups \
             WHERE group_name = '{group_name}' \
         )) \
+    AND loggedIN = 1
     """
 
     memberlist_locations = retrieve_sql_query(query_members)
@@ -334,6 +352,7 @@ def initialize_database():
         longitude REAL,
         latitude REAL,
         picture VARCHAR(255),
+        loggedIn BIT DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         UNIQUE (email)
     )
@@ -407,7 +426,7 @@ if __name__ == '__main__':
 
     print("Executing sqlite functions module.")
 
-    # initialize_database()
+    initialize_database()
 
     email = "master@mail"
     friend_mail = "cat@mail"
@@ -418,6 +437,10 @@ if __name__ == '__main__':
     add_new_user(friend_mail)
     add_new_user(friend_mail_2)
     retrieve_sql_query(SHOW_USERS)
+
+    # Login user
+    user_logged_in(email)
+    loggout_all_users()
 
     # Retrieve users from database
     id = get_user_id(email)
