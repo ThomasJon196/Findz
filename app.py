@@ -414,6 +414,15 @@ def save_point_of_interest():
     data = jsonify({"status": "success"})
     return data, 200
 
+@app.route("/updateImage", methods=['POST'])
+def updateImage():
+    payload = json.loads(request.data)
+    imageSource = payload["chosenImageSource"]
+
+    #function to save image
+
+    return 'Image updated successfully', 200
+
 
 # Reroutes the /static/ pages.
 @app.errorhandler(404)

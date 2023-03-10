@@ -1,0 +1,10 @@
+<h3>Profil bearbeiten</h3>
+
+<p>Bild auswählen:</p>
+
+<div *ngFor="let image of images">
+  <input type="radio" [(ngModel)]="image.checked" name="ch" value="{{image.id}}">
+  <img src="{{image.source}}" width="80" height="80" alt="Bild">
+</div>
+
+<button (click)="save()" style="margin-top: 15px" class="BigButtons">Speichern</button>

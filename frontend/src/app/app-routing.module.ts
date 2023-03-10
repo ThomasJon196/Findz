@@ -5,6 +5,7 @@ import {FriendsComponent} from './friends/friends.component';
 import {GroupDetailComponent} from './group-detail/group-detail.component';
 import {GroupsComponent} from './groups/groups.component';
 import {LoginComponent} from './login/login.component';
+import {EditProfileComponent} from "./edit-profile/edit-profile.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -12,7 +13,8 @@ const routes: Routes = [
   {path: 'gruppen', component: GroupsComponent},
   {path: 'gruppeErstellen', component: CreateGroupComponent},
   {path: 'gruppenDetails/:groupName', component: GroupDetailComponent},
-  {path: 'freunde', component: FriendsComponent}
+  {path: 'freunde', component: FriendsComponent},
+  {path: 'profilBearbeiten', component: EditProfileComponent},
 ];
 
 @NgModule({
