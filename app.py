@@ -196,8 +196,8 @@ def transform_to_point_payload(points):
         point_payload = {
             "title": point[0],
             "text": point[1],
-            "latitude": point[2],
-            "longitude": point[3]
+            "longitude": point[2],
+            "latitude": point[3]
         }
         payload.append(point_payload)
 
@@ -222,25 +222,6 @@ def handle_message(message):
     # picture = request_data.get("bild")
 
     update_location(email, latitude, longitute)
-
-    # if session.get("current_group") is not None:
-    #     user_location_list = get_group_memberlist_and_location(
-    #         session.get("current_group")
-    #     )
-
-    #     user_payload = transform_to_payload(user_location_list)
-    #     print("User payload to send" + str(user_payload))
-
-    #     saved_points_list = get_saved_group_points(group=session.get("current_group"))
-    #     example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
-    #     saved_points_list = transform_to_point_payload(example_point)
-
-    #     payload = [user_payload, saved_points_list]
-    #     print("Full payload to send" + str(payload))
-    # else:
-    #     payload = []
-
-    # emit("answer", json.dumps(payload), broadcast=True)
 
 
 #####################
