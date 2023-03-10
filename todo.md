@@ -7,18 +7,22 @@
 	- [x] Aktuelle Gruppe an Server schicken. (Wiete)
 	- [x] Endpunkt erweitern zur Gruppenuebergabe (WebXR)
 	- [x] Userlist/Pointlist -> database 
-	- [x] Isolate groups from each other
-    - [ ] Only show logged in users inside a group. Login/Logout flag in database with name of group. SocketIO rooms
+	- [x] Isolate groups from each other. (SocketIO rooms)
+    - [ ] Only show logged in users inside a group. Login/Logout flag in database with name of group. 
+      - loggedIn Flag in database (default False)
+      - set False on server restart
+  - [x] Endpoint for profile picture
 
-2. Feature: Interaktion
+1. Feature: Interaktion
 	- [ ] Anstupsen (optional)
-	- [ ] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
+	- [x] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
 	Fuer alle Leute in der Gruppe sichtbar.
 
-3. Feature: Frontend UX
+2. Feature: Frontend UX
+	- [ ] Choose profile picture
 	- [ ] User friendly interface.
 
-4. Documentation
+3. Documentation
    - [ ] documentation outline (chatgpt)
    - [ ] frontend
    - [ ] backend
@@ -26,18 +30,19 @@
    - [ ] Vision
 
 Bugfixes:
-- [ ] App langsamer seit AppScheduler
+- [x] Lati/Longi switched when saving/reading point.
+- [ ] App langsamer seit AppScheduler: Replaced print statements
 - [x] Sonderzeichen in Gruppennamen
-- [ ] Pink marker at spawn? (Scaled down marker)
+- [x] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
-- [ ] Bild flakern (probably download/refresh)
+- [x] Bild flakern (probably download/refresh)
 - [ ] Error on first login 
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
 
 
 # Extras
 
-- [ ] SocketIO: Create periodic message. 
+- [x] SocketIO: Create periodic message. 
 - [ ] Bild an markierten PuTODOnkt anghaengen
 - [x] Optional: Beschreibung von dem Punkt
 
