@@ -104,9 +104,8 @@ scheduler.init_app(app)
 scheduler.start()
 
 
-
 # Ecryption of client-side sessions. Necessary for OAuth 2.0.
-app.secret_key = os.urandom(12).hex()
+app.secret_key = '6e4699e90e1096191c1d137b'
 
 # this is to set our environment to https because OAuth 2.0 only supports https environments
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
