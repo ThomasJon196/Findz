@@ -1,5 +1,7 @@
 from contextlib import closing
 import sqlite3
+import logging
+logger = logging.getLogger(__name__)
 
 DB_NAME = 'findz.db'
 
@@ -20,15 +22,21 @@ def add_new_user(email):
     """
     Adds new user to user table.
     """
-    query = f"INSERT INTO users (email, picture) VALUES ('{email}', 'dummy')"
+    query = f"INSERT INTO users (email) VALUES ('{email}')"
     execute_sql_statement(query)
-    print('Added new user')
+    logger.debug('Added new user')
+
+
+def update_user_picture(user, picture_url):
+    user_id = get_user_id(user)
+    query = f"UPDATE users SET picture = '{picture_url}' WHERE user_id = {user_id}"
+    execute_sql_statement(query)
 
 
 def get_user_id(identifier):
     # TODO: Try except Already exsists error
     if identifier == 'None':
-        print("Bitte neu einloggen Mister 1.0")
+        logger.debug("Bitte neu einloggen Mister 1.0")
         return None
     else:
         query = f"SELECT user_id FROM users WHERE email = '{identifier}'"
@@ -48,7 +56,7 @@ def user_logged_out(email):
     execute_sql_statement(query)
 
 
-def loggout_all_users():  
+def loggout_all_users():
     query = "UPDATE users SET loggedIN = 0"
     execute_sql_statement(query)
 
@@ -76,7 +84,7 @@ def add_new_friend(friends_email, user_email):
     VALUES ({user_id}, {friends_id}) \
     """
     execute_sql_statement(query)
-    print('Added friend')
+    logger.debug('Added friend')
 
 
 @require_unique
@@ -95,7 +103,7 @@ def add_new_group(admin, groupname):
     VALUES ('{groupname}', {user_id}) \
     """
     execute_sql_statement(query)
-    print(f'Created group: {groupname}.')
+    logger.debug(f'Created group: {groupname}.')
 
 
 @require_unique
@@ -104,7 +112,7 @@ def add_new_group_members(admin, groupname, new_users):
     Adds members to a group
     """
     admin_id = get_user_id(admin)
-    print('new users:' + str(new_users))
+    logger.debug('new users:' + str(new_users))
 
     query_group = f""" \
     SELECT group_id FROM groups \
@@ -114,18 +122,18 @@ def add_new_group_members(admin, groupname, new_users):
 
     group_id = retrieve_sql_query(query_group)[0][0]
     user_ids = tuple([get_user_id(new_user) for new_user in new_users])
-    print('User IDs: ' + str(user_ids))
+    logger.debug('User IDs: ' + str(user_ids))
 
     if len(user_ids) == 1:
         user_ids = [user_ids[0]]
     sql_params = [(group_id, user_id) for user_id in user_ids]
 
     query = "INSERT INTO group_members (group_id, member_id) VALUES (?, ?)"
-    print("Add group: sql params: " + str(sql_params))
+    logger.debug("Add group: sql params: " + str(sql_params))
 
     execute_sql_statement(query, sql_params)
 
-    print(f'Added {new_users} to group {groupname}.')
+    logger.debug(f'Added {new_users} to group {groupname}.')
 
 
 def get_friendlist(email):
@@ -183,7 +191,7 @@ def get_group_memberlist(user, group_name):
     friendlist_mails = retrieve_sql_query(query_members)
     friendlist_mails = concat_query_result(friendlist_mails)
 
-    print(friendlist_mails)
+    logger.debug(friendlist_mails)
 
     return friendlist_mails
 
@@ -191,21 +199,8 @@ def get_group_memberlist(user, group_name):
 def get_group_memberlist_and_location(group_name):
     # TODO: Refactor sql queries. Variables inside are a safety vournability.
 
-    # admin_id = get_user_id(group_admin_mail)
-
-    # query_members = f""" \
-    # SELECT email, longitude, latitude FROM users \
-    # WHERE user_id IN ( \
-    #     SELECT member_id FROM group_members \
-    #     WHERE group_id = ( \
-    #         SELECT group_id FROM groups \
-    #         WHERE admin_id = {admin_id} \
-    #         AND group_name = '{group_name}' \
-    #     )) \
-    # """
-
     query_members = f""" \
-    SELECT email, longitude, latitude FROM users \
+    SELECT email, longitude, latitude, picture FROM users \
     WHERE user_id IN ( \
         SELECT member_id FROM group_members \
         WHERE group_id = ( \
@@ -216,21 +211,8 @@ def get_group_memberlist_and_location(group_name):
     """
 
     memberlist_locations = retrieve_sql_query(query_members)
-    # memberlist_locations = concat_query_result(memberlist_locations)
-    # print("memberlist_locations:" + str(memberlist_locations))
 
-    # query_group_admin = f""" \
-    # SELECT email, longitude, latitude FROM users \
-    # WHERE user_id = {admin_id}\
-    # """
-
-    # group_admin_location = retrieve_sql_query(query_group_admin)
-
-    # # print("admin_location:" + str(group_admin_location))
-
-    # memberlist_locations += group_admin_location
-
-    print("Member list:" + str(memberlist_locations))
+    logger.debug("Member list:" + str(memberlist_locations))
 
     return memberlist_locations
 
@@ -279,7 +261,7 @@ def get_saved_group_points(group):
     ) \
     """
     points = retrieve_sql_query(query)
-    print("Retrieved points: " + str(points))
+    logger.debug("Retrieved points: " + str(points))
 
     return points
 
@@ -334,7 +316,7 @@ def tables_exist():
     """
 
     tables = retrieve_sql_query(query)
-    print("Current num tables: " + str(len(tables)))
+    logger.debug("Current num tables: " + str(len(tables)))
     if len(tables) >= 5:
         return True
     else:
@@ -407,14 +389,14 @@ def initialize_database():
     """
 
     if not tables_exist():
-        print("Creating new tables.")
+        logger.debug("Creating new tables.")
         execute_sql_statement(users_table)
         execute_sql_statement(friendlists_table)
         execute_sql_statement(groups_table)
         execute_sql_statement(group_members_table)
         execute_sql_statement(saved_points_table)
     else:
-        print("Tables already exist.")
+        logger.debug("Tables already exist.")
 
 
 if __name__ == '__main__':
@@ -424,7 +406,7 @@ if __name__ == '__main__':
     SHOW_MEMBERS = 'SELECT * FROM group_members'
     SHOW_POINTS = 'SELECT * FROM saved_points'
 
-    print("Executing sqlite functions module.")
+    logger.debug("Executing sqlite functions module.")
 
     initialize_database()
 

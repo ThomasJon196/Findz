@@ -11,6 +11,26 @@ from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
+import logging
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+logging.getLogger('apscheduler').setLevel(logging.WARNING)
+
 
 from database.sqlite_functions import (
     initialize_database,
@@ -29,9 +49,9 @@ from database.sqlite_functions import (
     get_all_groupnames,
     user_logged_in,
     user_logged_out,
-    loggout_all_users
+    loggout_all_users,
+    update_user_picture
 )
-
 
 #####################
 #       SETUP       #
@@ -41,7 +61,7 @@ GOOGLE_CLIENT_ID = os.getenv("CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.getenv("CLIENT_KEY", None)
 DEPLOY_ENV = os.getenv("DEPLOY_ENV", "GLOBAL (default)")
 
-# TODO: Add logging instead of print statements. (Slow down the server.)
+# TODO: Add logging instead of app.logger.debug statements. (Slow down the server.)
 print("Setting up database")
 initialize_database()
 loggout_all_users()
@@ -72,6 +92,7 @@ else:
     print("Deploying: " + DEPLOY_ENV + " accessible on: " + DOMAIN)
 
 
+
 # Name of the application. Used inside flask for module loading.. and so on. Idk rly.
 app = Flask(__name__)
 
@@ -81,6 +102,8 @@ scheduler = APScheduler()
 scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
+
+
 
 # Ecryption of client-side sessions. Necessary for OAuth 2.0.
 app.secret_key = os.urandom(12).hex()
@@ -130,7 +153,7 @@ def on_join(data):
     room = data.get("current_group")
     join_room(room)
     # If a None type error is thrown here, the current user is not logged in.
-    print(username + ' has joined the room ' + room)
+    app.logger.debug(username + ' has joined the room ' + room)
     send(username + ' has joined the room ' + room, room=room)
 
 # TODO: Implement a active rooms list.
@@ -145,27 +168,27 @@ def on_join(data):
 
 # @scheduler.task('interval', id='do_job_1', seconds=2, misfire_grace_time=300)
 # def test_task():
-#     print("hello you")
+#     app.logger.debug("hello you")
 
 
 @scheduler.task('interval', id='Notify users', seconds=2, misfire_grace_time=300)
 def broadcast_locations():
-    print("Boradcasting locations")
+    app.logger.debug("Boradcasting locations")
     rooms = get_all_groupnames()
 
     for room in rooms:
-        print("Broadcasting locations for group: " + str(room))
+        app.logger.debug("Broadcasting locations for group: " + str(room))
         user_location_list = get_group_memberlist_and_location(room)
 
         user_payload = transform_to_payload(user_location_list)
-        print("User payload to send" + str(user_payload))
+        app.logger.debug("User payload to send" + str(user_payload))
 
         saved_points_list = get_saved_group_points(group=room)
         # example_point = [['examplePoint', 'kill me please', 50.78001445359288, 7.182461982104352]]
         saved_points_list = transform_to_point_payload(saved_points_list)
 
         payload = [user_payload, saved_points_list]
-        print("Full payload to send" + str(payload))
+        app.logger.debug("Full payload to send" + str(payload))
 
         socketio.emit("answer", json.dumps(payload), room=room)
 
@@ -182,7 +205,7 @@ def transform_to_payload(user_location_list):
             "name": record[0],
             "latitude": record[1],
             "longitude": record[2],
-            "bild": None
+            "bild": record[3]
         }
         user_list.append(json_payload)
 
@@ -210,9 +233,9 @@ def handle_message(message):
     Endpoint which receives the current user position and establishes a socketio-connection
     TODO: Create a periodic tasks for broadcasting, instead of sending locations whenever a users sends an update.
     """
-    # print('received message: ' + message)
+    # app.logger.debug('received message: ' + message)
     # Received format: { "name": '{{user}}', "latitude": position.coords.latitude , "longitude": position.coords.longitude, "bild": "images/Wiete.png" }
-    print("SocketIO request by: " + str(session.get("email")))
+    app.logger.debug("SocketIO request by: " + str(session.get("email")))
 
     request_data = json.loads(message)
 
@@ -236,8 +259,8 @@ def handle_message(message):
 # def require_login():
 #     # Check if the user is logged in with Google
 #     if request.endpoint not in EXCLUDED_ENDPOINTS and session.get('email') is None:
-#         print(request.endpoint)
-#         print(session.get('email') is None)
+#         app.logger.debug(request.endpoint)
+#         app.logger.debug(session.get('email') is None)
 #         # If the user is not logged in, redirect to the Google login page
 #         return redirect('/')
 
@@ -286,7 +309,7 @@ def callback():
     session["name"] = id_info.get("name")
     session["email"] = email
 
-    print("New user-login: " + session["email"])
+    app.logger.debug("New user-login: " + session["email"])
     add_new_user(email)
     user_logged_in(email)
 
@@ -299,7 +322,7 @@ def callback():
 def logout():
     email = session["email"]
     user_logged_out(email)
-    print("User logged out: " + email)
+    app.logger.debug("User logged out: " + email)
     session.clear()
     return redirect("/")
 
@@ -341,7 +364,7 @@ def getGroups():
 @app.route("/getGroupMembers", methods=["GET"])
 def getGroupMembers():
     payload = request.args.get("groupName")
-    print(payload)
+    app.logger.debug(payload)
     memberlist = get_group_memberlist(user=session["email"], group_name=payload)
     data = jsonify({"memberlist": memberlist})
     return data, 200
@@ -355,7 +378,7 @@ def createGroup():
 
     add_new_group(admin=session.get("email"), groupname=payload["name"])
 
-    print("Payload is: " + str(payload["members"]))
+    app.logger.debug("Payload is: " + str(payload["members"]))
 
     new_members.append(mail)
     add_new_group_members(
@@ -378,7 +401,7 @@ def webxr():
     session["current_group"] = groupname
 
     email = session.get("email")
-    print("groupname: " + str(groupname))
+    app.logger.debug("groupname: " + str(groupname))
 
     return render_template("webXR.html", user=email, current_group=groupname)
 
@@ -393,7 +416,7 @@ def save_point_of_interest():
     payload = json.loads(request.data)  
 
     save_new_point(payload, session.get('email'), session.get('current_group'))
-    print('Successfully recevied point of interest: ' + str(payload))
+    app.logger.debug('Successfully recevied point of interest: ' + str(payload))
 
     data = jsonify({"status": "success"})
     return data, 200
@@ -403,7 +426,7 @@ def updateImage():
     payload = json.loads(request.data)
     imageSource = payload["chosenImageSource"]
 
-    #function to save image
+    update_user_picture(session.get("email"), imageSource)
 
     return 'Image updated successfully', 200
 
@@ -418,24 +441,6 @@ def not_found_error(error):
 # BACKGROUND FUNCS  #
 #####################
 
-
-def get_logged_in_users():
-    # Retrieve all users from the database
-    all_users = get_all_users()
-
-    # Create an empty list to store the logged in users
-    logged_in_users = []
-
-    # Iterate over the session keys and check if they correspond to a logged-in user
-    for key in session.keys():
-        user_id = session.get(key)
-        for user in all_users:
-            if user.id == user_id:
-                logged_in_users.append(user)
-
-    return logged_in_users
-
-
 if __name__ == "__main__":
 
     if DEPLOY_ENV == "LOCAL":
@@ -448,16 +453,3 @@ if __name__ == "__main__":
         )
     else:
         socketio.run(app, debug=True, allow_unsafe_werkzeug=True, host="0.0.0.0")
-
-
-    # import threading
-    # # Broadcast locations every x seconds.
-    # def broadcast_event():
-    #     broadcast_locations()
-    #     new_event = threading.Timer(2.0, broadcast_event)
-    # def test():
-    #     print("Hello you fat fuck")
-    #     new_event = threading.Timer(2.0, test)
-        
-    # print("Starting thread")
-    # threading.Timer(interval=2.0, function=test)
