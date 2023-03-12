@@ -97,14 +97,21 @@
                     });
                 }
             }
-        );
+        );AFRAME.registerComponent('log', {
+            schema: {type: 'string'},
+            init: function () {
+                var stringToLog = this.data;
+                console.log(stringToLog);
+            }
+        });
+
     </script>
 </head>
 
 <body>
 <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-         id="a-cene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000'>
-    <a-entity id="container">
+         id="a-cene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000' log="Hello, Scene!">
+    <a-entity id="container" log="Helo, container!l">
         <!-- Hier wird das 3D-Objekt definiert -->
     </a-entity>
     <!-- ></a-entity>-->
@@ -181,7 +188,7 @@
             "name": '{{user}}',
             "latitude": position.coords.latitude,
             "longitude": position.coords.longitude,
-            "bild": "images/Wiete.png"
+          //  "bild": "images/Wiete.png"
         }))
         ownPosition = position
     };
@@ -189,9 +196,12 @@
         console.log(error);
     };
 
+
+
     let ownPosition;
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((coords) => {
+            console.log("own position", coords)
             ownPosition = coords
         })
     } else {
@@ -235,6 +245,7 @@
     }
 
     function erstelleFreundEntity(freundNeu) {
+
         let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         var scale = 130
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
@@ -245,12 +256,20 @@
             scale *= (1 - (0.5 - entfernung))
         }
 
+        console.log("element container", )
+        console.log("der selector" , document.querySelector('#container'))
+        element = document.querySelector('#container')
         let root = document.createElement("a-entity")
+        element.append(root)
         console.log("freundname erstelleFreundEntity", freundNeu.name)
+
         root.setAttribute("id", freundNeu.name)
+        root.setAttribute("log", "wurzel erstellt")
         root.setAttribute("maxDistance", "5000000")
         root.setAttribute("look-at", "[gps-camera]")
         root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+
+
 
         let userText = document.createElement("a-text")
         if (entfernung > 1) {
@@ -262,26 +281,37 @@
         userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
         userText.setAttribute("align", "center")
+     //   userText.setAttribute("maxDistance", "5000000")
+     //   userText.setAttribute("look-at", "[gps-camera]")
+     //   userText.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
 
+       // var scene = document.querySelector('#a-cene')
+        //scene.append(root)
+       // console.log(scene)
 
+/*
         var pfeil = document.createElement("a-entity")
         pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
         pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
         pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
-
+*/
 
         var userBild = document.createElement("a-circle")
 
         userBild.setAttribute('align', 'center');
         userBild.setAttribute("material", "src: " + freundNeu.bild)
         userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
+     //   userBild.setAttribute("maxDistance", "5000000")
+     //   userBild.setAttribute("look-at", "[gps-camera]")
+     //   userBild.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
 
-        let element = document.querySelector('#container')
+        root.append(userBild)
+     //   root.appendChild(pfeil)
+        root.append(userText)
 
-        root.appendChild(userBild)
-        root.appendChild(pfeil)
-        root.appendChild(userText)
-        element.appendChild(root)
+
+
+        console.log("freundname erstelleFreundEntity", userText)
     }
 
     function updateFriend(freundNeu) {
@@ -290,18 +320,24 @@
     }
 
     function updateFreundesListe(freundNeu) {
+
         if (checkZunahFreund(freundNeu)) {
             return
         }
 
-        angezeigteFreunde.forEach(freundAktuell => {
+        console.log("freunde aktuell")
 
-            if (0 === freundAktuell.name.localeCompare(freundNeu.name)) {
+        for (let i = 0; i <= angezeigteFreunde.length; i++) {
+            console.log("freunde aktuell", angezeigteFreunde[i].name)
+            console.log("freunde neu", freundNeu.name)
+            console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
+            if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
                 //           console.log("updatefriendList" + freundNeu.name)
-                updateFriend("update friend" + freundNeu);
+                updateFriend(freundNeu);
                 return
             }
-        })
+        }
+        console.log("hier nicht")
         angezeigteFreunde.push(freundNeu)
         erstelleFreundEntity(freundNeu)
     }
@@ -334,6 +370,14 @@
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         var scale = 200
 
+
+        let root = document.createElement("a-entity")
+
+        root.setAttribute("id", punkte.title)
+        root.setAttribute("maxDistance", "5000000")
+        root.setAttribute("look-at", "[gps-camera]")
+        root.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
+
         var userText = document.createElement("a-text")
         userText.setAttribute("id", punkte.title)
         if (entfernung > 1) {
@@ -341,9 +385,10 @@
         } else {
             userText.setAttribute("value", punkte.title + " " + entfernung + " m")
         }
-        userText.setAttribute("maxDistance", "5000000")
-        userText.setAttribute("look-at", "[gps-camera]")
+     //   userText.setAttribute("maxDistance", "5000000")
+     //   userText.setAttribute("look-at", "[gps-camera]")
         userText.setAttribute("clicker", "")
+        userText.setAttribute("align", "center")
         userText.innerText = punkte.title
 
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
@@ -354,11 +399,22 @@
         }
 
         userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
-        userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
+      //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
 
+
+        var pfeil = document.createElement("a-entity")
+        pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
+        pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
+        pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
+
+
         let element = document.querySelector('#container')
-        element.appendChild(userText)
+        //element.appendChild(userText)
+
+        root.appendChild(pfeil)
+        root.appendChild(userText)
+        element.appendChild(root)
     }
 
     function updatePunkteListe(punktNeu) {
@@ -386,7 +442,7 @@
         angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
         let element = document.getElementById(freundAktuell.name);
         let root = document.getElementById("container");
-        root.removeChild(element);
+        root.remove(element);
     }
 
     function addTestData() {
@@ -397,12 +453,13 @@
             "longitude": "7.2058313596181565",
             "bild": zuhause_bild
         };
+        /*
         let testFreund2 = {
             "name": "Koeln",
-            "latitude": 50.932779,
-            "longitude": 6.958231,
+            "latitude": 50.726878,
+            "longitude": 7.084104,
             "bild": thomas_bild
-        }
+        }*/
         let testPunkt1 = {
             "title": 'hbrs',
             "text": 'wir lieben es alle ',
@@ -413,25 +470,28 @@
 
         } else {
             erstelleFreundEntity(testFreund1)
-            erstelleFreundEntity(testFreund2)
+            //erstelleFreundEntity(testFreund2)
         }
         checkZunahFreund(testFreund1)
-        checkZunahFreund(testFreund2)
+        //checkZunahFreund(testFreund2)
         updatePunkteListe(testPunkt1)
         testDataSet = true
     }
 
     socket.on('answer', function (msg) {
-
-        let freundeListeNeu = JSON.parse(msg)[0];
+     //   let aktuellerUser = '{{user}}';
+        let freundeListeNeu = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
         let punkteListeNeu = JSON.parse(msg)[1];
 
+      //  freundeListeNeu.splice(freundeListeNeu.indexOf(freundeListeNeu.filter(freund => freund.name===aktuellerUser)), 1);
 
         freundeListeNeu.forEach(freundNeu => {
-            updateFreundesListe(freundNeu)
+            if (typeof(freundNeu) != "undefined"){
+            updateFreundesListe(freundNeu)}
         });
         angezeigteFreunde.forEach(freundAktuell => {
-            removeOfflineUser(freundAktuell, freundeListeNeu)
+            if (typeof(freundAktuell) != "undefined"){
+            removeOfflineUser(freundAktuell, freundeListeNeu)}
         });
 
         punkteListeNeu.forEach(punktNeu => {
@@ -505,8 +565,8 @@
             body: JSON.stringify({
                 "title": titel,
                 "text": beschreibung,
-                "latitude": location.coords.longitude,
-                "longitude": location.coords.latitude
+                "latitude": location.coords.latitude,
+                "longitude": location.coords.longitude
             })
             ,
             headers: {
