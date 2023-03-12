@@ -98,6 +98,7 @@
                 }
             }
         );
+        /*
         AFRAME.registerComponent('log', {
             schema: {type: 'string'},
             init: function () {
@@ -106,13 +107,15 @@
             }
         });
 
+         */
+
     </script>
 </head>
 
 <body>
 <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-         id="a-cene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000' log="Hello, Scene!">
-    <a-entity id="container" log="Helo, container!l">
+         id="a-cene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000'>
+    <a-entity id="container">
         <!-- Hier wird das 3D-Objekt definiert -->
     </a-entity>
     <a-camera gps-camera rotation-reader far="100000"></a-camera>
@@ -179,10 +182,11 @@
     var socket = io.connect('https://' + document.domain + ':' + location.port);
 
     const successCallback = (position) => {
-         console.log("succsesss",position);
+         console.log("succsesss", position.coords.longitude);
          console.log('{{user}}')
         if (typeof ownPosition !== 'undefined') {
             if (checkClose(position)) {
+                console.log("hallo", position)
                 return
             }
         }
@@ -227,7 +231,7 @@
         if ((entfernung < 0.04) && !zuNahListe.includes(freundNeu.name)) {
             zuNahListe.push(freundNeu.name)
             updateDeviceList();
-            return true
+            return true;
         } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
             for (let i = 0; i < zuNahListe.length; i++) {
                 //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
@@ -241,7 +245,7 @@
         } else if (zuNahListe.includes(freundNeu.name)) {
             return true;
         }
-        return false
+        return false;
     }
 
     function erstelleFreundEntity(freundNeu) {
@@ -260,12 +264,12 @@
 
         //console.log("element container",)
         //console.log("der selector", document.querySelector('#container'))
-        let element = document.querySelector('#container')
+        //let element = document.querySelector('#container')
         let root = document.createElement("a-entity")
-        element.appendChild(root)
+        //element.appendChild(root)
         console.log("freundname erstelleFreundEntity", freundNeu.name)
 
-        root.setAttribute("id", freundNeu.name)
+        //root.setAttribute("id", freundNeu.name)
         root.setAttribute("log", "wurzel erstellt")
         root.setAttribute("maxDistance", "5000000")
         root.setAttribute("look-at", "[gps-camera]")
@@ -323,6 +327,8 @@
 
         //element.appendChild(root)
         //console.log("freundname erstelleFreundEntity", userText)
+        let element = document.querySelector('#container')
+        element.appendChild(root)
     }
 
     function updateFriend(freundNeu) {
@@ -499,7 +505,8 @@
 
         freundeListeNeu.forEach(freundNeu => {
             if (typeof (freundNeu) != "undefined") {
-                if (!checkZunahFreund(freundNeu)){
+                let checkZunahFreundErg = checkZunahFreund(freundNeu);
+                if (!checkZunahFreundErg){
                     erstelleFreundEntity(freundNeu)
                 }
 
@@ -518,7 +525,8 @@
 
         punkteListeNeu.forEach(punktNeu => {
             //updatePunkteListe(punktNeu)
-            if (!checkZunahPunkt(punktNeu)){
+            let checkZunahPunktErg = checkZunahPunkt(punktNeu);
+            if (!checkZunahPunktErg){
                 erstellePunktEntity(punktNeu)
             }
 
@@ -641,8 +649,10 @@
     }
 
     function updateDeviceList() {
-        let deviceList = document.getElementById('deviceList');
-        deviceList.innerHTML = "";
+        // Leere die Liste
+        var deviceList = document.querySelector('#deviceList')
+        deviceList.innerHTML = ""
+        // Füge jedes Gerät als Listenelement hinzu
         for (index in zuNahListe) {
             const deviceItem = document.createElement('li');
             deviceItem.innerText = zuNahListe[index];
