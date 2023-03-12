@@ -88,7 +88,7 @@ def initialize_test_users():
     user_logged_in(users[1])
     add_new_group(users[0], test_group)
     add_new_group_members(users[0], test_group, new_users=[users[1], users[0], "jonas.thomas196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
-    
+
     save_new_point(groupname=test_group, payload=test_point, user="jonas.thomas196@gmail.com")
     # add_new_group_members(users[0], "testmailGroup", new_users=["t.niederpruem@googlemail.com"])
     # add_new_group_members(users[0], "testmailGroup", new_users=["wiete.lueck@gmail.com"])
@@ -220,8 +220,8 @@ def transform_to_payload(user_location_list):
     for record in user_location_list:
         json_payload = {
             "name": record[0],
-            "latitude": record[1],
-            "longitude": record[2],
+            "longitude": record[1],
+            "latitude": record[2],
             "bild": record[3]
         }
         user_list.append(json_payload)
@@ -261,7 +261,7 @@ def handle_message(message):
     longitute = request_data.get("longitude")
     # picture = request_data.get("bild")
 
-    update_location(email, latitude, longitute)
+    update_location(email, latitude=latitude, longitute=longitute)
 
 
 #####################
