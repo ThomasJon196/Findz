@@ -442,7 +442,8 @@ def updateImage():
 
     update_user_picture(session.get("email"), imageSource)
 
-    return 'Image updated successfully', 200
+    data = jsonify({"status": "success"})
+    return data, 200
 
 
 # Reroutes the /static/ pages.
