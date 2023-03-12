@@ -84,14 +84,17 @@ def initialize_test_users():
     add_new_user("wiete.lueck@gmail.com")
     update_location(users[0], longitute=7.204948, latitude=50.803896)
     update_location(users[1], longitute=7.080573, latitude=50.714985)
+    user_logged_in(users[0])
+    user_logged_in(users[1])
     add_new_group(users[0], test_group)
-    add_new_group_members(users[0], "testmailGroup", new_users=[users[1], "jonas.thomas196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
+    add_new_group_members(users[0], test_group, new_users=[users[1], users[0], "jonas.thomas196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
     
     save_new_point(groupname=test_group, payload=test_point, user="jonas.thomas196@gmail.com")
     # add_new_group_members(users[0], "testmailGroup", new_users=["t.niederpruem@googlemail.com"])
     # add_new_group_members(users[0], "testmailGroup", new_users=["wiete.lueck@gmail.com"])
 
-    get_group_memberlist_and_location('testmailGroup') # Group has to be created first.
+    print("Groupmembers: " + str(get_group_memberlist(group_name=test_group, user=users[0])))
+    print("Locations: " + str(get_group_memberlist_and_location(group_name=test_group)))  # Group has to be created first.
 
 
 initialize_test_users()
