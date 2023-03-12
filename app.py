@@ -66,7 +66,6 @@ print("Setting up database")
 initialize_database()
 loggout_all_users()
 
-"
 
 def initialize_test_users():
     users = ["test@mail.com", "test2@mail.com"]

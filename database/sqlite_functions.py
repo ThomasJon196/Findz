@@ -232,6 +232,7 @@ def update_location(email, longitute, latitude):
     execute_sql_statement(query_update_location)
 
 
+@require_unique
 def save_new_point(payload, user, groupname):
 
     user_id = get_user_id(user)
