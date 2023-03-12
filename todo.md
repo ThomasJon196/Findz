@@ -19,11 +19,11 @@
 	Fuer alle Leute in der Gruppe sichtbar.
   - [ ] Zeige Nutzer in der selben Gruppe an.
 
-2. Feature: Frontend UX
+1. Feature: Frontend UX
 	- [x] Choose profile picture
 	- [x] User friendly interface.
 
-3. Documentation
+2. Documentation
    - [x] documentation outline
    - [ ] frontend
    - [ ] backend
@@ -31,13 +31,14 @@
    - [ ] Vision
 
 Bugfixes:
+- [ ] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
 - [x] Lati/Longi switched when saving/reading point.
 - [ ] App langsamer seit AppScheduler: Replace print statements with logging, Disable/Replace clientside logging. Disable 'DEBUG' Flag in production.
 - [x] Sonderzeichen in Gruppennamen
 - [x] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [x] Bild flakern (probably download/refresh)
-- [x] Error on first login: Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
+- [ ] Error on first login: **need a full error report from client & serverside** Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
 
 

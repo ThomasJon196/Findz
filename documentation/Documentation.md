@@ -41,7 +41,8 @@ Mark points of interest.
 - Database:   sqlite3
 - AR:         WebXR / ARCore
 - Deployment: Docker
-- Host exposure: Cloudflare Tunnel    
+- Host exposure: Cloudflare Tunnel
+- Authentication: Google     
 
 ### Architecture
 
