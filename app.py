@@ -66,23 +66,36 @@ print("Setting up database")
 initialize_database()
 loggout_all_users()
 
+"
+
 def initialize_test_users():
     users = ["test@mail.com", "test2@mail.com"]
+    test_group = "testmailGroup"
+    test_point = {
+            "title": 'hbrs',
+            "text": 'wir lieben es alle',
+            "latitude": 50.78001445359288,
+            "longitude": 7.182461982104352
+    }
     print("Adding example users: " + str(users) + " for development.")
     add_new_user(users[0])
     add_new_user(users[1])
-    add_new_user("tmusic196@gmail.com")
-    update_location(users[0], longitute=123, latitude=456)
-    update_location(users[1], longitute=123, latitude=456)
-    add_new_group(users[0], "testmailGroup")
-    add_new_group_members(users[0], "testmailGroup", new_users=[users[1],"tmusic196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
-    #add_new_group_members(users[0], "testmailGroup", new_users=["t.niederpruem@googlemail.com"])
-    #add_new_group_members(users[0], "testmailGroup", new_users=["wiete.lueck@gmail.com"])
+    add_new_user("jonas.thomas196@gmail.com")
+    add_new_user("t.niederpruem@googlemail.com")
+    add_new_user("wiete.lueck@gmail.com")
+    update_location(users[0], longitute=7.204948, latitude=50.803896)
+    update_location(users[1], longitute=7.080573, latitude=50.714985)
+    add_new_group(users[0], test_group)
+    add_new_group_members(users[0], "testmailGroup", new_users=[users[1], "jonas.thomas196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
+    
+    save_new_point(groupname=test_group, payload=test_point, user="jonas.thomas196@gmail.com")
+    # add_new_group_members(users[0], "testmailGroup", new_users=["t.niederpruem@googlemail.com"])
+    # add_new_group_members(users[0], "testmailGroup", new_users=["wiete.lueck@gmail.com"])
 
     get_group_memberlist_and_location('testmailGroup') # Group has to be created first.
 
 
-#initialize_test_users()
+initialize_test_users()
 
 if DEPLOY_ENV == "LOCAL":
     DOMAIN = "127.0.0.1:5000"

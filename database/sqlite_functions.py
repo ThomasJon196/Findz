@@ -208,6 +208,8 @@ def get_group_memberlist_and_location(group_name):
             WHERE group_name = '{group_name}' \
         )) \
     AND loggedIN = 1
+    AND longitude IS NOT NULL
+    AND latitude IS NOT NULL
     """
 
     memberlist_locations = retrieve_sql_query(query_members)
