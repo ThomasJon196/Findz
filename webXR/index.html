@@ -96,12 +96,18 @@
                         openPoint(place);
                     });
                 }
+
             }
-        );AFRAME.registerComponent('log', {
-            schema: {type: 'string'},
-            init: function () {
-                var stringToLog = this.data;
-                console.log(stringToLog);
+        );
+        AFRAME.registerComponent('my-component', {
+            update: function (oldData) {
+                console.log("hierbin ich drin")
+                console.log(oldData)
+                console.log(this.data)
+                var newData = this.data; // Das neue Attributwert
+                if (newData !== oldData) { // Wenn der Wert geändert wurde
+                    this.el.setAttribute('value', newData); // Aktualisieren Sie den Text
+                }
             }
         });
 
@@ -174,11 +180,11 @@
     let punkteAr = []
     let zuNahListe = []
     let angezeigteFreunde = []
+
     let testDataSet = false;
 
     const successCallback = (position) => {
-        // console.log(position);
-        // console.log('{{user}}')
+
         if (typeof ownPosition !== 'undefined') {
             if (checkClose(position)) {
                 return
@@ -197,11 +203,10 @@
     };
 
 
-
     let ownPosition;
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((coords) => {
-            console.log("own position", coords)
+
             ownPosition = coords
         })
     } else {
@@ -230,7 +235,7 @@
             return true
         } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
             for (let i = 0; i < zuNahListe.length; i++) {
-                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
+
                 if (zuNahListe[i].localeCompare(freundNeu.name + " ")) {
                     zuNahListe.splice(i, 1);
                     break;
@@ -256,12 +261,9 @@
             scale *= (1 - (0.5 - entfernung))
         }
 
-        console.log("element container", )
-        console.log("der selector" , document.querySelector('#container'))
         element = document.querySelector('#container')
         let root = document.createElement("a-entity")
         element.append(root)
-        console.log("freundname erstelleFreundEntity", freundNeu.name)
 
         root.setAttribute("id", freundNeu.name)
         root.setAttribute("log", "wurzel erstellt")
@@ -272,6 +274,7 @@
 
 
         let userText = document.createElement("a-text")
+        userText.setAttribute("id", freundNeu.name + "Text")
         if (entfernung > 1) {
             userText.setAttribute("value", entfernung + " km")
         } else {
@@ -281,13 +284,13 @@
         userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
         userText.setAttribute("align", "center")
+        userText.setAttribute("my-component", "nein")
      //   userText.setAttribute("maxDistance", "5000000")
      //   userText.setAttribute("look-at", "[gps-camera]")
      //   userText.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
 
        // var scene = document.querySelector('#a-cene')
-        //scene.append(root)
-       // console.log(scene)
+
 
 /*
         var pfeil = document.createElement("a-entity")
@@ -310,13 +313,26 @@
         root.append(userText)
 
 
-
-        console.log("freundname erstelleFreundEntity", userText)
     }
 
     function updateFriend(freundNeu) {
+
         let element = document.getElementById(freundNeu.name)
         element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        let elText = document.getElementById(freundNeu.name + "Text")
+        console.log(document.getElementById(freundNeu.name))
+        console.log("freunde updaten villeicht",elText)
+        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+        console.log(entfernung)
+        let ergebnissText
+        if (entfernung > 1) {
+            ergebnissText = entfernung + " km"
+        } else {
+            ergebnissText = (entfernung * 1000) + " m"
+        }
+        console.log(" das ist der ergebniss text",ergebnissText)
+        elText.setAttribute("my-component", ergebnissText)
+        console.log(elText)
     }
 
     function updateFreundesListe(freundNeu) {
@@ -325,20 +341,21 @@
             return
         }
 
-        console.log("freunde aktuell")
 
-        for (let i = 0; i <= angezeigteFreunde.length; i++) {
+        for (let i = 0; i < angezeigteFreunde.length; i++) {
             console.log("freunde aktuell", angezeigteFreunde[i].name)
             console.log("freunde neu", freundNeu.name)
             console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
             if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
                 //           console.log("updatefriendList" + freundNeu.name)
+                console.log("hallo")
                 updateFriend(freundNeu);
                 return
             }
         }
-        console.log("hier nicht")
+
         angezeigteFreunde.push(freundNeu)
+
         erstelleFreundEntity(freundNeu)
     }
 
@@ -370,7 +387,6 @@
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         var scale = 200
 
-
         let root = document.createElement("a-entity")
 
         root.setAttribute("id", punkte.title)
@@ -379,7 +395,7 @@
         root.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
 
         var userText = document.createElement("a-text")
-        userText.setAttribute("id", punkte.title)
+        userText.setAttribute("id", punkte.title + "Text")
         if (entfernung > 1) {
             userText.setAttribute("value", punkte.title + " " + entfernung + " km")
         } else {
@@ -425,20 +441,28 @@
 
         for (let i = 0; i < punkteAr.length; i++) {
             if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
+                let entfernung = PythagorasEquirectangular(punktNeu.latitude, punktNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+                let userText = document.getElementById(punktNeu.title + "Text")
+                if (entfernung > 1) {
+                    userText.setAttribute("value", punktNeu.title + " " + entfernung + " km")
+                } else {
+                    userText.setAttribute("value", punktNeu.title + " " + entfernung + " m")
+                }
                 return
             }
         }
         punkteAr.push(punktNeu)
         erstellePunktEntity(punktNeu)
-
     }
 
     function removeOfflineUser(freundAktuell, freundlisteNeu) {
-        freundlisteNeu.forEach(freundneu => {
-            if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
+
+        for (let i = 0; i < freundlisteNeu.length; i++) {
+            if (0 === freundlisteNeu[i].name.localeCompare(freundAktuell.name)) {
                 return
             }
-        })
+        }
+
         angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
         let element = document.getElementById(freundAktuell.name);
         let root = document.getElementById("container");
@@ -478,6 +502,16 @@
         testDataSet = true
     }
 
+    function removeOfflineUserZuNah(freundAktuell, freundeListeNeu) {
+        for (let i = 0; i < freundeListeNeu.length; i++) {
+            if (0 === freundeListeNeu[i].name.localeCompare(freundAktuell.name)) {
+                return
+            }
+        }
+
+        zuNahListe.splice(zuNahListe.indexOf(freundAktuell.name), 1);
+    }
+
     socket.on('answer', function (msg) {
      //   let aktuellerUser = '{{user}}';
         let freundeListeNeu = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
@@ -486,24 +520,27 @@
       //  freundeListeNeu.splice(freundeListeNeu.indexOf(freundeListeNeu.filter(freund => freund.name===aktuellerUser)), 1);
 
         freundeListeNeu.forEach(freundNeu => {
-            if (typeof(freundNeu) != "undefined"){
             updateFreundesListe(freundNeu)}
-        });
+        );
+
         angezeigteFreunde.forEach(freundAktuell => {
-            if (typeof(freundAktuell) != "undefined"){
             removeOfflineUser(freundAktuell, freundeListeNeu)}
-        });
+        );
+
+        zuNahListe.forEach(freundAktuell => {
+            removeOfflineUserZuNah(freundAktuell, freundeListeNeu)}
+        );
 
         punkteListeNeu.forEach(punktNeu => {
             updatePunkteListe(punktNeu)
         });
 
-        addTestData();
+        //addTestData();
 
     });
 
     function openPoint(punkt) {
-        //    console.log("punkt : " + punkt)
+
         document.getElementById("titelp").innerHTML = punkt["title"]
         document.getElementById("textp").innerHTML = punkt["text"]
 
@@ -512,13 +549,9 @@
 
     function getPunkt(punkt) {
         var ergebnis;
-        punkteAr.forEach(element => {
-            console.log("das sind die punkte" + element["title"])
-        });
-        console.log("bin der vergleichspunkt" + punkt)
+
         punkteAr.forEach(element => {
             if (0 === element["title"].localeCompare(punkt)) {
-                console.log(" fuck this" + element["title"])
                 ergebnis = element;
             }
         });
@@ -554,7 +587,7 @@
         let titel = document.getElementById("titel").value;
         let beschreibung = document.getElementById("beschreibung").value;
 
-        //console.log("imhereto die" + titel)
+
         /*if(titel.localeCompare(" ") || titel == null){
             closeForm()
             return
@@ -580,7 +613,7 @@
                 console.error("Error occurred:", error);
             });
 
-        console.log("imhereto die" + titel)
+
         JSON.stringify({
             "titel": titel,
             "beschreibung": beschreibung,
@@ -591,8 +624,7 @@
         closeForm()
 
         /*
-                  console.log(JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
-                  //socket.emit('update', JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
+                   //socket.emit('update', JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
 
                   closeForm();
          */
