@@ -281,7 +281,7 @@ def handle_message(message):
     Endpoint which receives the current user position and establishes a socketio-connection
     TODO: Create a periodic tasks for broadcasting, instead of sending locations whenever a users sends an update.
     """
-    # app.logger.debug('received message: ' + message)
+    app.logger.debug('received message: ' + message)
     # Received format: { "name": '{{user}}', "latitude": position.coords.latitude , "longitude": position.coords.longitude, "bild": "images/Wiete.png" }
     app.logger.debug("SocketIO request by: " + str(session.get("email")))
 

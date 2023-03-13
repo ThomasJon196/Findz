@@ -183,14 +183,16 @@
     var socket = io.connect('https://' + document.domain + ':' + location.port);
 
     const successCallback = (position) => {
-         console.log("succsesss", position.coords.longitude);
-         console.log('{{user}}')
-        if (typeof ownPosition !== 'undefined') {
-            if (checkClose(position)) {
-                console.log("hallo", position)
-                return
-            }
-        }
+
+
+        console.log("succsesss", position.coords.longitude);
+        console.log("succsesss", JSON.stringify({
+            "name": '{{user}}',
+            "latitude": position.coords.latitude,
+            "longitude": position.coords.longitude,
+            //  "bild": "images/Wiete.png"
+        }));
+
         socket.emit('update', JSON.stringify({
             "name": '{{user}}',
             "latitude": position.coords.latitude,
@@ -505,7 +507,7 @@
         document.querySelector('#container').innerHTML = '';
 
         freundeListeNeu.forEach(freundNeu => {
-            if (typeof (freundNeu) != "undefined") {
+            if (typeof freundNeu != "undefined") {
                 let checkZunahFreundErg = checkZunahFreund(freundNeu);
                 if (!checkZunahFreundErg){
                     erstelleFreundEntity(freundNeu)
