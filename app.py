@@ -42,7 +42,6 @@ from database.sqlite_functions import (
     add_new_group_members,
     get_grouplist,
     get_group_memberlist,
-    get_all_users,
     get_group_memberlist_and_location,
     update_location,
     get_saved_group_points,
@@ -360,7 +359,6 @@ def callback():
 
     app.logger.debug("New user-login: " + session["email"])
     add_new_user(email)
-    user_logged_in(email)
 
     # Final redirect.
     return redirect("/static/gruppen")
@@ -379,6 +377,14 @@ def logout():
 #####################
 # BASIC ENDPOINTS
 #####################
+
+
+@app.route("/logoutWebXR")
+def logout_from_webXR():
+    email = session["email"]
+    user_logged_out(email)
+    data = jsonify({"status": "success"})
+    return data, 200
 
 
 @app.route("/addFriend", methods=["POST"])
@@ -448,8 +454,8 @@ def index():
 def webxr():
     groupname = request.args.get("groupname")
     session["current_group"] = groupname
-
     email = session.get("email")
+    user_logged_in(email, groupname)
     app.logger.debug("groupname: " + str(groupname))
 
     return render_template("webXR.html", user=email, current_group=groupname)
