@@ -251,6 +251,7 @@
 
     function erstelleFreundEntity(freundNeu) {
 
+        console.log('Creating new entity', freundNeu)
         let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         var scale = 130
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
@@ -261,17 +262,25 @@
             scale *= (1 - (0.5 - entfernung))
         }
 
-        element = document.querySelector('#container')
+        element = document.querySelector('a-scene')
         let root = document.createElement("a-entity")
-        element.append(root)
+        
 
         root.setAttribute("id", freundNeu.name)
         root.setAttribute("log", "wurzel erstellt")
         root.setAttribute("maxDistance", "5000000")
         root.setAttribute("look-at", "[gps-camera]")
-        root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-
-
+        // root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        root.setAttribute("gps-entity-place", { latitude: freundNeu.latitude, longitude: freundNeu.longitude })
+        
+        // gps = document.createAttribute("gps-entity-place")
+        // gps.value = `latitude: ${freundNeu.latitude - 0.00001}; longitude: ${freundNeu.longitude + 0.00001}`;
+        // root.setAttributeNode(gps)
+        // root.setAttribute("material", "src: " + freundNeu.bild)
+        // root.setAttribute("geometry", 'primitive: box')
+        // root.setAttribute("material", "color: red")
+    
+        console.log("Element is ", root.getAttribute("geometry"))
 
         let userText = document.createElement("a-text")
         userText.setAttribute("id", freundNeu.name + "Text")
@@ -284,7 +293,8 @@
         userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
         userText.setAttribute("align", "center")
-        userText.setAttribute("my-component", "nein")
+        // userText.setAttribute("value", )
+        userText.value = freundNeu.latitude + ""
      //   userText.setAttribute("maxDistance", "5000000")
      //   userText.setAttribute("look-at", "[gps-camera]")
      //   userText.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
@@ -301,27 +311,48 @@
 
         var userBild = document.createElement("a-circle")
 
+        userBild.id = freundNeu.name + 'Bild'
         userBild.setAttribute('align', 'center');
         userBild.setAttribute("material", "src: " + freundNeu.bild)
         userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
-     //   userBild.setAttribute("maxDistance", "5000000")
-     //   userBild.setAttribute("look-at", "[gps-camera]")
-     //   userBild.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        userBild.setAttribute("maxDistance", "5000000")
+        userBild.setAttribute("look-at", "[gps-camera]")
+        // userBild.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+
+        // gps = document.createAttribute("gps-entity-place")
+        // gps.value = `latitude: ${freundNeu.latitude - 0.00001}; longitude: ${freundNeu.longitude + 0.00001}`;
+        // userBild.setAttributeNode(gps)
 
         root.append(userBild)
      //   root.appendChild(pfeil)
         root.append(userText)
 
+        element.appendChild(root)
 
     }
 
     function updateFriend(freundNeu) {
-
+        
         let element = document.getElementById(freundNeu.name)
-        element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        // element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        element.setAttribute("gps-entity-place", { latitude: freundNeu.latitude, longitude: freundNeu.longitude })
+        // let gps = document.createAttribute("gps-entity-place")
+        // gps.value = `latitude: ${freundNeu.latitude}; longitude: ${freundNeu.longitude}`;
+        // element.setAttributeNode(gps)
+        
+
+        // Update geo for picture test
+        elBild = document.getElementById(freundNeu.name + "Bild")
+        console.log("Bild printed:" , elBild)
+        gps = document.createAttribute("gps-entity-place")
+        gps.value = `latitude: ${freundNeu.latitude - 0.00001}; longitude: ${freundNeu.longitude + 0.00001}`;
+        elBild.setAttributeNode(gps)
+
+
         let elText = document.getElementById(freundNeu.name + "Text")
-        console.log(document.getElementById(freundNeu.name))
+        console.log(element)
         console.log("freunde updaten villeicht",elText)
+        console.log(document.getElementById(freundNeu.name).getAttribute("gps-entity-place"))
         let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         console.log(entfernung)
         let ergebnissText
@@ -330,9 +361,14 @@
         } else {
             ergebnissText = (entfernung * 1000) + " m"
         }
-        console.log(" das ist der ergebniss text",ergebnissText)
-        elText.setAttribute("my-component", ergebnissText)
+        console.log("Das text object: ", freundNeu.latitude)
+        elText.setAttribute("value", freundNeu.latitude);
+        // elText.flushToDOM();
+        // elText.value = freundNeu.latitude + ""
         console.log(elText)
+
+        
+
     }
 
     function updateFreundesListe(freundNeu) {
