@@ -13,6 +13,7 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 import logging
 from logging.config import dictConfig
+from Examples.circle_coordinates import circle_coordinates
 
 dictConfig({
     'version': 1,
@@ -66,9 +67,22 @@ print("Setting up database")
 initialize_database()
 loggout_all_users()
 
+###
+# TESTING
+###
+
+# Thomas position: 'longitude': 7.0865317, 'latitude': 50.7235271
+#longitude = 7.0865317
+#latitude = 50.7235271
+
+# Tobi und Wiete position: 'longitude': 7.2052295, 'latitude': 50.7995951
+longitude = 7.2052295
+latitude = 50.7995951
+
+users = ["test@mail.com", "test2@mail.com"]
 
 def initialize_test_users():
-    users = ["test@mail.com", "test2@mail.com"]
+
     test_group = "testmailGroup"
     test_point = {
             "title": 'hbrs',
@@ -82,8 +96,9 @@ def initialize_test_users():
     add_new_user("jonas.thomas196@gmail.com")
     add_new_user("t.niederpruem@googlemail.com")
     add_new_user("wiete.lueck@gmail.com")
+
     update_location(users[0], longitute=7.204948, latitude=50.803896)
-    update_location(users[1], longitute=7.080573, latitude=50.714985)
+    update_location(users[1], longitute=longitude, latitude=latitude)
     user_logged_in(users[0])
     user_logged_in(users[1])
     add_new_group(users[0], test_group)
@@ -186,6 +201,22 @@ def on_join(data):
 # @scheduler.task('interval', id='do_job_1', seconds=2, misfire_grace_time=300)
 # def test_task():
 #     app.logger.debug("hello you")
+
+
+
+
+def update_test_user_position_task():
+    import time
+    time.sleep(5)
+    coords = circle_coordinates(latitude, longitude, 0.5) # Circle 2km around current position
+    for i in range(500):
+        time.sleep(3)
+        lati, longi = next(coords)
+        print(f"Updated coordinates for user: {lati}, {longi}")
+        update_location(users[1], longitute=longi, latitude=lati)
+
+
+scheduler.add_job(func=update_test_user_position_task, id='test', trigger='date')
 
 
 @scheduler.task('interval', id='Notify users', seconds=2, misfire_grace_time=300)
@@ -308,6 +339,7 @@ def callback():
     flow.fetch_token(authorization_response=request.url)
 
     if not session["state"] == request.args["state"]:
+        app.logger.debug("State of request and response didnt match.")
         abort(500)  # state does not match!
 
     credentials = flow.credentials
