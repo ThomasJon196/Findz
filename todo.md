@@ -31,6 +31,7 @@
    - [ ] Vision
 
 Bugfixes:
+- [x] Remove fixed routes in index.html
 - [ ] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
 - [x] Lati/Longi switched when saving/reading point.
 - [ ] App langsamer seit AppScheduler: Replace print statements with logging, Disable/Replace clientside logging. Disable 'DEBUG' Flag in production.
