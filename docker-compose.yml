@@ -10,6 +10,7 @@ services:
       - ./webXR/index.html:/app/templates/webXR.html
       - ./database:/app/database
       - ./app.py:/app/app.py
+      - ./Examples/circle_coordinates.py:/app/Examples/circle_coordinates.py
       # - findz-volume:/app/persistent/
     restart: unless-stopped
     
