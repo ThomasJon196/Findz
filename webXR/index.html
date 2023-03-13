@@ -86,7 +86,8 @@
             opacity: 1;
         }
     </style>
-    <script>/*
+    <script>
+        /*
         AFRAME.registerComponent('clicker', {
                 init: function () {
                     console.log(this.el)
@@ -95,10 +96,10 @@
                         console.log(" ergebniss getponkut" + place)
                         openPoint(place);
                     });
-                }
+                },
             }
         );
-        */
+
         /*
         AFRAME.registerComponent('log', {
             schema: {type: 'string'},
@@ -184,14 +185,15 @@
 
     const successCallback = (position) => {
 
-
-        console.log("succsesss", position.coords.longitude);
-        console.log("succsesss", JSON.stringify({
+        //console.log("succsesss", position.coords.longitude);
+        /*console.log("succsesss", JSON.stringify({
             "name": '{{user}}',
             "latitude": position.coords.latitude,
             "longitude": position.coords.longitude,
             //  "bild": "images/Wiete.png"
         }));
+
+         */
 
         socket.emit('update', JSON.stringify({
             "name": '{{user}}',
@@ -218,7 +220,6 @@
     navigator.geolocation.watchPosition(successCallback, errorCallback)
 
 
-
     socket.emit('join', JSON.stringify({
         "name": '{{user}}',
         "current_group": '{{current_group}}'
@@ -227,6 +228,7 @@
     socket.on('redirect', function (destination) {
         window.location.href = destination;
     });
+
 
     function checkZunahFreund(freundNeu) {
         let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
@@ -256,7 +258,7 @@
         let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
         var scale = 130
 
-        console.log("entfernung", entfernung)
+        //console.log("entfernung", entfernung)
         if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
             scale *= (1 + (entfernung - 2.5))
         }
@@ -270,7 +272,7 @@
         //let element = document.querySelector('#container')
         let root = document.createElement("a-entity")
         //element.appendChild(root)
-        console.log("freundname erstelleFreundEntity", freundNeu.name)
+        //console.log("freundname erstelleFreundEntity", freundNeu.name)
 
         //root.setAttribute("id", freundNeu.name)
         //root.setAttribute("log", "wurzel erstellt")
@@ -292,7 +294,7 @@
         //   userText.setAttribute("maxDistance", "5000000")
         //   userText.setAttribute("look-at", "[gps-camera]")
         //   userText.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-         console.log(userText)
+         //console.log(userText)
         // var scene = document.querySelector('#a-cene')
         //scene.append(root)
 
@@ -334,34 +336,6 @@
         element.appendChild(root)
     }
 
-    function updateFriend(freundNeu) {
-        let element = document.getElementById(freundNeu.name)
-        element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-    }
-
-    function updateFreundesListe(freundNeu) {
-
-        if (checkZunahFreund(freundNeu)) {
-            return
-        }
-
-        //console.log("freunde aktuell")
-
-        for (let i = 0; i <= angezeigteFreunde.length; i++) {
-            console.log("freunde aktuell", angezeigteFreunde[i].name)
-            console.log("freunde neu", freundNeu.name)
-            console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
-            if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
-                //           console.log("updatefriendList" + freundNeu.name)
-                updateFriend(freundNeu);
-                return
-            }
-        }
-        console.log("hier nicht")
-        angezeigteFreunde.push(freundNeu)
-        erstelleFreundEntity(freundNeu)
-    }
-
     function checkZunahPunkt(punkte) {
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
 
@@ -397,7 +371,7 @@
         root.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
 
         var userText = document.createElement("a-text")
-        userText.setAttribute("id", punkte.title)
+        userText.setAttribute("id", punkte.title + "Text")
         if (entfernung > 1) {
             userText.setAttribute("value", punkte.title + " " + entfernung + " km")
         } else {
@@ -405,7 +379,7 @@
         }
         //   userText.setAttribute("maxDistance", "5000000")
         //   userText.setAttribute("look-at", "[gps-camera]")
-        //userText.setAttribute("clicker", "")
+       // userText.setAttribute("clicker", "")
         userText.setAttribute("align", "center")
         userText.innerText = punkte.title
 
@@ -432,77 +406,24 @@
 
         root.appendChild(pfeil)
         root.appendChild(userText)
+        root.addEventListener('click', function openPointWindow() {
+                openPoint(punkte);
+            })
+
         element.appendChild(root)
     }
 
-    function updatePunkteListe(punktNeu) {
-
-        if (checkZunahPunkt(punktNeu)) {
-            return
-        }
-
-        for (let i = 0; i < punkteAr.length; i++) {
-            if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
-                return
-            }
-        }
-        punkteAr.push(punktNeu)
-        erstellePunktEntity(punktNeu)
-
-    }
-
-    function removeOfflineUser(freundAktuell, freundlisteNeu) {
-        freundlisteNeu.forEach(freundneu => {
-            if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
-                return
-            }
-        })
-        angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
-        let element = document.getElementById(freundAktuell.name);
-        let root = document.getElementById("container");
-        root.remove(element);
-    }
-
-    function addTestData() {
-
-        let testFreund1 = {
-            "name": "RingKiosk",
-            "latitude": "50.79846715949979",
-            "longitude": "7.2058313596181565",
-            "bild": zuhause_bild
-        };
-        /*
-        let testFreund2 = {
-            "name": "Koeln",
-            "latitude": 50.726878,
-            "longitude": 7.084104,
-            "bild": thomas_bild
-        }*/
-        let testPunkt1 = {
-            "title": 'hbrs',
-            "text": 'wir lieben es alle ',
-            "latitude": 50.78001445359288,
-            "longitude": 7.182461982104352
-        }
-        if (testDataSet) {
-
-        } else {
-            erstelleFreundEntity(testFreund1)
-            //erstelleFreundEntity(testFreund2)
-        }
-        checkZunahFreund(testFreund1)
-        //checkZunahFreund(testFreund2)
-
-        //updatePunkteListe(testPunkt1)
-        testDataSet = true
-    }
-
     socket.on('answer', function (msg) {
-        //   let aktuellerUser = '{{user}}';
         let freundeListeNeu = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
         let punkteListeNeu = JSON.parse(msg)[1];
 
-        //  freundeListeNeu.splice(freundeListeNeu.indexOf(freundeListeNeu.filter(freund => freund.name===aktuellerUser)), 1);
+        punkteListeNeu.forEach(p =>{
+            let element = document.getElementById(p.title)
+            if (element !==null) {
+                console.log(element)
+              //  element.removeEventListener('click', openPoint)
+            }
+        })
 
         document.querySelector('#container').innerHTML = '';
 
@@ -513,7 +434,6 @@
                     erstelleFreundEntity(freundNeu)
                 }
 
-                //updateFreundesListe(freundNeu)
             }
         });
         /*
@@ -526,8 +446,13 @@
          */
 
 
+
         punkteListeNeu.forEach(punktNeu => {
-            //updatePunkteListe(punktNeu)
+            if(!punkteAr.includes(punktNeu)){
+                punkteAr.push(punktNeu)
+            }
+
+
             let checkZunahPunktErg = checkZunahPunkt(punktNeu);
             if (!checkZunahPunktErg){
                 erstellePunktEntity(punktNeu)
@@ -535,17 +460,7 @@
 
         });
 
-        //addTestData();
-
     });
-
-    function openPoint(punkt) {
-        //    console.log("punkt : " + punkt)
-        document.getElementById("titelp").innerHTML = punkt["title"]
-        document.getElementById("textp").innerHTML = punkt["text"]
-
-        document.getElementById("myPoint").style.display = "block";
-    }
 
     function getPunkt(punkt) {
         var ergebnis;
@@ -560,6 +475,15 @@
             }
         });
         return ergebnis;
+    }
+
+    function openPoint(punkt) {
+        console.log("punkt : " + punkt["title"])
+        document.getElementById("titelp").innerHTML = punkt["title"]
+        document.getElementById("textp").innerHTML = punkt["text"]
+
+        document.getElementById("myPoint").style.display = "block";
+
     }
 
     function closePoint() {
@@ -663,8 +587,105 @@
         }
     }
 
+
+
+
+
+
+
+
     function checkClose(position) {
         return (0.00001 < Math.abs(ownPosition.coords.latitude - position.coords.latitude) + Math.abs(ownPosition.coords.longitude - position.coords.longitude))
+    }
+
+    function updateFriend(freundNeu) {
+        let element = document.getElementById(freundNeu.name)
+        element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+    }
+
+    function updateFreundesListe(freundNeu) {
+
+        if (checkZunahFreund(freundNeu)) {
+            return
+        }
+
+        //console.log("freunde aktuell")
+
+        for (let i = 0; i <= angezeigteFreunde.length; i++) {
+            console.log("freunde aktuell", angezeigteFreunde[i].name)
+            console.log("freunde neu", freundNeu.name)
+            console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
+            if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
+                //           console.log("updatefriendList" + freundNeu.name)
+                //updateFriend(freundNeu);
+                return
+            }
+        }
+        console.log("hier nicht")
+        angezeigteFreunde.push(freundNeu)
+        erstelleFreundEntity(freundNeu)
+    }
+
+    function updatePunkteListe(punktNeu) {
+
+        if (checkZunahPunkt(punktNeu)) {
+            return
+        }
+
+        for (let i = 0; i < punkteAr.length; i++) {
+            if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
+                return
+            }
+        }
+        punkteAr.push(punktNeu)
+        erstellePunktEntity(punktNeu)
+
+    }
+
+    function removeOfflineUser(freundAktuell, freundlisteNeu) {
+        freundlisteNeu.forEach(freundneu => {
+            if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
+                return
+            }
+        })
+        angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
+        let element = document.getElementById(freundAktuell.name);
+        let root = document.getElementById("container");
+        root.remove(element);
+    }
+
+    function addTestData() {
+
+        let testFreund1 = {
+            "name": "RingKiosk",
+            "latitude": "50.79846715949979",
+            "longitude": "7.2058313596181565",
+            "bild": zuhause_bild
+        };
+        /*
+        let testFreund2 = {
+            "name": "Koeln",
+            "latitude": 50.726878,
+            "longitude": 7.084104,
+            "bild": thomas_bild
+        }*/
+        let testPunkt1 = {
+            "title": 'hbrs',
+            "text": 'wir lieben es alle ',
+            "latitude": 50.78001445359288,
+            "longitude": 7.182461982104352
+        }
+        if (testDataSet) {
+
+        } else {
+            erstelleFreundEntity(testFreund1)
+            //erstelleFreundEntity(testFreund2)
+        }
+        checkZunahFreund(testFreund1)
+        //checkZunahFreund(testFreund2)
+
+        //updatePunkteListe(testPunkt1)
+        testDataSet = true
     }
 
 </script>
