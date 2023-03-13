@@ -38,7 +38,9 @@ Bugfixes:
 - [x] Pink marker at spawn? (Scaled down marker)
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [x] Bild flakern (probably download/refresh)
-- [ ] Error on first login: **need a full error report from client & serverside** Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
+- [ ] Error on first login: **need a full error report from client & serverside** Probably session problems. Maybe the random secret key creates problems. 
+  - [x] https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
+  - [ ] Missmatching state from parallel responses: https://stackoverflow.com/questions/69638897/flask-oauth-state-not-equal-in-request-and-response
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
 
 
