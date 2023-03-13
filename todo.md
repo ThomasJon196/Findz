@@ -31,8 +31,9 @@
    - [ ] Vision
 
 Bugfixes:
-- [x] Remove fixed routes in index.html
-- [ ] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
+- [ ] Remove fixed routes in index.html
+- [ ] On WebxR- back button: Redirect user to server endpoint so they are logged out.
+- [x] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
 - [x] Lati/Longi switched when saving/reading point.
 - [ ] App langsamer seit AppScheduler: Replace print statements with logging, Disable/Replace clientside logging. Disable 'DEBUG' Flag in production.
 - [x] Sonderzeichen in Gruppennamen
@@ -41,6 +42,14 @@ Bugfixes:
 - [x] Bild flakern (probably download/refresh)
 - [ ] Error on first login: **need a full error report from client & serverside** Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
 - [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
+
+
+# Feedback Sophia
+
+- [ ] User Interface unintuitiv
+- [ ] Punkte skalierung: Punkte zu gross
+- [ ] Anzeige erst ab 50m: User ist aber ab 30 aus der liste entfernt.
+
 
 
 # Extras

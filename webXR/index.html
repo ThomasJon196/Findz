@@ -125,7 +125,7 @@
 </a-scene>
 
 <div>
-    <button onclick="location.href='https://findz.thomasjonas.de/gruppen'"
+    <button onclick="location.href='https://' + document.domain + ':' + location.port + '/gruppen'"
             style='position:absolute; left: 2%; top: 2%; z-index:999; border-radius:5px; background: rgba(54,88,48,0.85); color: white; padding: 5px'>
         zurück
     </button>
@@ -510,7 +510,7 @@
         }
     }
 
-    function makierungSetzten(location) {
+    function makierungSetzten(loc) {
 
         let titel = document.getElementById("titel").value;
         let beschreibung = document.getElementById("beschreibung").value;
@@ -521,13 +521,13 @@
             return
         }*/
 
-        fetch("https://findz.thomasjonas.de/save_point", {
+        fetch("https://" + document.domain + ":" + location.port + "/save_point", {
             method: "POST",
             body: JSON.stringify({
                 "title": titel,
                 "text": beschreibung,
-                "latitude": location.coords.latitude,
-                "longitude": location.coords.longitude
+                "latitude": loc.coords.latitude,
+                "longitude": loc.coords.longitude
             })
             ,
             headers: {
@@ -545,8 +545,8 @@
         JSON.stringify({
             "titel": titel,
             "beschreibung": beschreibung,
-            "latitude": location.coords.latitude,
-            "longitude": location.coords.longitude
+            "latitude": loc.coords.latitude,
+            "longitude": loc.coords.longitude
         })
 
         closeForm()
