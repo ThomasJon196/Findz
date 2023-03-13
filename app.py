@@ -98,8 +98,8 @@ def initialize_test_users():
 
     update_location(users[0], longitute=7.204948, latitude=50.803896)
     update_location(users[1], longitute=longitude, latitude=latitude)
-    user_logged_in(users[0])
-    user_logged_in(users[1])
+    user_logged_in(users[0], test_group)
+    user_logged_in(users[1], test_group)
     add_new_group(users[0], test_group)
     add_new_group_members(users[0], test_group, new_users=[users[1], users[0], "jonas.thomas196@gmail.com","t.niederpruem@googlemail.com", "wiete.lueck@gmail.com"])
 
