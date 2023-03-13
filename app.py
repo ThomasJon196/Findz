@@ -74,7 +74,10 @@ loggout_all_users()
 # Thomas position: 'longitude': 7.0865317, 'latitude': 50.7235271
 longitude = 7.0865317
 latitude = 50.7235271
-# Eure position:
+
+# Tobi und Wiete position: 'longitude': 7.2052295, 'latitude': 50.7995951
+#longitude = 7.2052295
+#latitude = 50.7995951
 
 users = ["test@mail.com", "test2@mail.com"]
 
