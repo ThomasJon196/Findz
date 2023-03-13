@@ -44,20 +44,32 @@ def get_user_id(identifier):
         return id[0][0]
 
 
-def user_logged_in(email):
+def get_group_id(groupname):
+    # TODO: Try except Already exsists error
+    if groupname == 'None':
+        logger.debug("Bitte neu einloggen Mister 1.0")
+        return None
+    else:
+        query = f"SELECT group_id FROM groups WHERE group_name = '{groupname}'"
+        id = retrieve_sql_query(query)
+        return id[0][0]
+
+
+def user_logged_in(email, group_name):
     user_id = get_user_id(email)
-    query = f"UPDATE users SET loggedIN = 1 WHERE user_id = {user_id}"
+    group_id = get_group_id(group_name)
+    query = f"UPDATE users SET loggedIN = {group_id} WHERE user_id = {user_id}"
     execute_sql_statement(query)
 
 
 def user_logged_out(email):
     user_id = get_user_id(email)
-    query = f"UPDATE users SET loggedIN = 0 WHERE user_id = {user_id}"
+    query = f"UPDATE users SET loggedIN = NULL WHERE user_id = {user_id}"
     execute_sql_statement(query)
 
 
 def loggout_all_users():
-    query = "UPDATE users SET loggedIN = 0"
+    query = "UPDATE users SET loggedIN = NULL"
     execute_sql_statement(query)
 
 
@@ -199,6 +211,8 @@ def get_group_memberlist(user, group_name):
 def get_group_memberlist_and_location(group_name):
     # TODO: Refactor sql queries. Variables inside are a safety vournability.
 
+    groupd_id = get_group_id(groupname=group_name)
+
     query_members = f""" \
     SELECT email, longitude, latitude, picture FROM users \
     WHERE user_id IN ( \
@@ -207,7 +221,7 @@ def get_group_memberlist_and_location(group_name):
             SELECT group_id FROM groups \
             WHERE group_name = '{group_name}' \
         )) \
-    AND loggedIN = 1
+    AND loggedIN = {groupd_id}
     AND longitude IS NOT NULL
     AND latitude IS NOT NULL
     """
@@ -337,7 +351,7 @@ def initialize_database():
         longitude REAL,
         latitude REAL,
         picture VARCHAR(255),
-        loggedIn BIT DEFAULT 0,
+        loggedIn INTEGER DEFAULT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         UNIQUE (email)
     )
@@ -421,11 +435,10 @@ if __name__ == '__main__':
     add_new_user(email)
     add_new_user(friend_mail)
     add_new_user(friend_mail_2)
+
+    update_location(email, 7.2058313596181565, 50.79846715949979)
     retrieve_sql_query(SHOW_USERS)
 
-    # Login user
-    user_logged_in(email)
-    loggout_all_users()
 
     # Retrieve users from database
     id = get_user_id(email)
@@ -439,17 +452,18 @@ if __name__ == '__main__':
     get_friendlist(email)
 
     # Create new group
-    add_new_group(admin=email, groupname="Meat")
+    groupname = "Meat"
+    add_new_group(admin=email, groupname=groupname)
     get_grouplist(email)
     retrieve_sql_query(SHOW_GROUPS)
 
     # Add group members
-    add_new_group_members(admin=email, groupname="Meat",
-                          new_users=[friend_mail, friend_mail_2])
+    add_new_group_members(admin=email, groupname=groupname,
+                          new_users=[friend_mail, friend_mail_2, email])
 
     # Show groups members
     retrieve_sql_query(SHOW_MEMBERS)
-    get_group_memberlist(email, "Meat")
+    get_group_memberlist(email, groupname)
 
     # Show saved points
     point_payload = {
@@ -458,14 +472,19 @@ if __name__ == '__main__':
             "latitude": 50.79846715949979,
             "longitude": 7.2058313596181565
         }
-    save_new_point(point_payload, email, "Meat")
+    save_new_point(point_payload, email, groupname)
     point_payload = {
             "title": 'examplePoint_2',
             "text": 'kill me please',
             "latitude": 50.79846715949979,
             "longitude": 7.2058313596181565
         }
-    save_new_point(point_payload, email, "Meat")
+    save_new_point(point_payload, email, groupname)
     retrieve_sql_query(SHOW_POINTS)
 
-    get_group_memberlist_and_location('jonasgrop')
+    # Login user
+    user_logged_in(email, groupname)
+
+    get_group_memberlist_and_location(group_name=groupname)
+
+    loggout_all_users()
