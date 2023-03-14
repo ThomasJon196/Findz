@@ -7,7 +7,7 @@ import {LoginStatusService} from './LoginStatusService';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'Findz';
+  title = 'Findz.';
   sidebarStyle: any = {"width": "0"};
   mainStyle: any = {"marginRight": "0"};
 
