@@ -1,11 +1,11 @@
 source ../.env
 # sudo cloudflared service install ${CLOUD_TOKEN}
 
-sudo cloudflared service install $CLOUD_TOKEN_2
+sudo cloudflared service install $CLOUD_TOKEN
 sudo service cloudflared start
 echo "Started cloudflare daemon"
 
-export DEPLOY_ENV=GLOBAL_2
+export DEPLOY_ENV=GLOBAL
 
 cd ..
 cp webXR/index.html templates/webXR.html

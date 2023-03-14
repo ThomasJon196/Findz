@@ -20,6 +20,7 @@
   - [Projektaufteilung](#projektaufteilung)
   - [Pflichtkriterien](#pflichtkriterien)
   - [Was haben wir gelernt?](#was-haben-wir-gelernt)
+  - [Anhang](#anhang)
 
 
 ## Projektidee & Motivation
@@ -37,12 +38,14 @@ Mark points of interest.
 ### Software
 
 - Clientside: Angular.js
-- Serverside: Flask (Python framework)
-- Database:   sqlite3
-- AR:         WebXR / ARCore
-- Deployment: Docker
-- Host exposure: Cloudflare Tunnel
-- Authentication: Google     
+- Serverside: [Flask](https://flask.palletsprojects.com/en/2.2.x/) (Python framework)
+- Database:   [sqlite3](https://flask.palletsprojects.com/en/2.2.x/patterns/sqlite3/)
+- AR:         [Aframe](https://aframe.io/)
+- Deployment: [Docker](https://www.docker.com/)
+- Host exposure: [Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/)
+- Authentication: Google
+
+Source: https://geekyhumans.com/how-to-implement-google-login-in-flask-app/#Let8217s-write-our-app
 
 ### Architecture
 
@@ -61,3 +64,6 @@ Begründung für die Aufteilung:
 ## Pflichtkriterien
 
 ## Was haben wir gelernt?
+
+
+## Anhang

@@ -17,7 +17,7 @@
 	- [ ] Anstupsen (optional)
 	- [x] Punkt platzieren (Button in WebXR einfuegen -> Ruft Endpunkt auf und speichert Location)
 	Fuer alle Leute in der Gruppe sichtbar.
-  - [ ] Zeige Nutzer in der selben Gruppe an.
+  - [x] Zeige Nutzer in der selben Gruppe an.
 
 1. Feature: Frontend UX
 	- [x] Choose profile picture
@@ -32,7 +32,8 @@
 
 Bugfixes:
 - [x] Remove fixed routes in index.html
-- [ ] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
+- [x] On WebxR- back button: Redirect user to server endpoint so they are logged out.
+- [x] Currently loggedIn gorupmembers whoare loggedIn another group are also shown
 - [x] Lati/Longi switched when saving/reading point.
 - [ ] App langsamer seit AppScheduler: Replace print statements with logging, Disable/Replace clientside logging. Disable 'DEBUG' Flag in production.
 - [x] Sonderzeichen in Gruppennamen
@@ -40,13 +41,22 @@ Bugfixes:
 - [x] Dont repond to non-logged in users. > Backend redirects to login page.
 - [x] Bild flakern (probably download/refresh)
 - [ ] Error on first login: **need a full error report from client & serverside** Probably session problems. Maybe the random secret key creates problems. https://stackoverflow.com/questions/61922045/mismatchingstateerror-mismatching-state-csrf-warning-state-not-equal-in-reque
-- [ ] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
+- [x] Bild anzeigen (Vielleicht erstmal fix setzen, Das Flakern kommt vielleicht von der downloadzeit)
+
+
+# Feedback Sophia
+
+- [ ] User Interface unintuitiv
+- [ ] Punkte skalierung: Punkte zu gross
+- [x] Anzeige erst ab 50m: User ist aber ab 30 aus der liste entfernt.
+
 
 
 # Extras
 
+- [ ] Neues Foto
 - [x] SocketIO: Create periodic message. 
-- [ ] Bild an markierten PuTODOnkt anghaengen
+- [x] Bild an markierten PuTODOnkt anghaengen
 - [x] Optional: Beschreibung von dem Punkt
 
 
