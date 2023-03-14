@@ -1,8 +1,15 @@
-<h3>Gruppen</h3>
+<div *ngIf="groups.length==0">
+  <p>Willkommen bei FINDZ</p>
+  <p>
+    Um deine Feunde zu finden mussst du sie als <a routerLink="/freunde" style="color: #365830"><b>Freunde hinzufügen</b></a>,
+    <br>anschließend eine Gruppe erstellen und deine Freunde einladen.
+  </p>
+</div>
 
+<h3>Gruppen</h3>
 <button routerLink="/gruppeErstellen" class="addGroupButton">+</button>
 
-<ul>
+<ul *ngIf="groups.length!=0">
   <li *ngFor="let groupName of groups" routerLink="/gruppenDetails/{{groupName}}">
     {{groupName}}
   </li>
