@@ -251,6 +251,8 @@
         if ((entfernung < 0.04) && !zuNahListe.includes(freundNeu.name)) {
             zuNahListe.push(freundNeu.name)
             updateDeviceList();
+            //TODO: remove from screen
+            angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundNeu),1)
             return true;
         } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
             for (let i = 0; i < zuNahListe.length; i++) {
@@ -289,7 +291,7 @@
         //element.appendChild(root)
         //console.log("freundname erstelleFreundEntity", freundNeu.name)
 
-        //root.setAttribute("id", freundNeu.name)
+        root.setAttribute("id", freundNeu.name)
         //root.setAttribute("log", "wurzel erstellt")
         root.setAttribute("maxDistance", "5000000")
         root.setAttribute("look-at", "[gps-camera]")
@@ -303,6 +305,7 @@
             userText.setAttribute("value", (entfernung * 1000) + " m")
         }
 
+        userText.setAttribute("id", freundNeu.name + "Text")
         userText.setAttribute('position', 0 + " " + (-scale / 1.41) + " " + 0)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
         userText.setAttribute("align", "center")
@@ -323,6 +326,8 @@
 
         var userBild = document.createElement("a-circle")
 
+        userBild.setAttribute("id", freundNeu.name + "Bild")
+
         userBild.setAttribute('align', 'center');
         //userBild.append('<a-image src=("src: " + freundNeu.bild)></a-image>')
         userBild.setAttribute("material", "src: " + freundNeu.bild)
@@ -341,16 +346,58 @@
         //bild.setAttribute("theta-length", "360")
 
 
-        root.appendChild(userBild)
+        root.append(userBild)
         //root.append(bild)
         //   root.appendChild(pfeil)
-        root.appendChild(userText)
+        root.append(userText)
 
         //element.appendChild(root)
         //console.log("freundname erstelleFreundEntity", userText)
-        let element = document.querySelector('#container')
-        element.appendChild(root)
+        let element = document.querySelector('a-scene')
+        element.append(root)
     }
+
+    function updateFriend(freundNeu) {
+        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+        let scale = 130
+
+        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
+            scale *= (1 + (entfernung - 2.5))
+        }
+        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
+            scale *= (0.6 - (0.5 - entfernung))
+        }
+
+        let root = document.getElementById(freundNeu.name)
+        root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+
+        let userText = document.getElementById(freundNeu.name + "Text")
+        if (entfernung > 1) {
+            userText.setAttribute("value", entfernung + " km")
+        } else {
+            userText.setAttribute("value", (entfernung * 1000) + " m")
+        }
+        userText.setAttribute('position', 0 + " " + (-scale / 1.41) + " " + 0)
+        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+
+        let userBild = document.getElementById(freundNeu.name + "Bild")
+        userBild.setAttribute("material", "src: " + freundNeu.bild)
+        userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
+    }
+
+    function removeOfflineUser(freundAktuell, freundlisteNeu) {
+        for (let i = 0; i < freundlisteNeu.length; i++) {
+            if (0 === freundlisteNeu[i].name.localeCompare(freundAktuell.name)) {
+                return
+            }
+        }
+
+        angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
+        let element = document.getElementById(freundAktuell.name);
+        let root = document.getElementById("container");
+        root.remove(element);
+    }
+
 
     function checkZunahPunkt(punkte) {
         let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
@@ -406,9 +453,9 @@
             scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
         //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
+        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
 
         var pfeil = document.createElement("a-entity")
@@ -442,7 +489,7 @@
         var userText = document.getElementById(punktNeu.title + "Text")
 
         if (entfernung > 1) {
-            userText.setAttribute("value", punktNeu.title + " " + entfernung  + " km")
+            userText.setAttribute("value", punktNeu.title + " " + entfernung + " km")
         } else {
             userText.setAttribute("value", punktNeu.title + " " + (entfernung * 1000) + " m")
         }
@@ -456,9 +503,9 @@
             scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
         //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
+        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
 
         var pfeil = document.getElementById(punktNeu.title + "Pfeil")
@@ -481,17 +528,35 @@
         })
          */
 
-        document.querySelector('#container').innerHTML = '';
+        //document.querySelector('#container').innerHTML = '';
 
         freundeListeNeu.forEach(freundNeu => {
             if (typeof freundNeu.name != "undefined") {
                 let checkZunahFreundErg = checkZunahFreund(freundNeu);
                 if (!checkZunahFreundErg) {
+                    console.log(angezeigteFreunde.length)
+                    for (let i = 0; i < angezeigteFreunde.length; i++) {
+                        if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
+                            updateFriend(freundNeu)
+                            console.log("freund geupdated: ", freundNeu)
+                            return
+                        }
+                    }
+                    angezeigteFreunde.push(freundNeu)
                     erstelleFreundEntity(freundNeu)
+                    console.log("freund erstellt: ", freundNeu)
                 }
 
             }
         });
+
+        angezeigteFreunde.forEach(freundAktuell => {
+            if (typeof (freundAktuell) != "undefined") {
+                removeOfflineUser(freundAktuell, freundeListeNeu)
+            }
+        });
+
+
         /*
         angezeigteFreunde.forEach(freundAktuell => {
             if (typeof (freundAktuell) != "undefined") {
@@ -626,8 +691,6 @@
         var d = Math.sqrt(x * x + y * y) * R;
         return d.toFixed(2);
     }
-
-
 
 
     /*
