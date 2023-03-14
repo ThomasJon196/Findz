@@ -280,7 +280,7 @@
         }
 
         if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (1 - (0.5 - entfernung))
+            scale *= (0.6 - (0.5 - entfernung))
         }
 
         //console.log("element container",)
@@ -304,7 +304,7 @@
             userText.setAttribute("value", (entfernung * 1000) + " m")
         }
 
-        userText.setAttribute('position', 0 + " " + (-scale / 1.5) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (-scale / 1.41) + " " + 0)
         userText.setAttribute("scale", scale + " " + scale + " " + scale)
         userText.setAttribute("align", "center")
         //   userText.setAttribute("maxDistance", "5000000")
@@ -325,6 +325,7 @@
         var userBild = document.createElement("a-circle")
 
         userBild.setAttribute('align', 'center');
+        //userBild.append('<a-image src=("src: " + freundNeu.bild)></a-image>')
         userBild.setAttribute("material", "src: " + freundNeu.bild)
         //userBild.setAttribute("material", "src= ww.png")
         userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
@@ -391,7 +392,7 @@
         if (entfernung > 1) {
             userText.setAttribute("value", punkte.title + " " + entfernung + " km")
         } else {
-            userText.setAttribute("value", punkte.title + " " + entfernung + " m")
+            userText.setAttribute("value", punkte.title + " " + (entfernung * 1000) + " m")
         }
         //   userText.setAttribute("maxDistance", "5000000")
         //   userText.setAttribute("look-at", "[gps-camera]")
@@ -403,18 +404,18 @@
             scale *= (1 + (entfernung - 2.5))
         }
         if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (1 - (0.5 - entfernung))
+            scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
-        //userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
+        //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
+        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
 
 
         var pfeil = document.createElement("a-entity")
         pfeil.setAttribute("id", punkte.title + "Pfeil")
-        pfeil.innerHTML = '<a-cone position="0 1.77 -10" rotation="-180 0 0" height="1.2" radius-bottom="1.2" color="#FF0000"></a-cone> <a-sphere position="0 3.44 -10" radius="1.6" color="#FF0000" rotation="180 0 0"></a-sphere>'
-        pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
+        pfeil.innerHTML = '<a-cone position="0 0 0" rotation="-180 0 0" height="1.2" radius-bottom="1.2" color="#FF0000"></a-cone> <a-sphere position="0 1.68 0" radius="1.6" color="#FF0000" rotation="180 0 0"></a-sphere>'
+        pfeil.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5))
         pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
 
 
@@ -442,9 +443,9 @@
         var userText = document.getElementById(punktNeu.title + "Text")
 
         if (entfernung > 1) {
-            userText.setAttribute("value", punktNeu.title + " " + entfernung + " km")
+            userText.setAttribute("value", punktNeu.title + " " + entfernung  + " km")
         } else {
-            userText.setAttribute("value", punktNeu.title + " " + entfernung + " m")
+            userText.setAttribute("value", punktNeu.title + " " + (entfernung * 1000) + " m")
         }
 
         userText.innerText = punktNeu.title
@@ -453,16 +454,16 @@
             scale *= (1 + (entfernung - 2.5))
         }
         if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (1 - (0.5 - entfernung))
+            scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
         //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", scale + " " + scale + " " + scale)
+        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
 
 
         var pfeil = document.getElementById(punktNeu.title + "Pfeil")
-        pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
+        pfeil.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5))
         pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
 
     }
@@ -485,7 +486,7 @@
         document.querySelector('#container').innerHTML = '';
 
         freundeListeNeu.forEach(freundNeu => {
-            if (typeof freundNeu != "undefined") {
+            if (typeof freundNeu.name != "undefined") {
                 let checkZunahFreundErg = checkZunahFreund(freundNeu);
                 if (!checkZunahFreundErg) {
                     erstelleFreundEntity(freundNeu)
