@@ -73,7 +73,6 @@
             position: fixed;
             bottom: 50%;
             right: 50%;
-
             z-index: 9;
         }
 
@@ -81,6 +80,7 @@
             max-width: 300px;
             padding: 10px;
             background-color: white;
+            border-radius: 5px;
         }
 
         .form-container input[type=text] {
@@ -103,7 +103,7 @@
         .btn {
             background-color: #365830;
             color: white;
-            padding: 16px 20px;
+            padding: 8px 10px;
             border: none;
             border-radius: 5px;
             width: 40%;
@@ -174,7 +174,6 @@
 
 <div id="openPointForm">
     <div class="form-container">
-        <!--<h1>Markierung</h1>-->
         <h2 id="titlePoint"></h2>
         <p id="textPoint"></p>
 
@@ -184,7 +183,7 @@
 
 <div id="openAddPointForm">
     <div class="form-container">
-        <h1>Markierung setzen</h1>
+        <h2>Markierung setzen</h2>
 
         <label for="titel"><b>Name</b></label>
         <input type="text" placeholder="Name" id="titel">
@@ -205,22 +204,12 @@
 
     let punkteAr = []
     let zuNahListe = []
-    //let angezeigteFreunde = []
+    let angezeigteFreunde = []
     //let testDataSet = false;
 
     var socket = io.connect('https://' + document.domain + ':' + location.port);
 
     const successCallback = (position) => {
-
-        //console.log("succsesss", position.coords.longitude);
-        /*console.log("succsesss", JSON.stringify({
-            "name": '{{user}}',
-            "latitude": position.coords.latitude,
-            "longitude": position.coords.longitude,
-            //  "bild": "images/Wiete.png"
-        }));
-
-         */
 
         socket.emit('update', JSON.stringify({
             "name": '{{user}}',
@@ -490,7 +479,6 @@
               //  element.removeEventListener('click', openPoint)
             }
         })
-
          */
 
         document.querySelector('#container').innerHTML = '';
@@ -510,29 +498,15 @@
                 removeOfflineUser(freundAktuell, freundeListeNeu)
             }
         });
-
          */
-
 
         punkteListeNeu.forEach(punktNeu => {
             /*
-            if(!punkteAr.includes(punktNeu)){
-                punkteAr.push(punktNeu)
-            }
-
-
             let checkZunahPunktErg = checkZunahPunkt(punktNeu);
             if (!checkZunahPunktErg){
                 erstellePunktEntity(punktNeu)
             }
-
-             */
-
-
-            /*
-                        if (checkZunahPunkt(punktNeu)) {
-                            return
-                        }*/
+            */
 
             for (let i = 0; i < punkteAr.length; i++) {
                 if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
@@ -544,9 +518,7 @@
             punkteAr.push(punktNeu)
             console.log("punkt erstellt:  ", punktNeu)
             erstellePunktEntity(punktNeu)
-
         });
-
     });
 
 
@@ -654,6 +626,8 @@
         var d = Math.sqrt(x * x + y * y) * R;
         return d.toFixed(2);
     }
+
+
 
 
     /*
