@@ -3,101 +3,27 @@
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>GeoAR.js demo</title>
+    <title>findz</title>
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet">
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
 
         * {
             box-sizing: border-box;
         }
 
-        /* Button used to open the contact form - fixed at the bottom of the page */
-        .open-button {
-            background-color: #555;
-            color: white;
-            padding: 8px 10px;
-            border: none;
-            cursor: pointer;
-            opacity: 0.8;
-            position: fixed;
-            top: 2%;
-            right: 2%;
-            width: 100px;
-        }
-
-        /* The popup form - hidden by default */
-        .form-popup {
-            display: none;
-            position: fixed;
-            bottom: 50%;
-            left: 50%;
-            top: 1%;
-            right: 1%;
-        / / border: 3 px solid #f1f1f1;
-            z-index: 9;
-        }
-
-        .form-popup2 {
-            display: none;
-            position: fixed;
-            bottom: 50%;
-            right: 50%;
-            border: 3px solid #f1f1f1;
-            z-index: 9;
-        }
-
-        /* Add styles to the form container */
-        .form-container {
-            max-width: 300px;
-            padding: 10px;
-            background-color: white;
-        }
-
-        /* Full-width input fields */
-        .form-container input[type=text], .form-container input[type=password] {
-            width: 100%;
-            padding: 15px;
-            margin: 5px 0 22px 0;
-            border: none;
-            background: #f1f1f1;
-        }
-
-        /* When the inputs get focus, do something */
-        .form-container input[type=text]:focus, .form-container input[type=password]:focus {
-            background-color: #ddd;
-            outline: none;
-        }
-
-        /* Set a style for the submit/login button */
-        .form-container .btn {
-            background-color: #04AA6D;
-            color: white;
-            padding: 16px 20px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            opacity: 0.8;
-        }
-
-        /* Add a red background color to the cancel button */
-        .form-container .cancel {
-            background-color: red;
-        }
-
-        /* Add some hover effects to buttons */
-        .form-container .btn:hover, .open-button:hover {
-            opacity: 1;
-        }
-
-        #zurueckButton {
+        #goBackButton {
             position: absolute;
             left: 2%;
             top: 2%;
@@ -108,8 +34,93 @@
             color: white;
             padding: 8px 10px;;
         }
-    </style>
 
+        #nearByList {
+            position: absolute;
+            left: 2%;
+            bottom: 2%;
+            z-index: 999;
+            border-radius: 5px;
+            background: rgba(54, 88, 48, 0.85);
+            color: white;
+            padding: 10px;
+        }
+
+        #openAddPointFormButton {
+            background-color: #363636;
+            color: white;
+            padding: 10px 10px;
+            border: none;
+            border-radius: 5px;
+            opacity: 0.8;
+            position: fixed;
+            top: 2%;
+            right: 2%;
+        }
+
+        #openAddPointForm {
+            display: none;
+            position: fixed;
+            bottom: 50%;
+            left: 50%;
+            top: 1%;
+            right: 1%;
+            z-index: 9;
+        }
+
+        #openPointForm {
+            display: none;
+            position: fixed;
+            bottom: 50%;
+            right: 50%;
+
+            z-index: 9;
+        }
+
+        .form-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: white;
+        }
+
+        .form-container input[type=text] {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            background-color: #F9F9F9;
+            border-radius: 5px;
+            border: 1px solid #DADADA;
+        }
+
+        /*.form-container input[type=text]:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+         */
+
+
+        .btn {
+            background-color: #365830;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 5px;
+            width: 40%;
+            margin-bottom: 10px;
+        }
+
+        .closebtn {
+            width: 100%;
+            padding: 8px 10px;
+        }
+
+        .cancel {
+            background-color: red;
+        }
+
+
+    </style>
     <!--<script>
         /*
         AFRAME.registerComponent('clicker', {
@@ -135,7 +146,6 @@
 
          */
     </script>-->
-
 </head>
 
 <body>
@@ -147,40 +157,40 @@
     <a-camera gps-camera rotation-reader far="100000"></a-camera>
 </a-scene>
 
-
-<button onclick="window.history.go(-1); return false;" id="zurueckButton">
+<button id="goBackButton" onclick="window.history.go(-1); return false;">
     zurück
 </button>
 
-
-<div style='position:absolute; left: 5px; bottom: 2%; z-index:999; border-radius:5px; background: rgba(54,88,48,0.85); color: white; padding: 10px'>
+<div id="nearByList">
     In deiner Nähe (<40m):
     <ul id="deviceList" style='list-style-type:square;'></ul>
 </div>
 
-<button class="open-button" onclick="openForm()">Markierung setzen</button>
+<button id="openAddPointFormButton" onclick="openForm()">
+    <span class="material-symbols-outlined">
+        add_location_alt
+    </span>
+</button>
 
-<div class="form-popup2" id="myPoint">
-    <div class="form-container" id="1">
-        <h1>Markierung</h1>
-        <h2 id="titelp"></h2>
+<div id="openPointForm">
+    <div class="form-container">
+        <!--<h1>Markierung</h1>-->
+        <h2 id="titlePoint"></h2>
+        <p id="textPoint"></p>
 
-        <p id="textp"></p>
-
-        <button class="btn" onclick="closePoint()">Schließen</button>
-
+        <button class="btn closebtn" onclick="closePoint()">Schließen</button>
     </div>
 </div>
 
-<div class="form-popup" id="myForm">
-    <div class="form-container" id="0">
+<div id="openAddPointForm">
+    <div class="form-container">
         <h1>Markierung setzen</h1>
 
         <label for="titel"><b>Name</b></label>
-        <input type="text" placeholder="Name" id="titel" required>
+        <input type="text" placeholder="Name" id="titel">
 
         <label for="beschreibung"><b>Beschreibung</b></label>
-        <input type="text" placeholder="Beschreibung" id="beschreibung" required>
+        <input type="text" placeholder="Beschreibung" id="beschreibung">
 
         <button class="btn" onclick="ongeopruefen()">Speichern</button>
         <button type="button" class="btn cancel" onclick="closeForm()">Verwerfen</button>
@@ -558,27 +568,27 @@
         //e.preventDefault();
         console.log("punkt : " + punkt["title"])
 
-        document.getElementById("titelp").innerHTML = punkt["title"]
-        document.getElementById("textp").innerHTML = punkt["text"]
+        document.getElementById("titlePoint").innerHTML = punkt["title"]
+        document.getElementById("textPoint").innerHTML = punkt["text"]
 
-        document.getElementById("myPoint").style.display = "block";
+        document.getElementById("openPointForm").style.display = "block";
 
     }
 
     function closePoint() {
-        document.getElementById("myPoint").style.display = "none";
-        //document.getElementById("titelp").innerHTML = ""
-        //document.getElementById("textp").innerHTML = ""
+        document.getElementById("openPointForm").style.display = "none";
+        //document.getElementById("titlePoint").innerHTML = ""
+        //document.getElementById("textPoint").innerHTML = ""
     }
 
     function openForm() {
-        document.getElementById("myForm").style.display = "block";
+        document.getElementById("openAddPointForm").style.display = "block";
     }
 
     function closeForm() {
         document.getElementById("titel").value = "";
         document.getElementById("beschreibung").value = "";
-        document.getElementById("myForm").style.display = "none";
+        document.getElementById("openAddPointForm").style.display = "none";
     }
 
     function ongeopruefen() {
@@ -646,117 +656,116 @@
     }
 
 
-
-
-    function getPunkt(punkt) {
-        var ergebnis;
-        punkteAr.forEach(element => {
-            console.log("das sind die punkte" + element["title"])
-        });
-        console.log("bin der vergleichspunkt" + punkt)
-        punkteAr.forEach(element => {
-            if (0 === element["title"].localeCompare(punkt)) {
-                console.log(" fuck this" + element["title"])
-                ergebnis = element;
-            }
-        });
-        return ergebnis;
-    }
-
-    function checkClose(position) {
-        return (0.00001 < Math.abs(ownPosition.coords.latitude - position.coords.latitude) + Math.abs(ownPosition.coords.longitude - position.coords.longitude))
-    }
-
-    function updateFriend(freundNeu) {
-        let element = document.getElementById(freundNeu.name)
-        element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-    }
-
-    function updateFreundesListe(freundNeu) {
-
-        if (checkZunahFreund(freundNeu)) {
-            return
+    /*
+        function getPunkt(punkt) {
+            var ergebnis;
+            punkteAr.forEach(element => {
+                console.log("das sind die punkte" + element["title"])
+            });
+            console.log("bin der vergleichspunkt" + punkt)
+            punkteAr.forEach(element => {
+                if (0 === element["title"].localeCompare(punkt)) {
+                    console.log(" fuck this" + element["title"])
+                    ergebnis = element;
+                }
+            });
+            return ergebnis;
         }
 
-        //console.log("freunde aktuell")
+        function checkClose(position) {
+            return (0.00001 < Math.abs(ownPosition.coords.latitude - position.coords.latitude) + Math.abs(ownPosition.coords.longitude - position.coords.longitude))
+        }
 
-        for (let i = 0; i <= angezeigteFreunde.length; i++) {
-            console.log("freunde aktuell", angezeigteFreunde[i].name)
-            console.log("freunde neu", freundNeu.name)
-            console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
-            if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
-                //           console.log("updatefriendList" + freundNeu.name)
-                //updateFriend(freundNeu);
+        function updateFriend(freundNeu) {
+            let element = document.getElementById(freundNeu.name)
+            element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
+        }
+
+        function updateFreundesListe(freundNeu) {
+
+            if (checkZunahFreund(freundNeu)) {
                 return
             }
+
+            //console.log("freunde aktuell")
+
+            for (let i = 0; i <= angezeigteFreunde.length; i++) {
+                console.log("freunde aktuell", angezeigteFreunde[i].name)
+                console.log("freunde neu", freundNeu.name)
+                console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
+                if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
+                    //           console.log("updatefriendList" + freundNeu.name)
+                    //updateFriend(freundNeu);
+                    return
+                }
+            }
+            console.log("hier nicht")
+            angezeigteFreunde.push(freundNeu)
+            erstelleFreundEntity(freundNeu)
         }
-        console.log("hier nicht")
-        angezeigteFreunde.push(freundNeu)
-        erstelleFreundEntity(freundNeu)
-    }
 
-    function updatePunkteListe(punktNeu) {
+        function updatePunkteListe(punktNeu) {
 
-        if (checkZunahPunkt(punktNeu)) {
-            return
-        }
-
-        for (let i = 0; i < punkteAr.length; i++) {
-            if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
+            if (checkZunahPunkt(punktNeu)) {
                 return
             }
-        }
-        punkteAr.push(punktNeu)
-        erstellePunktEntity(punktNeu)
 
-    }
-
-    function removeOfflineUser(freundAktuell, freundlisteNeu) {
-        freundlisteNeu.forEach(freundneu => {
-            if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
-                return
+            for (let i = 0; i < punkteAr.length; i++) {
+                if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
+                    return
+                }
             }
-        })
-        angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
-        let element = document.getElementById(freundAktuell.name);
-        let root = document.getElementById("container");
-        root.remove(element);
-    }
+            punkteAr.push(punktNeu)
+            erstellePunktEntity(punktNeu)
 
-    function addTestData() {
-
-        let testFreund1 = {
-            "name": "RingKiosk",
-            "latitude": "50.79846715949979",
-            "longitude": "7.2058313596181565",
-            "bild": zuhause_bild
-        };
-        /*
-        let testFreund2 = {
-            "name": "Koeln",
-            "latitude": 50.726878,
-            "longitude": 7.084104,
-            "bild": thomas_bild
-        }*/
-        let testPunkt1 = {
-            "title": 'hbrs',
-            "text": 'wir lieben es alle ',
-            "latitude": 50.78001445359288,
-            "longitude": 7.182461982104352
         }
-        if (testDataSet) {
 
-        } else {
-            erstelleFreundEntity(testFreund1)
-            //erstelleFreundEntity(testFreund2)
+        function removeOfflineUser(freundAktuell, freundlisteNeu) {
+            freundlisteNeu.forEach(freundneu => {
+                if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
+                    return
+                }
+            })
+            angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
+            let element = document.getElementById(freundAktuell.name);
+            let root = document.getElementById("container");
+            root.remove(element);
         }
-        checkZunahFreund(testFreund1)
-        //checkZunahFreund(testFreund2)
 
-        //updatePunkteListe(testPunkt1)
-        testDataSet = true
-    }
+        function addTestData() {
 
+            let testFreund1 = {
+                "name": "RingKiosk",
+                "latitude": "50.79846715949979",
+                "longitude": "7.2058313596181565",
+                "bild": zuhause_bild
+            };
+
+            let testFreund2 = {
+                "name": "Koeln",
+                "latitude": 50.726878,
+                "longitude": 7.084104,
+                "bild": thomas_bild
+            }
+            let testPunkt1 = {
+                "title": 'hbrs',
+                "text": 'wir lieben es alle ',
+                "latitude": 50.78001445359288,
+                "longitude": 7.182461982104352
+            }
+            if (testDataSet) {
+
+            } else {
+                erstelleFreundEntity(testFreund1)
+                //erstelleFreundEntity(testFreund2)
+            }
+            checkZunahFreund(testFreund1)
+            //checkZunahFreund(testFreund2)
+
+            //updatePunkteListe(testPunkt1)
+            testDataSet = true
+        }
+    */
 </script>
 
 </html>
