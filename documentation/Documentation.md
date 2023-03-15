@@ -17,6 +17,7 @@
     - [Software](#software)
     - [Architecture](#architecture)
     - [Interface](#interface)
+    - [Verwendete Codeschnipsel](#verwendeteCodeschnipsel)
   - [Projektaufteilung](#projektaufteilung)
   - [Pflichtkriterien](#pflichtkriterien)
   - [Was haben wir gelernt?](#was-haben-wir-gelernt)
@@ -53,6 +54,13 @@ Source: https://geekyhumans.com/how-to-implement-google-login-in-flask-app/#Let8
 
 ### Interface
 
+### Verwendete Codeschnipsel
+Google Authentication: 
+
+
+UI Sidebar:
+https://www.w3schools.com/howto/howto_js_collapse_sidebar.asp
+
 ## Projektaufteilung
 
 - Wiete: Clientside/Frontend programming & UX design
@@ -67,3 +75,14 @@ Begründung für die Aufteilung:
 
 
 ## Anhang
+### UI Mockups
+https://www.figma.com/file/PUsZCEjtUDdzZFsPRiGOti/Findz?node-id=0%3A1&t=gpnGgZXmNqI4YRn5-1
+
+![](mockups/UI-Mockups-1.png)
+![](mockups/UI-Mockups-2.png)
+![](mockups/UI-Mockups-3.png)
+![](mockups/UI-Mockups-4.png)
+![](mockups/UI-Mockups-5.png)
+![](mockups/UI-Mockups-6.png)
+![](mockups/UI-Mockups-7.png)
+![](mockups/UI-Mockups-8.png)
