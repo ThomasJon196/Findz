@@ -85,7 +85,8 @@
 
         .form-container input[type=text] {
             width: 100%;
-            padding: 15px;
+            height: 40px;
+            padding-left: 4px;
             margin: 5px 0 22px 0;
             background-color: #F9F9F9;
             border-radius: 5px;
@@ -103,16 +104,9 @@
         .btn {
             background-color: #365830;
             color: white;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border: none;
             border-radius: 5px;
-            width: 40%;
-            margin-bottom: 10px;
-        }
-
-        .closebtn {
-            width: 100%;
-            padding: 8px 10px;
         }
 
         .cancel {
@@ -162,7 +156,6 @@
     zurück
 </button>
 
-
 <div id="nearByList">
     In deiner Nähe (<40m):
     <ul id="deviceList" style='list-style-type:square;'></ul>
@@ -176,16 +169,16 @@
 
 <div id="openPointForm">
     <div class="form-container">
-        <h2 id="titlePoint"></h2>
+        <h3 id="titlePoint"></h3>
         <p id="textPoint"></p>
 
-        <button class="btn closebtn" onclick="closePoint()">Schließen</button>
+        <button class="btn" onclick="closePoint()">Schließen</button>
     </div>
 </div>
 
 <div id="openAddPointForm">
     <div class="form-container">
-        <h2>Markierung setzen</h2>
+        <h3>Markierung setzen</h3>
 
         <label for="titel"><b>Name</b></label>
         <input type="text" placeholder="Name" id="titel">
@@ -256,7 +249,6 @@
             return true;
         } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
             for (let i = 0; i < zuNahListe.length; i++) {
-                //  console.log(zuNahListe[i].localeCompare(andereUser.name)==0)
                 if (zuNahListe[i].localeCompare(freundNeu.name + " ")) {
                     zuNahListe.splice(i, 1);
                     break;
@@ -408,9 +400,9 @@
             scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
         //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
+        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
 
         var pfeil = document.createElement("a-entity")
@@ -429,7 +421,6 @@
 
         root.appendChild(pfeil)
         root.appendChild(userText)
-        //console.log("entität",root)
         element.appendChild(root)
     }
 
@@ -444,7 +435,7 @@
         var userText = document.getElementById(punktNeu.title + "Text")
 
         if (entfernung > 1) {
-            userText.setAttribute("value", punktNeu.title + " " + entfernung  + " km")
+            userText.setAttribute("value", punktNeu.title + " " + entfernung + " km")
         } else {
             userText.setAttribute("value", punktNeu.title + " " + (entfernung * 1000) + " m")
         }
@@ -458,9 +449,9 @@
             scale *= (0.6 - (0.5 - entfernung))
         }
 
-        userText.setAttribute('position', 0 + " " + (scale*1.5) + " " + 0)
+        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
         //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale*1.3) + " " + (scale*1.3) + " " + (scale*1.3))
+        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
 
         var pfeil = document.getElementById(punktNeu.title + "Pfeil")
@@ -525,10 +516,8 @@
 
 
     function updateDeviceList() {
-        // Leere die Liste
         var deviceList = document.querySelector('#deviceList')
         deviceList.innerHTML = ""
-        // Füge jedes Gerät als Listenelement hinzu
         for (index in zuNahListe) {
             const deviceItem = document.createElement('li');
             deviceItem.innerText = zuNahListe[index];
@@ -551,8 +540,6 @@
 
     function closePoint() {
         document.getElementById("openPointForm").style.display = "none";
-        //document.getElementById("titlePoint").innerHTML = ""
-        //document.getElementById("textPoint").innerHTML = ""
     }
 
     function openForm() {
@@ -573,16 +560,18 @@
         }
     }
 
-    function makierungSetzten(loc) {
-
-
+    function markierungSetzten(loc) {
         let title = document.getElementById("titel").value;
         let beschreibung = document.getElementById("beschreibung").value;
 
-        /*if(titel.localeCompare(" ") || titel == null){
-            closeForm()
+        if (title === "") {
+            alert("Bitte Namen eingeben!")
             return
-        }*/
+        }
+        if (beschreibung === "") {
+            alert("Bitte Beschreibung eingeben!")
+            return
+        }
 
         fetch("https://" + document.domain + ":" + location.port + "/save_point", {
             method: "POST",
@@ -603,15 +592,8 @@
             .catch(error => {
                 console.error("Error occurred:", error);
             });
-
         console.log("added new point" + title);
         closeForm();
-
-
-        /*
-                  //socket.emit('update', JSON.stringify({ "name": titel, "latitude": lokation.coords.latitude , "longitude": lokation.coords.longitude, "bild": "images/Wiete.png" }))
-
-         */
     }
 
 
@@ -630,8 +612,6 @@
         var d = Math.sqrt(x * x + y * y) * R;
         return d.toFixed(2);
     }
-
-
 
 
     /*
