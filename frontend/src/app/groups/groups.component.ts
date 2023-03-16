@@ -10,6 +10,7 @@ import {LoginStatusService} from "../LoginStatusService";
 })
 export class GroupsComponent implements OnInit {
   groups = [];
+  groupsAvailable: string = "dataNotLoaded";
 
   constructor(private http: HttpClient, public loginStatusService: LoginStatusService) {
     this.loginStatusService.setLoginStatus(true);
@@ -24,6 +25,11 @@ export class GroupsComponent implements OnInit {
       .subscribe(data => {
         console.log(data);
         this.groups = data.grouplist;
+        if (this.groups.length == 0) {
+          this.groupsAvailable = "noGroupsAvailable";
+        } else {
+          this.groupsAvailable = "groupsAvailable";
+        }
       });
   }
 }
