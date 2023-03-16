@@ -1,4 +1,4 @@
-<div *ngIf="groupsAvailable=='no groups'">
+<div *ngIf="!groupsAvailable">
   <p>Willkommen bei Findz.</p>
   <p>
     Um deine Feunde zu finden mussst du sie als <a routerLink="/freunde" style="color: #365830"><b>Freunde hinzufügen</b></a>,
@@ -9,7 +9,7 @@
 <h3>Gruppen</h3>
 <button routerLink="/gruppeErstellen" class="addGroupButton">+</button>
 
-<ul *ngIf="groupsAvailable=='groupsAvailable'">
+<ul *ngIf="groupsAvailable">
   <li *ngFor="let groupName of groups" routerLink="/gruppenDetails/{{groupName}}">
     {{groupName}}
   </li>
