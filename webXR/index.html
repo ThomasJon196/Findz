@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>findz</title>
+    <title>Findz.</title>
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
@@ -35,7 +35,7 @@
             padding: 8px 10px;;
         }
 
-        #nearByList {
+        #nearbyListForm {
             position: absolute;
             left: 2%;
             bottom: 2%;
@@ -93,14 +93,6 @@
             border: 1px solid #DADADA;
         }
 
-        /*.form-container input[type=text]:focus {
-            background-color: #ddd;
-            outline: none;
-        }
-
-         */
-
-
         .btn {
             background-color: #365830;
             color: white;
@@ -115,58 +107,39 @@
 
 
     </style>
-    <!--<script>
-        /*
-        AFRAME.registerComponent('clicker', {
-                init: function () {
-                    console.log(this.el)
-                    this.el.addEventListener('click', e => {
-                        place = getPunkt(this.el.innerHTML);
-                        console.log(" ergebniss getponkut" + place)
-                        openPoint(place);
-                    });
-                },
-            }
-        );
-
-        /*
-        AFRAME.registerComponent('log', {
-            schema: {type: 'string'},
-            init: function () {
-                var stringToLog = this.data;
-                console.log(stringToLog);
-            }
-        });
-
-         */
-    </script>-->
 </head>
 
 <body>
+<!-- The AR scene with AR.js configuration -->
 <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-         id="a-cene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000'>
+         id="a-scene" cursor='rayOrigin: mouse' raycaster='near: 0; far: 50000'>
+    <!-- Container for the 3D object to be defined later -->
     <a-entity id="container">
-        <!-- Hier wird das 3D-Objekt definiert -->
+        <!-- The 3D object will be defined here -->
     </a-entity>
+    <!-- The camera used for AR with GPS support -->
     <a-camera gps-camera rotation-reader far="100000"></a-camera>
 </a-scene>
 
-
+<!-- Button to go back to the previous page -->
 <button id="goBackButton" onclick="window.history.go(-1); return false;">
     zurück
 </button>
 
-<div id="nearByList">
+<!-- List of nearby points of interest -->
+<div id="nearbyListForm">
     In deiner Nähe (<40m):
-    <ul id="deviceList" style='list-style-type:square;'></ul>
+    <ul id="nearbyList" style='list-style-type:square;'></ul>
 </div>
 
+<!-- Button to open the form to add a new point of interest -->
 <button id="openAddPointFormButton" onclick="openForm()">
     <span class="material-symbols-outlined">
         add_location_alt
     </span>
 </button>
 
+<!-- The form to display details about a point of interest -->
 <div id="openPointForm">
     <div class="form-container">
         <h3 id="titlePoint"></h3>
@@ -176,410 +149,310 @@
     </div>
 </div>
 
+<!-- The form to add a new point of interest -->
 <div id="openAddPointForm">
     <div class="form-container">
         <h3>Markierung setzen</h3>
 
-        <label for="titel"><b>Name</b></label>
-        <input type="text" placeholder="Name" id="titel">
+        <label for="title"><b>Name</b></label>
+        <input type="text" placeholder="Name" id="title">
 
-        <label for="beschreibung"><b>Beschreibung</b></label>
-        <input type="text" placeholder="Beschreibung" id="beschreibung">
+        <label for="description"><b>Beschreibung</b></label>
+        <input type="text" placeholder="Beschreibung" id="description">
 
-        <button class="btn" onclick="ongeopruefen()">Speichern</button>
+        <button class="btn" onclick="safeMarker()">Speichern</button>
         <button type="button" class="btn cancel" onclick="closeForm()">Verwerfen</button>
     </div>
 </div>
 </body>
 
 <script>
-    //katzen_bild = 'https://www.myself.de/Undefined/image-thumb__8934__header/katzenfotos_1.jpg'
-    //thomas_bild = 'https://m.media-amazon.com/images/I/51PPdZidmBL._SX342_SY445_QL70_ML2_.jpg'
-    //zuhause_bild = 'https://images.pexels.com/photos/7005018/pexels-photo-7005018.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    // An array to store all points of interest
+    let points = [];
 
-    let punkteAr = []
-    let zuNahListe = []
-    let angezeigteFreunde = []
-    //let testDataSet = false;
+    // An array to store the list of nearby friends
+    let nearbyFriendList = [];
 
+    // The current user's GPS position
+    let ownPosition;
+
+    // Initialize a socket connection to the server
     var socket = io.connect('https://' + document.domain + ':' + location.port);
 
+    // Function to be called when the user's GPS position is successfully obtained
     const successCallback = (position) => {
-
+        // Emit an update to the server with the user's name and GPS coordinates
         socket.emit('update', JSON.stringify({
             "name": '{{user}}',
             "latitude": position.coords.latitude,
             "longitude": position.coords.longitude,
-            //  "bild": "images/Wiete.png"
         }))
-        ownPosition = position
+        // Store the user's position for later use
+        ownPosition = position;
     };
+
+    // Function to be called when there is an error obtaining
     const errorCallback = (error) => {
         console.log(error);
     };
 
-    let ownPosition;
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((coords) => {
-            console.log("own position", coords)
-            ownPosition = coords
-        })
-    } else {
-        console.log("Geolocation is not supported by this browser.")
-    }
+    // Start tracking user's position and sending updates to the server
     navigator.geolocation.watchPosition(successCallback, errorCallback)
 
-
+    // Send a join message to the server with user's name and current group
     socket.emit('join', JSON.stringify({
         "name": '{{user}}',
         "current_group": '{{current_group}}'
     }))
 
+    // Listen for a redirect message from the server and redirect the user to the specified destination
     socket.on('redirect', function (destination) {
         window.location.href = destination;
     });
 
+    // Listen for an answer message from the server and update the friend and point lists accordingly
+    socket.on('answer', function (msg) {
+        // Parse the friend and point lists from the message
+        let friendListNew = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
+        let pointListNew = JSON.parse(msg)[1];
 
-    function checkZunahFreund(freundNeu) {
-        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+        // Clear the existing 3D scene
+        document.querySelector('#container').innerHTML = '';
 
-        if ((entfernung < 0.04) && !zuNahListe.includes(freundNeu.name)) {
-            zuNahListe.push(freundNeu.name)
-            updateDeviceList();
+        // Update the nearbyFriendList based on the new friend list
+        friendListNew.forEach(newFriend => {
+            if (typeof newFriend.name != "undefined") {
+                // Calculate the distance between the new friend and the user
+                let distance = getDistance(newFriend.latitude, newFriend.longitude);
+                // If the new friend is within 40m and not already in the nearbyFriendList, add them to the list and update the UI
+                if ((distance < 0.04) && !nearbyFriendList.includes(newFriend.name)) {
+                    nearbyFriendList.push(newFriend.name)
+                    updateNearbyList();
+                    // If the new friend is more than 40m away and already in the nearbyFriendList, remove them from the list and update the UI
+                } else if ((distance > 0.04) && nearbyFriendList.includes(newFriend.name)) {
+                    for (let i = 0; i < nearbyFriendList.length; i++) {
+                        if (nearbyFriendList[i].localeCompare(newFriend.name + " ")) {
+                            nearbyFriendList.splice(i, 1);
+                            updateNearbyList();
+                            createFriendEntity(newFriend);
+                            break;
+                        }
+                    }
+                    // If the new friend is already in the nearbyFriendList, do nothing
+                } else if (nearbyFriendList.includes(newFriend.name)) {
+                    // If the new friend is not in the nearbyFriendList, create a new entity for them in the 3D scene
+                } else {
+                    createFriendEntity(newFriend);
+                }
+            }
+        });
+
+        // Update the point list based on the new point list
+        pointListNew.forEach(newPoint => {
+            // Check if the new point already exists in the point list and update it if it does
+            for (let i = 0; i < points.length; i++) {
+                if (0 === points[i].title.localeCompare(newPoint.title)) {
+                    updatePoint(newPoint)
+                    //console.log("updated point: ", newPoint)
+                    return;
+                }
+            }
+            // If the new point doesn't exist in the point list, add it and create a new entity for it in the 3D scene
+            points.push(newPoint);
+            console.log("created point: ", newPoint);
+            createPointEntity(newPoint);
+        });
+    });
+
+
+    function checkNearbyFriend(newFriend) {
+        let distance = getDistance(newFriend.latitude, newFriend.longitude);
+
+        if ((distance < 0.04) && !nearbyFriendList.includes(newFriend.name)) {
+            nearbyFriendList.push(newFriend.name)
+            updateNearbyList();
             return true;
-        } else if ((entfernung > 0.04) && zuNahListe.includes(freundNeu.name)) {
-            for (let i = 0; i < zuNahListe.length; i++) {
-                if (zuNahListe[i].localeCompare(freundNeu.name + " ")) {
-                    zuNahListe.splice(i, 1);
+        } else if ((distance > 0.04) && nearbyFriendList.includes(newFriend.name)) {
+            for (let i = 0; i < nearbyFriendList.length; i++) {
+                if (nearbyFriendList[i].localeCompare(newFriend.name + " ")) {
+                    nearbyFriendList.splice(i, 1);
                     break;
                 }
             }
-            updateDeviceList();
-            return false
-        } else if (zuNahListe.includes(freundNeu.name)) {
+            updateNearbyList();
+            return false;
+        } else if (nearbyFriendList.includes(newFriend.name)) {
             return true;
         }
         return false;
     }
 
-    function erstelleFreundEntity(freundNeu) {
 
-        let entfernung = PythagorasEquirectangular(freundNeu.latitude, freundNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
-        var scale = 130
+    function createFriendEntity(newFriend) {
+        let distance = getDistance(newFriend.latitude, newFriend.longitude);
+        let scale = getIndividualScale(distance, 130);
 
-        //console.log("entfernung", entfernung)
-        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-            scale *= (1 + (entfernung - 2.5))
-        }
+        // Create an <a-text> element to display the distance to the new friend
+        let userText = document.createElement("a-text");
+        userText.setAttribute("value", getDistanceText(distance));
+        userText.setAttribute('position', 0 + " " + (-scale / 1.41) + " " + 0);
+        userText.setAttribute("scale", scale + " " + scale + " " + scale);
+        userText.setAttribute("align", "center");
 
-        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (0.6 - (0.5 - entfernung))
-        }
+        // Create an <a-circle> element to display the new friend's image
+        let userImage = document.createElement("a-circle");
+        userImage.setAttribute('align', 'center');
+        userImage.setAttribute("material", "src: " + newFriend.bild);
+        userImage.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6));
 
-        //console.log("element container",)
-        //console.log("der selector", document.querySelector('#container'))
-        //let element = document.querySelector('#container')
-        let root = document.createElement("a-entity")
-        //element.appendChild(root)
-        //console.log("freundname erstelleFreundEntity", freundNeu.name)
+        // Create a parent <a-entity> element to group the text and image elements and position it on the map
+        let root = document.createElement("a-entity");
+        root.setAttribute("maxDistance", "5000000");
+        root.setAttribute("look-at", "[gps-camera]");
+        root.setAttribute("gps-entity-place", "latitude:" + newFriend.latitude + "; longitude:" + newFriend.longitude);
+        root.appendChild(userImage);
+        root.appendChild(userText);
 
-        //root.setAttribute("id", freundNeu.name)
-        //root.setAttribute("log", "wurzel erstellt")
-        root.setAttribute("maxDistance", "5000000")
-        root.setAttribute("look-at", "[gps-camera]")
-        root.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-
-
-        let userText = document.createElement("a-text")
-        if (entfernung > 1) {
-            userText.setAttribute("value", entfernung + " km")
-        } else {
-            userText.setAttribute("value", (entfernung * 1000) + " m")
-        }
-
-        userText.setAttribute('position', 0 + " " + (-scale / 1.41) + " " + 0)
-        userText.setAttribute("scale", scale + " " + scale + " " + scale)
-        userText.setAttribute("align", "center")
-        //   userText.setAttribute("maxDistance", "5000000")
-        //   userText.setAttribute("look-at", "[gps-camera]")
-        //   userText.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-        //console.log(userText)
-        // var scene = document.querySelector('#a-cene')
-        //scene.append(root)
-
-
-        /*
-                var pfeil = document.createElement("a-entity")
-                pfeil.innerHTML = '<a-cone material="color: #FF4081; metalness: 0.2; roughness: 0.8" height="1" radius-bottom="0.4" radius-top="0.04" rotation="0 0 180"></a-cone> <a-cylinder color="#FF4081" height="3" radius="0.05" position="0 1.5 0"></a-cylinder>'
-                pfeil.setAttribute("scale", (scale / 2) + " " + (scale / 2) + " " + (scale / 2))
-                pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
-        */
-
-        var userBild = document.createElement("a-circle")
-
-        userBild.setAttribute('align', 'center');
-        //userBild.append('<a-image src=("src: " + freundNeu.bild)></a-image>')
-        userBild.setAttribute("material", "src: " + freundNeu.bild)
-        //userBild.setAttribute("material", "src= ww.png")
-        userBild.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6))
-        //   userBild.setAttribute("maxDistance", "5000000")
-        //   userBild.setAttribute("look-at", "[gps-camera]")
-        //   userBild.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-
-        //var bild = document.createElement("a-image")
-        //bild.setAttribute("src", "./ww.png")
-        //bild.setAttribute("src", freundNeu.bild)
-        //bild.setAttribute("radius", "1")
-        //bild.setAttribute("theta-start", "0")
-
-        //bild.setAttribute("theta-length", "360")
-
-
-        root.appendChild(userBild)
-        //root.append(bild)
-        //   root.appendChild(pfeil)
-        root.appendChild(userText)
-
-        //element.appendChild(root)
-        //console.log("freundname erstelleFreundEntity", userText)
-        let element = document.querySelector('#container')
-        element.appendChild(root)
+        let element = document.querySelector('#container');
+        element.appendChild(root);
     }
 
-    function checkZunahPunkt(punkte) {
-        let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
+    function createPointEntity(newPoint) {
+        // Calculate the distance from the user to the new point
+        let distance = getDistance(newPoint.latitude, newPoint.longitude);
 
-        if ((entfernung < 0.04) && !zuNahListe.includes(punkte.title)) {
-            zuNahListe.push(punkte.title)
-            updateDeviceList();
-            return true
-        } else if ((entfernung > 0.04) && zuNahListe.includes(punkte.title)) {
-            for (let i = 0; i < zuNahListe.length; i++) {
-                if (zuNahListe[i].localeCompare(punkte.title + " ")) {
-                    zuNahListe.splice(i, 1);
-                    break;
-                }
-            }
-            updateDeviceList();
-            return false
-        } else if (zuNahListe.includes(punkte.title)) {
-            return true
-        }
-        return false
-    }
+        // Scale the size of the point based on its distance from the user
+        let scale = getIndividualScale(distance, 200);
 
-    function erstellePunktEntity(punkte) {
-        let entfernung = PythagorasEquirectangular(punkte.latitude, punkte.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
-        var scale = 200
+        // Create a text element to display the title of the point and its distance from the user
+        let pointText = document.createElement("a-text");
+        pointText.setAttribute("id", newPoint.title + "Text");
+        pointText.setAttribute("value", newPoint.title + getDistanceText(distance));
+        pointText.setAttribute("align", "center");
+        pointText.innerText = newPoint.title;
+        pointText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
+        pointText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
+        // Create a marker for the point using a cone and a sphere
+        let marker = document.createElement("a-entity");
+        marker.setAttribute("id", newPoint.title + "Marker");
+        marker.innerHTML = '<a-cone position="0 0 0" rotation="-180 0 0" height="1.2" radius-bottom="1.2" color="#FF0000"></a-cone> <a-sphere position="0 1.68 0" radius="1.6" color="#FF0000" rotation="180 0 0"></a-sphere>'
+        marker.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5));
+        marker.setAttribute("position", 0 + " " + (scale * 2) + " " + 0);
 
-        let root = document.createElement("a-entity")
-
-        root.setAttribute("id", punkte.title)
-        root.setAttribute("maxDistance", "5000000")
-        root.setAttribute("look-at", "[gps-camera]")
-        root.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-
-        var userText = document.createElement("a-text")
-        userText.setAttribute("id", punkte.title + "Text")
-        if (entfernung > 1) {
-            userText.setAttribute("value", punkte.title + " " + entfernung + " km")
-        } else {
-            userText.setAttribute("value", punkte.title + " " + (entfernung * 1000) + " m")
-        }
-        //   userText.setAttribute("maxDistance", "5000000")
-        //   userText.setAttribute("look-at", "[gps-camera]")
-        // userText.setAttribute("clicker", "")
-        userText.setAttribute("align", "center")
-        userText.innerText = punkte.title
-
-        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-            scale *= (1 + (entfernung - 2.5))
-        }
-        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (0.6 - (0.5 - entfernung))
-        }
-
-        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
-        //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
-
-
-        var pfeil = document.createElement("a-entity")
-        pfeil.setAttribute("id", punkte.title + "Pfeil")
-        pfeil.innerHTML = '<a-cone position="0 0 0" rotation="-180 0 0" height="1.2" radius-bottom="1.2" color="#FF0000"></a-cone> <a-sphere position="0 1.68 0" radius="1.6" color="#FF0000" rotation="180 0 0"></a-sphere>'
-        pfeil.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5))
-        pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
-
-
-        let element = document.querySelector('a-scene')
-        //element.appendChild(userText)
-
-        pfeil.addEventListener('click', function (e) {
-            openPoint(punkte, e);
+        // Add a click event listener to the marker to open the point details
+        marker.addEventListener('click', function (e) {
+            openPoint(newPoint, e);
         })
 
-        root.appendChild(pfeil)
-        root.appendChild(userText)
-        element.appendChild(root)
+        // Create a text entity to display the point title and distance
+        let root = document.createElement("a-entity");
+        root.setAttribute("id", newPoint.title);
+        root.setAttribute("maxDistance", "5000000");
+        root.setAttribute("look-at", "[gps-camera]");
+        root.setAttribute("gps-entity-place", "latitude:" + newPoint.latitude + "; longitude:" + newPoint.longitude);
+        root.appendChild(marker);
+        root.appendChild(pointText);
+
+        // Add the root entity to the scene
+        let element = document.querySelector('a-scene');
+        element.appendChild(root);
     }
 
-    function updatePunkt(punktNeu) {
-        let entfernung = PythagorasEquirectangular(punktNeu.latitude, punktNeu.longitude, ownPosition.coords.latitude, ownPosition.coords.longitude)
-        var scale = 200
+    // This function updates a point on a map with new data
+    function updatePoint(newPoint) {
+        // Calculate the distance between the new point and the current location
+        let distance = getDistance(newPoint.latitude, newPoint.longitude);
 
-        let root = document.getElementById(punktNeu.title)
+        // Calculate the scaling factor for the point based on its distance from the current location
+        let scale = getIndividualScale(distance, 200);
 
-        root.setAttribute("gps-entity-place", "latitude:" + punktNeu.latitude + "; longitude:" + punktNeu.longitude)
+        // Find the root element for the point and update its position
+        let root = document.getElementById(newPoint.title);
+        root.setAttribute("gps-entity-place", "latitude:" + newPoint.latitude + "; longitude:" + newPoint.longitude);
 
-        var userText = document.getElementById(punktNeu.title + "Text")
+        // Find the element for the point's text and update its text and position
+        let pointText = document.getElementById(newPoint.title + "Text");
+        pointText.setAttribute("value", newPoint.title + getDistanceText(distance));
+        pointText.innerText = newPoint.title;
+        pointText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
+        pointText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
 
-        if (entfernung > 1) {
-            userText.setAttribute("value", punktNeu.title + " " + entfernung + " km")
-        } else {
-            userText.setAttribute("value", punktNeu.title + " " + (entfernung * 1000) + " m")
-        }
-
-        userText.innerText = punktNeu.title
-
-        if (entfernung > 2.5) { // weiter als 2.5 -> groesse von 2.5
-            scale *= (1 + (entfernung - 2.5))
-        }
-        if (entfernung < 0.5) { // naeher als 0.5 -> groesse von 0.5
-            scale *= (0.6 - (0.5 - entfernung))
-        }
-
-        userText.setAttribute('position', 0 + " " + (scale * 1.5) + " " + 0)
-        //  userText.setAttribute("gps-entity-place", "latitude:" + punkte.latitude + "; longitude:" + punkte.longitude)
-        userText.setAttribute("scale", (scale * 1.3) + " " + (scale * 1.3) + " " + (scale * 1.3))
-
-
-        var pfeil = document.getElementById(punktNeu.title + "Pfeil")
-        pfeil.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5))
-        pfeil.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
-
+        // Find the element for the point's marker and update its scale and position
+        let marker = document.getElementById(newPoint.title + "Marker")
+        marker.setAttribute("scale", (scale / 2.5) + " " + (scale / 2.5) + " " + (scale / 2.5))
+        marker.setAttribute("position", 0 + " " + (scale * 2) + " " + 0)
     }
 
-    socket.on('answer', function (msg) {
-        let freundeListeNeu = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
-        let punkteListeNeu = JSON.parse(msg)[1];
-
-        /*
-        punkteListeNeu.forEach(p =>{
-            let element = document.getElementById(p.title)
-            if (element !==null) {
-                console.log(element)
-              //  element.removeEventListener('click', openPoint)
-            }
-        })
-         */
-
-        document.querySelector('#container').innerHTML = '';
-
-        freundeListeNeu.forEach(freundNeu => {
-            if (typeof freundNeu.name != "undefined") {
-                let checkZunahFreundErg = checkZunahFreund(freundNeu);
-                if (!checkZunahFreundErg) {
-                    erstelleFreundEntity(freundNeu)
-                }
-
-            }
-        });
-        /*
-        angezeigteFreunde.forEach(freundAktuell => {
-            if (typeof (freundAktuell) != "undefined") {
-                removeOfflineUser(freundAktuell, freundeListeNeu)
-            }
-        });
-         */
-
-        punkteListeNeu.forEach(punktNeu => {
-            /*
-            let checkZunahPunktErg = checkZunahPunkt(punktNeu);
-            if (!checkZunahPunktErg){
-                erstellePunktEntity(punktNeu)
-            }
-            */
-
-            for (let i = 0; i < punkteAr.length; i++) {
-                if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
-                    updatePunkt(punktNeu)
-                    //console.log("punkt geupdated: ", punktNeu)
-                    return
-                }
-            }
-            punkteAr.push(punktNeu)
-            console.log("punkt erstellt:  ", punktNeu)
-            erstellePunktEntity(punktNeu)
-        });
-    });
-
-
-    function updateDeviceList() {
-        var deviceList = document.querySelector('#deviceList')
-        deviceList.innerHTML = ""
-        for (index in zuNahListe) {
-            const deviceItem = document.createElement('li');
-            deviceItem.innerText = zuNahListe[index];
-            deviceList.appendChild(deviceItem);
+    // This function updates the list of nearby friends
+    function updateNearbyList() {
+        // Find the element for the nearby friends list and clear its contents
+        let nearbyList = document.querySelector('#nearbyList')
+        nearbyList.innerHTML = "";
+        // Loop through each friend in the nearby friend list and create a list item element for them
+        for (index in nearbyFriendList) {
+            const nearFriend = document.createElement('li');
+            nearFriend.innerText = nearbyFriendList[index];
+            nearbyList.appendChild(nearFriend);
         }
     }
 
-    function openPoint(punkt, e) {
-        //console.log(e);
-        e.stopPropagation();
-        //e.preventDefault();
-        console.log("punkt : " + punkt["title"])
+    // This function is called when a map point is clicked.
+    // It displays the title and text of the point in a form on the page.
+    function openPoint(point, e) {
+        e.stopPropagation(); // Stop the click event from propagating to the map
+        console.log("point : " + point["title"]);
 
-        document.getElementById("titlePoint").innerHTML = punkt["title"]
-        document.getElementById("textPoint").innerHTML = punkt["text"]
-
+        // Update the form with the point's title and text
+        document.getElementById("titlePoint").innerHTML = point["title"];
+        document.getElementById("textPoint").innerHTML = point["text"];
         document.getElementById("openPointForm").style.display = "block";
-
     }
 
+    // This function is called when the "Close" button on the point form is clicked.
+    // It hides the point form.
     function closePoint() {
         document.getElementById("openPointForm").style.display = "none";
     }
 
+    // This function is called when the "Add Point" button on the page is clicked.
+    // It displays a form for the user to input a new map point.
     function openForm() {
         document.getElementById("openAddPointForm").style.display = "block";
     }
 
+    // This function is called when the "Cancel" button on the new point form is clicked.
+    // It clears the form inputs and hides the new point form.
     function closeForm() {
-        document.getElementById("titel").value = "";
-        document.getElementById("beschreibung").value = "";
+        document.getElementById("title").value = "";
+        document.getElementById("description").value = "";
         document.getElementById("openAddPointForm").style.display = "none";
     }
 
-    function ongeopruefen() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(markierungSetzten);
-        } else {
-            console.log("Geolocation is not supported by this browser.")
-        }
-    }
+    // This function is called when the "Save" button on the new point form is clicked.
+    // It sends a request to the server to save the new point, and then clears the form inputs and hides the form.
+    function safeMarker() {
+        let title = document.getElementById("title").value;
+        let description = document.getElementById("description").value;
 
-    function markierungSetzten(loc) {
-        let title = document.getElementById("titel").value;
-        let beschreibung = document.getElementById("beschreibung").value;
-
+        // Ensure that the user has entered a title and description for the new point
         if (title === "") {
-            alert("Bitte Namen eingeben!")
-            return
+            alert("Bitte Namen eingeben!");
+            return;
         }
-        if (beschreibung === "") {
-            alert("Bitte Beschreibung eingeben!")
-            return
+        if (description === "") {
+            alert("Bitte Beschreibung eingeben!");
+            return;
         }
 
+        // Send a POST request to the server to save the new point
         fetch("https://" + document.domain + ":" + location.port + "/save_point", {
             method: "POST",
             body: JSON.stringify({
                 "title": title,
-                "text": beschreibung,
-                "latitude": loc.coords.latitude,
-                "longitude": loc.coords.longitude
+                "text": description,
+                "latitude": ownPosition.coords.latitude,
+                "longitude": ownPosition.coords.longitude
             })
             ,
             headers: {
@@ -593,15 +466,45 @@
                 console.error("Error occurred:", error);
             });
         console.log("added new point" + title);
+
+        // Clear the form inputs and hide the form
         closeForm();
     }
 
 
+    function getDistanceText(distance) {
+        if (distance > 1) {
+            return " " + distance + " km";
+        } else {
+            return " " + (distance * 1000) + " m";
+        }
+    }
+
+    //helperfunctions for calculation
+    function getDistance(latitude, longitude) {
+        return PythagorasEquirectangular(latitude, longitude, ownPosition.coords.latitude, ownPosition.coords.longitude);
+    }
+
+    function getIndividualScale(distance, scale) {
+        // This function calculates the scale of a marker based on its distance from the user's location
+        // If the distance is greater than 2.5 km, the marker will have a size of 2.5 times the original scale
+        // If the distance is less than 0.5 km, the marker will have a size of 0.6 times the original scale
+        if (distance > 2.5) {
+            scale *= (1 + (distance - 2.5));
+        } else if (distance < 0.5) {
+            scale *= (0.6 - (0.5 - distance));
+        }
+        return scale;
+    }
+
     function Deg2Rad(deg) {
+        // This function converts degrees to radians
         return deg * Math.PI / 180;
     }
 
     function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
+        // This function calculates the distance between two points on a sphere using the Pythagorean theorem and the equirectangular approximation
+        // It takes the latitude and longitude of two points as input and returns the distance between them in kilometers
         lat1 = Deg2Rad(lat1);
         lat2 = Deg2Rad(lat2);
         lon1 = Deg2Rad(lon1);
@@ -615,115 +518,31 @@
 
 
     /*
-        function getPunkt(punkt) {
-            var ergebnis;
-            punkteAr.forEach(element => {
-                console.log("das sind die punkte" + element["title"])
-            });
-            console.log("bin der vergleichspunkt" + punkt)
-            punkteAr.forEach(element => {
-                if (0 === element["title"].localeCompare(punkt)) {
-                    console.log(" fuck this" + element["title"])
-                    ergebnis = element;
+    friendListNew.forEach(newFriend => {
+        if (typeof newFriend.name != "undefined") {
+
+            let distance = getDistance(newFriend.latitude, newFriend.longitude);
+            if ((distance < 0.04) && !nearbyFriendList.includes(newFriend.name)) {
+                nearbyFriendList.push(newFriend.name)
+                updateNearbyList();
+
+            } else if ((distance > 0.04) && nearbyFriendList.includes(newFriend.name)) {
+                for (let i = 0; i < nearbyFriendList.length; i++) {
+                    if (nearbyFriendList[i].localeCompare(newFriend.name + " ")) {
+                        nearbyFriendList.splice(i, 1);
+                        break;
+                    }
                 }
-            });
-            return ergebnis;
-        }
-
-        function checkClose(position) {
-            return (0.00001 < Math.abs(ownPosition.coords.latitude - position.coords.latitude) + Math.abs(ownPosition.coords.longitude - position.coords.longitude))
-        }
-
-        function updateFriend(freundNeu) {
-            let element = document.getElementById(freundNeu.name)
-            element.setAttribute("gps-entity-place", "latitude:" + freundNeu.latitude + "; longitude:" + freundNeu.longitude)
-        }
-
-        function updateFreundesListe(freundNeu) {
-
-            if (checkZunahFreund(freundNeu)) {
-                return
-            }
-
-            //console.log("freunde aktuell")
-
-            for (let i = 0; i <= angezeigteFreunde.length; i++) {
-                console.log("freunde aktuell", angezeigteFreunde[i].name)
-                console.log("freunde neu", freundNeu.name)
-                console.log(0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name))
-                if (0 === angezeigteFreunde[i].name.localeCompare(freundNeu.name)) {
-                    //           console.log("updatefriendList" + freundNeu.name)
-                    //updateFriend(freundNeu);
-                    return
-                }
-            }
-            console.log("hier nicht")
-            angezeigteFreunde.push(freundNeu)
-            erstelleFreundEntity(freundNeu)
-        }
-
-        function updatePunkteListe(punktNeu) {
-
-            if (checkZunahPunkt(punktNeu)) {
-                return
-            }
-
-            for (let i = 0; i < punkteAr.length; i++) {
-                if (0 === punkteAr[i].title.localeCompare(punktNeu.title)) {
-                    return
-                }
-            }
-            punkteAr.push(punktNeu)
-            erstellePunktEntity(punktNeu)
-
-        }
-
-        function removeOfflineUser(freundAktuell, freundlisteNeu) {
-            freundlisteNeu.forEach(freundneu => {
-                if (0 === freundneu.name.localeCompare(freundAktuell.name)) {
-                    return
-                }
-            })
-            angezeigteFreunde.splice(angezeigteFreunde.indexOf(freundAktuell), 1);
-            let element = document.getElementById(freundAktuell.name);
-            let root = document.getElementById("container");
-            root.remove(element);
-        }
-
-        function addTestData() {
-
-            let testFreund1 = {
-                "name": "RingKiosk",
-                "latitude": "50.79846715949979",
-                "longitude": "7.2058313596181565",
-                "bild": zuhause_bild
-            };
-
-            let testFreund2 = {
-                "name": "Koeln",
-                "latitude": 50.726878,
-                "longitude": 7.084104,
-                "bild": thomas_bild
-            }
-            let testPunkt1 = {
-                "title": 'hbrs',
-                "text": 'wir lieben es alle ',
-                "latitude": 50.78001445359288,
-                "longitude": 7.182461982104352
-            }
-            if (testDataSet) {
-
+                updateNearbyList();
+                createFriendEntity(newFriend);
+            } else if (nearbyFriendList.includes(newFriend.name)) {
             } else {
-                erstelleFreundEntity(testFreund1)
-                //erstelleFreundEntity(testFreund2)
+                createFriendEntity(newFriend);
             }
-            checkZunahFreund(testFreund1)
-            //checkZunahFreund(testFreund2)
-
-            //updatePunkteListe(testPunkt1)
-            testDataSet = true
         }
-    */
+
+    });
+*/
 </script>
 
 </html>
