@@ -12,6 +12,7 @@ export class CreateGroupComponent implements OnInit {
   friends = [{name: "", checked: false}];
   groupName: String = "";
   checked = [];
+  groups = [];
 
   constructor(private http: HttpClient, private router: Router) {
   }
@@ -23,27 +24,25 @@ export class CreateGroupComponent implements OnInit {
         this.friends = [];
         data.friendlist.forEach((x: any) => this.friends.push({name: x, checked: false}));
       });
+
+    this.http.get<any>('/getGroups')
+      .subscribe(data => {
+        console.log(data);
+        this.groups = data.grouplist;
+      });
   }
 
   saveGroup() {
     let members = this.friends.filter(x => x.checked).map(y => y.name);
+
     if (this.groupName == "") {
       alert("Bitte Gruppennamen eingeben!");
       return;
+    } else if (this.groups.filter(gName => gName == this.groupName.trimEnd()).length != 0) {
+      alert("Sie sind bereits in einer Gruppe mit diesem Namen!");
+      return;
     } else if (members.length == 0) {
       alert("Bitte Gruppenmitglieder auswählen!");
-      return;
-    }
-
-    let groups: any[] = [];
-    this.http.get<any>('/getGroups')
-      .subscribe(data => {
-        console.log(data);
-        groups = data;
-      });
-
-    if (groups.filter(x => x.name==this.groupName).length!=0){
-      alert("Es existiert bereits eine Gruppe mit diesem Namen");
       return;
     }
 
