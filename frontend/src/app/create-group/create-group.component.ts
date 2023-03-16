@@ -34,6 +34,19 @@ export class CreateGroupComponent implements OnInit {
       alert("Bitte Gruppenmitglieder auswählen!");
       return;
     }
+
+    let groups: any[] = [];
+    this.http.get<any>('/getGroups')
+      .subscribe(data => {
+        console.log(data);
+        groups = data;
+      });
+
+    if (groups.filter(x => x.name==this.groupName).length!=0){
+      alert("Es existiert bereits eine Gruppe mit diesem Namen");
+      return;
+    }
+
     this.http.post<any>('/createGroup', JSON.stringify({members: members, name: this.groupName.trimEnd()}))
       .subscribe(data => {
         console.log(data);
