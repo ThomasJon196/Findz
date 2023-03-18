@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, jsonify
+from flask import render_template, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from flask_apscheduler import APScheduler
 import json
@@ -485,6 +485,11 @@ def updateImage():
 
     data = jsonify({"status": "success"})
     return data, 200
+
+
+@app.route('/images/<path:path>')
+def send_report(path):
+    return send_from_directory('images', path)
 
 
 # Reroutes the /static/ pages.
