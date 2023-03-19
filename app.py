@@ -487,7 +487,7 @@ def updateImage():
     return data, 200
 
 
-@app.route('/images/<path:path>')
+@app.route('/static/<path:path>')
 def send_report(path):
     return send_from_directory('images', path)
 
