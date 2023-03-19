@@ -1,0 +1,7 @@
+input[type="radio"]{
+  display: none;
+}
+
+:checked + label img {
+  border: 5px solid #365830;
+}
