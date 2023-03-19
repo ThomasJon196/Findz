@@ -16,26 +16,27 @@ export class EditProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.images = [{
+      id: "0",
+      source: "/static/Tobias.JPG",
+      checked: false
+    }, {
       id: "1",
-      //source: "https://images.unsplash.com/photo-1519750783826-e2420f4d687f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2574&q=80",
-      source: "https://images.pexels.com/photos/3756907/pexels-photo-3756907.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      source: "/static/Thomas.JPG",
       checked: false
     }, {
       id: "2",
-      //source: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80",
-      source: "https://images.pexels.com/photos/977418/pexels-photo-977418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      source: "/static/Wiete.JPG",
       checked: false
     }, {
       id: "3",
-      //source: "https://images.unsplash.com/photo-1651147538420-06f5e0d3f1d9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MnwxNTc5MTk3fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      source: "https://images.pexels.com/photos/1520760/pexels-photo-1520760.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      source: "/static/Ida.JPG",
       checked: false
     }, {
       id: "4",
-      //source: "https://images.unsplash.com/photo-1659846490270-58b1e659ddc0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MXwxNTc5MTk3fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=800&q=60",
-      source: "https://images.pexels.com/photos/13326901/pexels-photo-13326901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      source: "/static/Ivy.JPG",
       checked: false
-    }];
+    }
+    ];
   }
 
   save() {
@@ -50,8 +51,5 @@ export class EditProfileComponent implements OnInit {
         console.log(data);
         this.router.navigate(['gruppen']);
       });
-
   }
-
-
 }
