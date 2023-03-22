@@ -126,20 +126,20 @@
     zurück
 </button>
 
-<!-- List of nearby points of interest -->
+<!-- List of nearby points -->
 <div id="nearbyListForm">
     In deiner Nähe (<40m):
     <ul id="nearbyList" style='list-style-type:square;'></ul>
 </div>
 
-<!-- Button to open the form to add a new point of interest -->
+<!-- Button to open the form to add a new point -->
 <button id="openAddPointFormButton" onclick="openForm()">
     <span class="material-symbols-outlined">
         add_location_alt
     </span>
 </button>
 
-<!-- The form to display details about a point of interest -->
+<!-- The form to display details about a point -->
 <div id="openPointForm">
     <div class="form-container">
         <h3 id="titlePoint"></h3>
@@ -149,7 +149,7 @@
     </div>
 </div>
 
-<!-- The form to add a new point of interest -->
+<!-- The form to add a new point -->
 <div id="openAddPointForm">
     <div class="form-container">
         <h3>Markierung setzen</h3>
@@ -167,17 +167,18 @@
 </body>
 
 <script>
-    // An array to store all points of interest
     let points = [];
-
-    // An array to store the list of nearby friends
     let nearbyFriendList = [];
-
-    // The current user's GPS position
     let ownPosition;
 
     // Initialize a socket connection to the server
     var socket = io.connect('https://' + document.domain + ':' + location.port);
+
+    // Send a join message to the server with user's name and current group
+    socket.emit('join', JSON.stringify({
+        "name": '{{user}}',
+        "current_group": '{{current_group}}'
+    }))
 
     // Function to be called when the user's GPS position is successfully obtained
     const successCallback = (position) => {
@@ -187,11 +188,11 @@
             "latitude": position.coords.latitude,
             "longitude": position.coords.longitude,
         }))
-        // Store the user's position for later use
+        // Store the user's position
         ownPosition = position;
     };
 
-    // Function to be called when there is an error obtaining
+    // Function to be called when there is an error
     const errorCallback = (error) => {
         console.log(error);
     };
@@ -199,11 +200,6 @@
     // Start tracking user's position and sending updates to the server
     navigator.geolocation.watchPosition(successCallback, errorCallback)
 
-    // Send a join message to the server with user's name and current group
-    socket.emit('join', JSON.stringify({
-        "name": '{{user}}',
-        "current_group": '{{current_group}}'
-    }))
 
     // Listen for a redirect message from the server and redirect the user to the specified destination
     socket.on('redirect', function (destination) {
@@ -216,7 +212,7 @@
         let friendListNew = JSON.parse(msg)[0].filter(element => element['name'] !== '{{user}}');
         let pointListNew = JSON.parse(msg)[1];
 
-        // Clear the existing 3D scene
+        // Clear the existing 3D container
         document.querySelector('#container').innerHTML = '';
 
         // Update the nearbyFriendList based on the new friend list
@@ -240,7 +236,7 @@
                     }
                     // If the new friend is already in the nearbyFriendList, do nothing
                 } else if (nearbyFriendList.includes(newFriend.name)) {
-                    // If the new friend is not in the nearbyFriendList, create a new entity for them in the 3D scene
+                    // If the new friend is not in the nearbyFriendList, create a new entity
                 } else {
                     createFriendEntity(newFriend);
                 }
@@ -264,30 +260,7 @@
         });
     });
 
-
-    function checkNearbyFriend(newFriend) {
-        let distance = getDistance(newFriend.latitude, newFriend.longitude);
-
-        if ((distance < 0.04) && !nearbyFriendList.includes(newFriend.name)) {
-            nearbyFriendList.push(newFriend.name)
-            updateNearbyList();
-            return true;
-        } else if ((distance > 0.04) && nearbyFriendList.includes(newFriend.name)) {
-            for (let i = 0; i < nearbyFriendList.length; i++) {
-                if (nearbyFriendList[i].localeCompare(newFriend.name + " ")) {
-                    nearbyFriendList.splice(i, 1);
-                    break;
-                }
-            }
-            updateNearbyList();
-            return false;
-        } else if (nearbyFriendList.includes(newFriend.name)) {
-            return true;
-        }
-        return false;
-    }
-
-
+    // This function creates a new friend
     function createFriendEntity(newFriend) {
         let distance = getDistance(newFriend.latitude, newFriend.longitude);
         let scale = getIndividualScale(distance, 130);
@@ -305,7 +278,7 @@
         userImage.setAttribute("material", "src: " + newFriend.bild);
         userImage.setAttribute("scale", (scale / 1.6) + " " + (scale / 1.6) + " " + (scale / 1.6));
 
-        // Create a parent <a-entity> element to group the text and image elements and position it on the map
+        // Create a parent <a-entity> element to group the text and image elements and set the position
         let root = document.createElement("a-entity");
         root.setAttribute("maxDistance", "5000000");
         root.setAttribute("look-at", "[gps-camera]");
@@ -317,6 +290,7 @@
         element.appendChild(root);
     }
 
+    // This function creates a new point
     function createPointEntity(newPoint) {
         // Calculate the distance from the user to the new point
         let distance = getDistance(newPoint.latitude, newPoint.longitude);
@@ -359,7 +333,7 @@
         element.appendChild(root);
     }
 
-    // This function updates a point on a map with new data
+    // This function updates a point with new data
     function updatePoint(newPoint) {
         // Calculate the distance between the new point and the current location
         let distance = getDistance(newPoint.latitude, newPoint.longitude);
@@ -416,7 +390,7 @@
     }
 
     // This function is called when the "Add Point" button on the page is clicked.
-    // It displays a form for the user to input a new map point.
+    // It displays a form for the user to input a new point.
     function openForm() {
         document.getElementById("openAddPointForm").style.display = "block";
     }
@@ -471,7 +445,7 @@
         closeForm();
     }
 
-
+    // This function returns the text for the distance with kilometers or meters
     function getDistanceText(distance) {
         if (distance > 1) {
             return " " + distance + " km";
@@ -480,15 +454,15 @@
         }
     }
 
-    //helperfunctions for calculation
+    // This function calculates the distance between the user and given latitude and longitude
     function getDistance(latitude, longitude) {
         return PythagorasEquirectangular(latitude, longitude, ownPosition.coords.latitude, ownPosition.coords.longitude);
     }
 
+    // This function calculates the scale of a marker based on its distance from the user's location
+    // If the distance is greater than 2.5 km, the marker will have a size of 2.5 times the original scale
+    // If the distance is less than 0.5 km, the marker will have a size of 0.6 times the original scale
     function getIndividualScale(distance, scale) {
-        // This function calculates the scale of a marker based on its distance from the user's location
-        // If the distance is greater than 2.5 km, the marker will have a size of 2.5 times the original scale
-        // If the distance is less than 0.5 km, the marker will have a size of 0.6 times the original scale
         if (distance > 2.5) {
             scale *= (1 + (distance - 2.5));
         } else if (distance < 0.5) {
@@ -497,14 +471,14 @@
         return scale;
     }
 
+    // This function converts degrees to radians
     function Deg2Rad(deg) {
-        // This function converts degrees to radians
         return deg * Math.PI / 180;
     }
 
+    // This function calculates the distance between two points on a sphere using the Pythagorean theorem and the equirectangular approximation
+    // It takes the latitude and longitude of two points as input and returns the distance between them in kilometers
     function PythagorasEquirectangular(lat1, lon1, lat2, lon2) {
-        // This function calculates the distance between two points on a sphere using the Pythagorean theorem and the equirectangular approximation
-        // It takes the latitude and longitude of two points as input and returns the distance between them in kilometers
         lat1 = Deg2Rad(lat1);
         lat2 = Deg2Rad(lat2);
         lon1 = Deg2Rad(lon1);
@@ -516,33 +490,5 @@
         return d.toFixed(2);
     }
 
-
-    /*
-    friendListNew.forEach(newFriend => {
-        if (typeof newFriend.name != "undefined") {
-
-            let distance = getDistance(newFriend.latitude, newFriend.longitude);
-            if ((distance < 0.04) && !nearbyFriendList.includes(newFriend.name)) {
-                nearbyFriendList.push(newFriend.name)
-                updateNearbyList();
-
-            } else if ((distance > 0.04) && nearbyFriendList.includes(newFriend.name)) {
-                for (let i = 0; i < nearbyFriendList.length; i++) {
-                    if (nearbyFriendList[i].localeCompare(newFriend.name + " ")) {
-                        nearbyFriendList.splice(i, 1);
-                        break;
-                    }
-                }
-                updateNearbyList();
-                createFriendEntity(newFriend);
-            } else if (nearbyFriendList.includes(newFriend.name)) {
-            } else {
-                createFriendEntity(newFriend);
-            }
-        }
-
-    });
-*/
 </script>
-
 </html>
