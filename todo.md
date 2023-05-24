@@ -75,3 +75,34 @@ Wie kann man in Zukunft entiwcklungszeit sparen?
 [^1]: Kommunikation zwischen unterschiedlichen Komponenten erfordert die Uebergabe einheitlicher Daten. (Hierfuer eignen sich API-Management-Tools). Ansonsten kann ein kleiner typo fuer viel verlorene Entwicklungszeit sorgen.
 
 [^2]: Am besten sofort mit logging bibliotheken arbeiten, anstatt in den stdout zu schreiben, da die programmlaufzeit unter print statements leidet.
+
+
+__BACKLOG__
+
+__OPEN__
+
+- Clear project structure. (src/, )
+- Add project setup docs
+- Add angular build via docker-container. (Remove any dependencies from system. Such that only docker is required.)
+- Reduce Flask image size. (Currently 1 GB)
+- Integrate user sessions. Currently everyone sees everyone. (Privacy problem.)
+  - Flask SocketIO rooms
+  - flask.session
+  - update logged in userlist
+- Add logging. (Replace print statements)
+- Integrate error handling. (e.g. user already exists/friend already exist. (Extra)
+- Secure code against sql injections
+- Asynchronous update of locations via periodic tasks.
+- Persist database (docker volumes)
+- custom pictures
+- Tobi: Insert resources/links for webXR development
+
+__DONE__
+- Fix `static` endpoints. (Added automatic rerouting)
+- Write a local/global deployment script 
+- Configure deployment via docker-containers to remove OS-dependency. (cloudflared & flaskserver)
+- WebXR GPS Koordinaten einlesen [Tobi]
+- Authentifizierung + Freundesliste (Backend mit Typescript) [Thomas]
+- Authentifizierung + Freundesliste usw. (FrontEnd Mobile first development) [Wiete]
+- Erster prototyp eines 3D Markers 
+- Platzierung des Markers auf den GPS Koordinaten

@@ -7,11 +7,7 @@
   - [Flask](#flask)
   - [Angular](#angular)
   - [Docker Compose](#docker-compose)
-- [TODO (delete when finished)](#todo-delete-when-finished)
-- [Notes](#notes)
-- [MVP](#mvp)
-- [Optional](#optional)
-- [Criteria](#criteria)
+- [Lessons learned](#lessons-learned)
 
 
 ## Vision
@@ -23,7 +19,6 @@ Spotlight yourself so your friends find you easily. Dont lose your friend in a c
 
 
 Augumented-Reality marker, which displays your friends current position through the camera, lets you add locations of intereset and join groups for restricted visibility.
-
 
 
 
@@ -103,54 +98,28 @@ bash compose_docker_containers.sh
 
 ---
 
-## TODO (delete when finished)
 
-__OPEN__
-
-- Clear project structure. (src/, )
-- Create prod/dev deployments with seperate domains. (e.g. findz.dev., findz.)
-- Add project setup docs
-- Add angular build via docker-container. (Remove any dependencies from system. Such that only docker is required.)
-- Reduce Flask image size. (Currently 1 GB)
-- Integrate user sessions. Currently everyone sees everyone. (Privacy problem.)
-  - Flask SocketIO rooms
-  - flask.session
-  - update logged in userlist
-- Add logging. (Replace print statements)
-- Integrate error handling. (e.g. user already exists/friend already exist. (Extra)
-- Secure code against sql injections
-- Asynchronous update of locations via periodic tasks.
-- Persist database (docker volumes)
-- custom pictures
-- Tobi: Insert resources/links for webXR development
-
-__DONE__
-- Fix `static` endpoints. (Added automatic rerouting)
-- Write a local/global deployment script 
-- Configure deployment via docker-containers to remove OS-dependency. (cloudflared & flaskserver)
-- WebXR GPS Koordinaten einlesen [Tobi]
-- Authentifizierung + Freundesliste (Backend mit Typescript) [Thomas]
-- Authentifizierung + Freundesliste usw. (FrontEnd Mobile first development) [Wiete]
-- Erster prototyp eines 3D Markers 
-- Platzierung des Markers auf den GPS Koordinaten
+## Lessons learned
 
 
-## Notes
+- New Technologies
+  - `Flask`: Python Web-Framework (Server-Side)
+  - `Angular`: Typescript Web-Framework (Client-Side)
+  - `A-Frame`: 3D & WebXR Scence visualization
 
-- Codesandbox.io -> reactive development of 3D objects...
-
-
-## MVP
-
-- Get current position of a user based on app interaction. (Optimaly raising a hand. first simple button click.)
-    - GPS, ...?
-
-- Create a groups.
-    - Settings who wants to be seen/ Who wants to transmit
+- Security
+  - `SQL injections` [^3]
+  - `Secrets in git` [^4]
 
 
-## Optional
+- Save development time:
 
-- Create symbol above head/ circle on the ground. (e.g. when distance is small enough) 
+  - `Logging libraries`.  [^1]
+  - `API-endpoints` documented [^2]. Information flow between independently developed components should be documented.
 
-## Criteria
+[^1]: Logging statements clearly defined for easier debugigng. Use 
+[^2]: Information flow between independently developed components should be documented.(Small type can cost several hours..)
+[^3]: Prevent sql injections by not allowing strings to be passed on as queries.
+[^4]: Dont commit secrets into version control
+
+
