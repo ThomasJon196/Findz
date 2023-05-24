@@ -1,16 +1,31 @@
-# FindZ - Web3D-Project
----
+### FindZ - Web3D-Project
+
+- [Vision](#vision)
+- [Description](#description)
+- [Setup \& Deployment](#setup--deployment)
+  - [Cloudflare Tunnel](#cloudflare-tunnel)
+  - [Flask](#flask)
+  - [Angular](#angular)
+  - [Docker Compose](#docker-compose)
+- [TODO (delete when finished)](#todo-delete-when-finished)
+- [Notes](#notes)
+- [MVP](#mvp)
+- [Optional](#optional)
+- [Criteria](#criteria)
+
+
 ## Vision
 
-#### Spotlight yourself so your friends find you easily. Dont lose your friend in a crowd. ...(gerne eigene Beschreibung einfuegen)
+Spotlight yourself so your friends find you easily. Dont lose your friend in a crowd.
 
-Augumented-Reality marker, which displays your friends current position through the camera and locates your friends with higher precision.
-
----
 
 ## Description
 
-...
+
+Augumented-Reality marker, which displays your friends current position through the camera, lets you add locations of intereset and join groups for restricted visibility.
+
+
+
 
 
 ## Setup & Deployment
@@ -22,7 +37,8 @@ Setting up a local cloudflare-daemon `cloudflared` is required.
 
 Follow the instructions on [Cloudflare Dashboard](https://one.dash.cloudflare.com/3675dc4a228ca040243803bc358815e7/access/tunnels)
 
-...Describtion follows...
+
+The tunnels IP address has to be added inside the google oauth console for the google login to work properly.
 
 
 ### Flask
