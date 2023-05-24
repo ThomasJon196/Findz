@@ -14,6 +14,8 @@
 
 Spotlight yourself so your friends find you easily. Dont lose your friend in a crowd.
 
+![Vision picture](documentation/mockups/UI-Mockups-6_scaled.png)
+
 
 ## Description
 
